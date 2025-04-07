@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sortis liste{% endblock %}
+
+{% block body %}
+    <h2>Liste des sorties</h2>
+
+    {% for sortie in sorties %}
+        <div>
+            <p>{{ sortie.nom }}</p>
+            <p>Organisateur: {{ sortie.organisateur }}</p>
+        </div>
+    {% endfor %}
+{% endblock %}

@@ -29,7 +29,7 @@ class SortieType extends AbstractType
             ])
             ->add('dateHeureDebut', DateTimeType::class, [
 				'label' => 'Début',
-                'widget' => 'time_widget',
+                'widget' => 'single_text',
             ])
             ->add('duree', IntegerType::class, [
 				'label' => 'duree',
@@ -39,7 +39,7 @@ class SortieType extends AbstractType
             ])
             ->add('dateLimiteInscription', DateTimeType::class, [
 				'label' => 'Limite d\'inscription',
-	            'widget' => 'time_widget',
+	            'widget' => 'single_text',
             ])
             ->add('nbInscriptionsMax', IntegerType::class, [
 				'label' => 'Nombre de participants maximum',
@@ -49,10 +49,6 @@ class SortieType extends AbstractType
 	            'attr' => [
 					'placeholder' => 'Votre description ici...',
 	            ]
-            ])
-            ->add('organisateur', EntityType::class, [
-                'class' => Participant::class,
-                'choice_label' => 'id',
             ])
             ->add('campus', EntityType::class, [
                 'class' => Campus::class,
