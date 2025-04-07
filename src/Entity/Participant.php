@@ -6,10 +6,14 @@ use App\Repository\ParticipantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ParticipantRepository::class)]
+#[UniqueEntity(fields: ['email'], message: 'Il existe déjà un compte avec cette adresse email')]
+#[UniqueEntity(fields: ['pseudo'], message: 'Il existe déjà un compte avec ce pseudo')]
 class Participant implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -27,9 +31,17 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $telephone = null;
 
     #[ORM\Column(length: 100, unique: true)]
+    #[Assert\Email(
+        message: 'L\'adresse email n\'est pas une adresse email valide !'
+    )]
     private ?string $email = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\Length(min: 3, max: 50,minMessage: "Minimum 3 charactères", maxMessage: "Maximum 50 charactères")]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z0-9_]+$/',
+        message: 'Le pseudo ne doit contenir que des lettres, des chiffres et des underscores.'
+    )]
     private ?string $pseudo = null;
 
     #[ORM\Column]
