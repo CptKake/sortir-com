@@ -1,39 +1,74 @@
-<h1>
-    <a href="{{ path('app_home') }}">
-        <img src="{{ asset('images/logo.png') }}" alt="sortir">
-    </a>
-</h1>
-<ul class="navbar-menu">
-    <li class="navbar-start">
-        <a class="navbar-link" href="{{ path('app_home') }}">Accueil</a>
-    </li>
-    <li class="navbar-item">
-        <a class="navbar-link" href="{{ path('app_city') }}">Villes</a>
-    </li>
-    {% if app.user %}
-        <li class="navbar-item">
-            <a class="navbar-link" href="{{ path('app_logout') }}">
-                Se déconnecter
-            </a>
-        </li>
-        {% if is_granted('ROLE_ADMIN') %}
-            <li class="navbar-item">
-                <a class="navbar-link" href="{{ path('app_admin_dashboard') }}">
-                    Admin Dashboard
-                </a>
-            </li>
-        {% endif %}
+<nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="">
+            <img src="{{ asset('images/logo.png') }}" alt="sortir">
+            <strong>Sortir.com</strong>
+        </a>
 
-    {% else %}
-        <li class="navbar-item">
-            <a class="navbar-link" href="{{ path('app_register') }}">
-                S'inscrire
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div id="navbarMenu" class="navbar-menu">
+        <div class="navbar-start">
+            <a class="navbar-item" href="">
+                <span class="icon"><i class="fas fa-home"></i></span>
+                <span>Accueil</span>
             </a>
-        </li>
-        <li class="navbar-end">
-            <a class="navbar-link" href="{{ path('app_login') }}">
-                Se connecter
+            <a class="navbar-item" href="">
+                <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+                <span>Sorties</span>
             </a>
-        </li>
-    {% endif %}
-</ul>
+            {% if is_granted('ROLE_ADMIN') %}
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        <span class="icon"><i class="fas fa-cog"></i></span>
+                        <span>Administration</span>
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item" href="{{ path('app_ville_index') }}">
+                            Villes
+                        </a>
+                        <a class="navbar-item" href="{{ path('app_lieu_index') }}">
+                            Lieux
+                        </a>
+                        <a class="navbar-item" href="{{ path('app_campus_index') }}">
+                            Campus
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="navbar-end">
+            {% if app.user %}
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        <span class="icon"><i class="fas fa-user"></i></span>
+                        <span>{{ app.user.nom }} {{ app.user.prenom }}</span>
+                    </a>
+                    <div class="navbar-dropdown is-right">
+                        <a class="navbar-item" href="">
+                            Mon profil
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="">
+                            Déconnexion
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="navbar-item">
+                    <div class="buttons">
+                        <a class="button is-light" href="">
+                            <strong>Connexion</strong>
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</nav>

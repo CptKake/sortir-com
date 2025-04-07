@@ -2,18 +2,36 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{% block title %}Sortir.com{% endblock %}</title>
         <link rel="icon" href={{ asset('images/favicon.png') }}>
         {% block stylesheets %}
-            {{ parent() }}
+
             <link rel="stylesheet" href="{{ asset('css/bulma.min.css') }}">
         {% endblock %}
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
+
     </head>
     <body>
+        {% block header %}
+            {% include 'partials/_navbar.html.twig' %}
+        {% endblock %}
+
+        <section class="section">
+            <div class="container">
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="notification is-{{ label }} is-light">
+                            <button class="delete"></button>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
         {% block body %}{% endblock %}
+            </div>
+        </section>
+    {% block footer %}
+        {% include'partials/_footer.html.twig' %}
+    {% endblock %}
     </body>
 </html>
