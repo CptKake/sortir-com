@@ -15,4 +15,5 @@ final class MainController extends AbstractController
             'controller_name' => 'MainController',
         ]);
     }
+
 }
