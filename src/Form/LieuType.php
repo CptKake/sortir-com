@@ -64,15 +64,7 @@ class LieuType extends AbstractType
                 'required' => false,
                 'scale' => 6,
             ])
-            ->add('campus', EntityType::class, [
-                'class' => Campus::class,
-                'choice_label' => 'nom',
-                'label' => 'Campus',
-                'placeholder' => 'Sélectionnez un campus',
-                'constraints' => [
-                    new NotBlank(['message' => 'Veuillez sélectionner un campus.'])
-                ]
-            ])
+
         ;
     }
 
