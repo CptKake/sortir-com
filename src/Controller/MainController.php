@@ -17,19 +17,6 @@ final class MainController extends AbstractController
         ]);
     }
 
-    #[Route('/test-mail', name: 'test_mail')]
-    public function testMail(MailerInterface $mailer): Response
-    {
-        $email = (new \Symfony\Component\Mime\Email())
-            ->from('noreply@sortir.com')
-            ->to('test@demo.local')
-            ->subject('Test direct Symfony')
-            ->text('Ceci est un test de mail envoyé manuellement');
-
-        $mailer->send($email);
-
-        return new Response('✅ Mail envoyé');
-    }
 
 
 
