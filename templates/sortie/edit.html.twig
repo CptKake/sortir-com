@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Sortie{% endblock %}
+
 {% block body %}
+    <h2>Créer une sortie</h2>
 
-{% endblock %}
-
-{% block title %}
-
+    {{ include('sortie/_form.html.twig') }}
 {% endblock %}
 

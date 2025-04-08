@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250407114238 extends AbstractMigration
+final class Version20250408080912 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -36,7 +36,10 @@ final class Version20250407114238 extends AbstractMigration
             CREATE TABLE participant (id INT AUTO_INCREMENT NOT NULL, campus_id INT NOT NULL, nom VARCHAR(50) NOT NULL, prenom VARCHAR(50) NOT NULL, telephone VARCHAR(10) NOT NULL, email VARCHAR(100) NOT NULL, pseudo VARCHAR(50) NOT NULL, administrateur TINYINT(1) NOT NULL, actif TINYINT(1) NOT NULL, url_photo VARCHAR(255) DEFAULT NULL, mot_de_passe VARCHAR(255) NOT NULL, roles JSON NOT NULL, UNIQUE INDEX UNIQ_D79F6B11E7927C74 (email), INDEX IDX_D79F6B11AF5D55E1 (campus_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE sortie (id INT AUTO_INCREMENT NOT NULL, organisateur_id INT NOT NULL, campus_id INT NOT NULL, lieu_id INT NOT NULL, etat_id INT NOT NULL, participant_id INT DEFAULT NULL, nom VARCHAR(255) NOT NULL, date_heure_debut DATETIME NOT NULL, duree INT NOT NULL, date_limite_inscription DATETIME NOT NULL, nb_inscriptions_max INT NOT NULL, infos_sortie LONGTEXT NOT NULL, INDEX IDX_3C3FD3F2D936B2FA (organisateur_id), INDEX IDX_3C3FD3F2AF5D55E1 (campus_id), INDEX IDX_3C3FD3F26AB213CC (lieu_id), INDEX IDX_3C3FD3F2D5E86FF (etat_id), INDEX IDX_3C3FD3F29D1C3019 (participant_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+            CREATE TABLE sortie (id INT AUTO_INCREMENT NOT NULL, organisateur_id INT NOT NULL, campus_id INT NOT NULL, lieu_id INT NOT NULL, etat_id INT NOT NULL, nom VARCHAR(255) NOT NULL, date_heure_debut DATETIME NOT NULL, duree INT NOT NULL, date_limite_inscription DATETIME NOT NULL, nb_inscriptions_max INT NOT NULL, infos_sortie LONGTEXT NOT NULL, INDEX IDX_3C3FD3F2D936B2FA (organisateur_id), INDEX IDX_3C3FD3F2AF5D55E1 (campus_id), INDEX IDX_3C3FD3F26AB213CC (lieu_id), INDEX IDX_3C3FD3F2D5E86FF (etat_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+        SQL);
+        $this->addSql(<<<'SQL'
+            CREATE TABLE sortie_participant (sortie_id INT NOT NULL, participant_id INT NOT NULL, INDEX IDX_E6D4CDADCC72D953 (sortie_id), INDEX IDX_E6D4CDAD9D1C3019 (participant_id), PRIMARY KEY(sortie_id, participant_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE ville (id INT AUTO_INCREMENT NOT NULL, nom VARCHAR(50) NOT NULL, code_postal VARCHAR(5) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
@@ -69,7 +72,10 @@ final class Version20250407114238 extends AbstractMigration
             ALTER TABLE sortie ADD CONSTRAINT FK_3C3FD3F2D5E86FF FOREIGN KEY (etat_id) REFERENCES etat (id)
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE sortie ADD CONSTRAINT FK_3C3FD3F29D1C3019 FOREIGN KEY (participant_id) REFERENCES participant (id)
+            ALTER TABLE sortie_participant ADD CONSTRAINT FK_E6D4CDADCC72D953 FOREIGN KEY (sortie_id) REFERENCES sortie (id) ON DELETE CASCADE
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE sortie_participant ADD CONSTRAINT FK_E6D4CDAD9D1C3019 FOREIGN KEY (participant_id) REFERENCES participant (id) ON DELETE CASCADE
         SQL);
     }
 
@@ -101,7 +107,10 @@ final class Version20250407114238 extends AbstractMigration
             ALTER TABLE sortie DROP FOREIGN KEY FK_3C3FD3F2D5E86FF
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE sortie DROP FOREIGN KEY FK_3C3FD3F29D1C3019
+            ALTER TABLE sortie_participant DROP FOREIGN KEY FK_E6D4CDADCC72D953
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE sortie_participant DROP FOREIGN KEY FK_E6D4CDAD9D1C3019
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE campus
@@ -120,6 +129,9 @@ final class Version20250407114238 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE sortie
+        SQL);
+        $this->addSql(<<<'SQL'
+            DROP TABLE sortie_participant
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE ville

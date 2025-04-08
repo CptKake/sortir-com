@@ -30,7 +30,7 @@ final class SortieController extends AbstractController
 	{
 		$sortie = new Sortie();
 		$user = $this->getUser();
-		dd($user);
+		//dd($user);
 		$sortie->setOrganisateur($user);
 		$form = $this->createForm(SortieType::class, $sortie);
 		$form->handleRequest($request);
@@ -38,6 +38,8 @@ final class SortieController extends AbstractController
 		if ($form->isSubmitted() && $form->isValid()) {
 			$em->persist($sortie);
 			$em->flush();
+
+			$this->addFlash('success', 'La sortie a été créée');
 
 			return $this->redirectToRoute('sortie_index');
 		}
@@ -55,12 +57,13 @@ final class SortieController extends AbstractController
 		if (!$sortie) {
 			throw $this->createNotFoundException('Sortie inconnue');
 		}
+
 		return $this->render('sortie/detail.html.twig', [
 			'sortie' => $sortie,
 		]);
 	}
 
-	#[Route('/{id}/editer', name: 'editer', methods: ['GET', 'POST'])]
+	#[Route('/{id}/editer', name: 'editer', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
 	public function edit(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
 	{
 		$form = $this->createForm(SortieType::class, $sortie);
@@ -68,6 +71,8 @@ final class SortieController extends AbstractController
 
 		if ($form->isSubmitted() && $form->isValid()) {
 			$em->flush();
+
+			$this->addFlash('success', 'La sortie a été modifiée');
 
 			return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
 		}
@@ -78,13 +83,13 @@ final class SortieController extends AbstractController
 		]);
 	}
 
-	#[Route('/{id}', name: 'supprimer', methods: ['POST'])]
+	#[Route('/{id}/delete', name: 'supprimer',requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
 	public function delete(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
 	{
-		if ($this->isCsrfTokenValid('delete'.$sortie->getId(), $request->getPayload()->getString('_token'))) {
-			$em->remove($sortie);
-			$em->flush();
-		}
+		$em->remove($sortie);
+		$em->flush();
+
+		$this->addFlash('success', 'La sortie a été supprimée');
 
 		return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
 	}
