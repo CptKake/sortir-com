@@ -1,4 +1,4 @@
-import './bootstrap.js';
+import '../public/css/bulma.min.css';
 /*
  * Welcome to your app's main JavaScript file!
  *

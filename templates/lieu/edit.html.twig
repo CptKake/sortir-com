@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier un lieu - {{ parent() }}{% endblock %}
+
+{% block body %}
+    <div class="columns">
+        <div class="column is-8 is-offset-2">
+            <div class="box">
+                <h1 class="title">Modifier le lieu</h1>
+
+                {{ form_start(form) }}
+
+                <div class="columns is-multiline">
+                    <div class="column is-6">
+                        {{ form_row(form.nom) }}
+                    </div>
+                    <div class="column is-6">
+                        {{ form_row(form.campus) }}
+                    </div>
+                    <div class="column is-12">
+                        {{ form_row(form.rue) }}
+                    </div>
+                    <div class="column is-6">
+                        {{ form_row(form.ville) }}
+                    </div>
+                    <div class="column is-6">
+                        {{ form_row(form.codePostal) }}
+                    </div>
+                    <div class="column is-6">
+                        {{ form_row(form.latitude) }}
+                    </div>
+                    <div class="column is-6">
+                        {{ form_row(form.longitude) }}
+                    </div>
+                </div>
+
+                <div class="field is-grouped mt-5">
+                    <div class="control">
+                        <button class="button is-success">{{ button_label|default('Enregistrer') }}</button>
+                    </div>
+                    <div class="control">
+                        <a href="{{ path('app_lieu_index') }}" class="button is-light">Annuler</a>
+                    </div>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

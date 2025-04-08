@@ -1,0 +1,72 @@
+<nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="">
+            <img src="{{ asset('images/logo.png') }}" alt="sortir">
+            <strong>Sortir.com</strong>
+        </a>
+
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div id="navbarMenu" class="navbar-menu">
+        <div class="navbar-start">
+            <a class="navbar-item" href="{{ path('app_main') }}">
+                <span class="icon"><i class="fas fa-home"></i></span>
+                <span>Accueil</span>
+            </a>
+            <a class="navbar-item" href="">
+                <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+                <span>Sorties</span>
+            </a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        <span class="icon"><i class="fas fa-cog"></i></span>
+                        <span>Administration</span>
+                    </a>
+                    <div class="navbar-dropdown">
+
+                        <a class="navbar-item" href="{{ path('app_lieu_index') }}">
+                            Lieux
+                        </a>
+                        <a class="navbar-item" href="{{ path('app_campus_index') }}">
+                            Campus
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="navbar-end">
+            {% if app.user %}
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        <span class="icon"><i class="fas fa-user"></i></span>
+                        <span>{{ app.user.nom }} {{ app.user.prenom }}</span>
+                    </a>
+                    <div class="navbar-dropdown is-right">
+                        <a class="navbar-item" href="">
+                            Mon profil
+                        </a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item" href="{{ path('app_logout') }}">
+                            Déconnexion
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="navbar-item">
+                    <div class="buttons">
+                        <a class="button is-light" href="{{ path('app_login') }}">
+                            <strong>Connexion</strong>
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</nav>

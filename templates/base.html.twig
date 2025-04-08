@@ -2,16 +2,36 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        <title>{% block title %}Sortir.com{% endblock %}</title>
+        <link rel="icon" href={{ asset('images/favicon.png') }}>
         {% block stylesheets %}
+
+            <link rel="stylesheet" href="{{ asset('css/bulma.min.css') }}">
         {% endblock %}
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
+
     </head>
     <body>
+        {% block header %}
+            {% include 'partials/_navbar.html.twig' %}
+        {% endblock %}
+
+        <section class="section">
+            <div class="container">
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="notification is-{{ label }} is-light">
+                            <button class="delete"></button>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
         {% block body %}{% endblock %}
+            </div>
+        </section>
+    {% block footer %}
+        {% include'partials/_footer.html.twig' %}
+    {% endblock %}
     </body>
 </html>
