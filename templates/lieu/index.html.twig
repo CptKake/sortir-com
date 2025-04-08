@@ -36,17 +36,17 @@
 
                     <td>
                         <div class="buttons are-small">
-                            <a href="{{ path('app_lieu_show', {'id': lieu.id}) }}" class="button is-info"> Consulter
+                            <a href="{{ path('app_lieu_show', {'id': lieu.id}) }}" class="button is-info">
                                 <span class="icon"><i class="fas fa-eye"></i></span>
                             </a>
-                            <a href="{{ path('app_lieu_edit', {'id': lieu.id}) }}" class="button is-warning"> Modifier
-                                <span class="icon"><i class="fas fa-edit"></i></span>
+                            <a href="{{ path('app_lieu_edit', {'id': lieu.id}) }}" class="button is-warning">
+                                <span class="icon"><i class="fas fa-edit" ></i></span>
                             </a>
                             <form method="post" action="{{ path('app_lieu_delete', {'id': lieu.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce lieu ?');" style="display: inline-block;">
                                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ lieu.id) }}">
                                 <button class="button is-danger">
-                                    Supprimer
-                                    <span class="icon"><i class="fas trash"></i></span>
+
+                                    <span class="icon"><i class="fas fa-trash"></i></span>
                                 </button>
                             </form>
                         </div>

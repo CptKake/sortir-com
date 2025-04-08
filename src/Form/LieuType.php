@@ -50,7 +50,7 @@ class LieuType extends AbstractType
                     new Length(['max' => 5, 'maxMessage' => 'Le code postal doit contenir {{ limit }} chiffres.']),
                     new Regex([
                         'pattern' => '/^[0-9]{5}$/',
-                        'message' => 'Le code postal doit contenir 5 chiffres.'
+                        'message' => 'Le code postal doit être une série de 5 chiffres.'
                     ])
                 ]
             ])
