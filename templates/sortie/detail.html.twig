@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ sortie.nom|upper }}{% endblock %}
+
+{% block body %}
+    <h2>{{ sortie.nom|upper }}</h2>
+    <div class="card">
+        <ul>
+            <li>Nom de la sortie : {{ sortie.nom }}</li>
+            <li>Date et heure de la sortie : {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</li>
+            <li>Date limite d'inscription : {{ sortie.dateLimiteInscription|date('d/m/Y H:i') }}</li>
+            {% set nbplaces = sortie.nbInscriptionsMax - sortie.inscriptions.count %}
+            <li>Nombre de places : {{ nbplaces }}</li>
+            <li>Durée : {{ sortie.duree }} minutes</li>
+            <li>Description et infos : {{ sortie.infosSortie }}</li>
+            <li>Ville organisatrice : {{ sortie.lieu.ville.nom }}</li>
+            <li>Lieu : {{ sortie.lieu.nom }}</li>
+            <li>Rue : {{ sortie.lieu.rue }}</li>
+            <li>Code postal : {{ sortie.lieu.ville.codePostal }}</li>
+            <li>Latitude : {{ sortie.lieu.latitude }}</li>
+            <li>Longitude : {{ sortie.lieu.longitude }}</li>
+
+            {% if sortie.participants|length > 0 %}
+            <div class="card">
+                <ul>
+                    {% for participant in sortie.participants %}
+                        <li>
+                            {{ participant.nom }} {{ participant.prenom }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </ul>
+    </div>
+    {% if app.user.id is same as sortie.organisateur.id  %}
+        <a href="{{ path('sortie_editer', {'id': sortie.id}) }}">Modifier</a>
+        <a href="{{ path('sortie_supprimer', {'id': sortie.id}) }}">Supprimer</a>
+    {% endif %}
+{% endblock %}
+
