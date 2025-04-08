@@ -7,15 +7,19 @@
 
     {% for sortie in sorties %}
         <div class="card">
+
+            <p>{{ sortie.id }}</p>
+
             <p>{{ sortie.nom }}</p>
             <p>Durée : {{ sortie.duree }}min</p>
             <p>Début : {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</p>
             <p>Inscription fermées le {{ sortie.dateLimiteInscription|date('d/m/Y H:i') }}</p>
             <p>Description : {{ sortie.infosSortie }}</p>
+            <p>Status : {{ sortie.etat.libelle }}</p>
             {% if is_granted('ROLE_USER') %}
                 <a href="{{ path('sortie_detail', {'id': sortie.id}) }}">Détail</a>
             {% endif %}
-            {% if app.user.id is same as sortie.organisateur.id  %}
+            {% if app.user.id is same as sortie.organisateur.id and sortie.etat.libelle is not same as 'Annulée' %}
                 <a href="{{ path('sortie_editer', {'id': sortie.id}) }}">Modifier</a>
             {% endif %}
         </div>
