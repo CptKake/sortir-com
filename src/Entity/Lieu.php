@@ -21,15 +21,18 @@ class Lieu
     #[ORM\Column(length: 255)]
     private ?string $rue = null;
 
-    #[ORM\Column]
+    #[ORM\Column(length: 50)]
+    private ?string $ville = null;
+
+    #[ORM\Column(length: 10)]
+    private ?string $codePostal = null;
+
+    #[ORM\Column(nullable: true)]
     private ?float $latitude = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?float $longitude = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Ville $ville = null;
 
     /**
      * @var Collection<int, Sortie>
