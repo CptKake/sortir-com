@@ -45,7 +45,7 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $pseudo = null;
 
     #[ORM\Column]
-    private ?bool $administrateur = null;
+    private ?bool $administrateur = false;
 
     #[ORM\Column]
     private ?bool $actif = null;
