@@ -30,6 +30,9 @@
         </tbody>
     </table>
 
+    <div id="map" style="height: 400px;"></div>
+    {{ mapScript|raw }}
+
     <a  class="button is-primary" href="{{ path('app_lieu_index') }}">back to list</a>
 
     <a class="button is-primary" href="{{ path('app_lieu_edit', {'id': lieu.id}) }}">edit</a>

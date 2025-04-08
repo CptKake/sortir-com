@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Lieu;
 use App\Form\LieuType;
 use App\Repository\LieuRepository;
+use App\Services\MapService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,6 +14,13 @@ use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/lieu')]
 final class LieuController extends AbstractController{
+
+    private $mapService;
+
+    public function __construct(MapService $mapService){
+        $this->mapService = $mapService;
+    }
+
     #[Route(name: 'app_lieu_index', methods: ['GET'])]
     public function index(LieuRepository $lieuRepository): Response
     {
@@ -44,8 +52,11 @@ final class LieuController extends AbstractController{
     #[Route('/{id}', name: 'app_lieu_show', methods: ['GET'])]
     public function show(Lieu $lieu): Response
     {
+        $mapScript = $this->mapService->generateMapScript($lieu->getLatitude(), $lieu->getLongitude(), $lieu->getNom());
+
         return $this->render('lieu/show.html.twig', [
             'lieu' => $lieu,
+            'mapScript' => $mapScript,
         ]);
     }
 
