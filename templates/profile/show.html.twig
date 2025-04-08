@@ -1,0 +1,111 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil - {{ parent() }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Mon Profil</h1>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="row">
+            <div class="col-md-4 text-center mb-4">
+                {% if participant.urlPhoto %}
+                    <img src="{{ asset('uploads/photos/' ~ participant.urlPhoto) }}"
+                         alt="Photo de profil"
+                         class="img-thumbnail rounded-circle"
+                         style="width: 200px; height: 200px; object-fit: cover;">
+                {% else %}
+                    <img src="{{ asset('img/default-avatar.png') }}"
+                         alt="Photo de profil par défaut"
+                         class="img-thumbnail rounded-circle"
+                         style="width: 200px; height: 200px; object-fit: cover;">
+                {% endif %}
+
+                <div class="mt-3">
+                    <a href="{{ path('app_profile_edit') }}" class="btn btn-primary">Modifier mon profil</a>
+                    <a href="{{ path('app_profile_password') }}" class="btn btn-secondary mt-2">Changer mon mot de passe</a>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Informations personnelles</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Pseudo :</strong> {{ participant.pseudo }}</li>
+                            <li class="list-group-item"><strong>Nom :</strong> {{ participant.nom }}</li>
+                            <li class="list-group-item"><strong>Prénom :</strong> {{ participant.prenom }}</li>
+                            <li class="list-group-item"><strong>Email :</strong> {{ participant.email }}</li>
+                            <li class="list-group-item"><strong>Téléphone :</strong> {{ participant.telephone ?: 'Non renseigné' }}</li>
+                            <li class="list-group-item"><strong>Campus :</strong> {{ participant.campus.nom }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Optionnel : Afficher les sorties organisées et participées #}
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Mes sorties organisées
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% if participant.sorties|length > 0 %}
+                            {% for sortie in participant.sorties %}
+                                <li class="list-group-item">
+                                    <a href="{{ path('app_sortie_show', {'id': sortie.id}) }}">{{ sortie.nom }}</a>
+                                    <span class="badge bg-{{ sortie.etat.libelle == 'Annulée' ? 'danger' :
+                                    sortie.etat.libelle == 'Clôturée' ? 'warning' :
+                                    sortie.etat.libelle == 'Ouverte' ? 'success' : 'info' }} float-end">
+                                        {{ sortie.etat.libelle }}
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item">Vous n'avez organisé aucune sortie.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Mes participations
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% if participant.inscriptions|length > 0 %}
+                            {% for inscription in participant.inscriptions %}
+                                <li class="list-group-item">
+                                    <a href="{{ path('app_sortie_show', {'id': inscription.sortie.id}) }}">
+                                        {{ inscription.sortie.nom }}
+                                    </a>
+                                    <span class="badge bg-{{ inscription.sortie.etat.libelle == 'Annulée' ? 'danger' :
+                                    inscription.sortie.etat.libelle == 'Clôturée' ? 'warning' :
+                                    inscription.sortie.etat.libelle == 'Ouverte' ? 'success' : 'info' }} float-end">
+                                        {{ inscription.sortie.etat.libelle }}
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item">Vous n'êtes inscrit à aucune sortie.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+
