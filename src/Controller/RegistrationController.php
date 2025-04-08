@@ -21,6 +21,13 @@ final class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Vérifier si un utilisateur avec le même pseudo ou email existe déjà
+            $existingUser = $entityManager->getRepository(Participant::class)->findOneBy(['pseudo' => $user->getPseudo()]);
+            if ($existingUser) {
+                $this->addFlash('error', 'Il existe déjà un compte avec ce pseudo.');
+                return $this->redirectToRoute('app_register');
+            }
+
             // Hasher le mot de passe
             $hashedPassword = $passwordHasher->hashPassword(
                 $user,

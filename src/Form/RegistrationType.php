@@ -20,7 +20,7 @@ $builder
 ->add('pseudo')
 ->add('email')
 ->add('telephone')
-->add('urlPhoto')
+
 ->add('plainPassword', PasswordType::class, [
 'label' => 'Mot de passe',
 'mapped' => false,
