@@ -8,7 +8,12 @@
     {% for sortie in sorties %}
         <div>
             <p>{{ sortie.nom }}</p>
-            <p>Organisateur: {{ sortie.organisateur }}</p>
+            <p>{{ sortie.duree }}</p>
+            <p>{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</p>
+            <p>{{ sortie.duree }}</p>
+            <p>{{ sortie.dateLimiteInscription|date('d/m/Y H:i') }}</p>
+            <p>{{ sortie.infosSortie }}</p>
+
         </div>
     {% endfor %}
 {% endblock %}
