@@ -14,7 +14,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ParticipantRepository::class)]
 #[UniqueEntity(fields: ['email'], message: 'Il existe déjà un compte avec cette adresse email')]
 #[UniqueEntity(fields: ['pseudo'], message: 'Il existe déjà un compte avec ce pseudo')]
+
+
 class Participant implements UserInterface, PasswordAuthenticatedUserInterface
+
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -50,8 +53,8 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?bool $actif = null;
 
-    #[Assert\Image(maxSize: '1024k', mimeTypes: ['image/jpeg', 'image/png', 'image/jpg'])]
-    private $urlPhoto;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $urlPhoto = null;
 
     #[ORM\Column(length: 255)]
     private ?string $motDePasse = null;
@@ -64,16 +67,16 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Campus $campus = null;
 
     /**
+     * @var Collection<int, Sortie>
+     */
+    #[ORM\OneToMany(targetEntity: Sortie::class, mappedBy: 'organisateur')]
+    private Collection $sorties;
+
+    /**
      * @var Collection<int, Inscription>
      */
     #[ORM\OneToMany(targetEntity: Inscription::class, mappedBy: 'participant')]
     private Collection $inscriptions;
-
-    /**
-     * @var Collection<int, Sortie>
-     */
-    #[ORM\ManyToMany(targetEntity: Sortie::class, mappedBy: 'participants')]
-    private Collection $sorties;
 
 
     public function __construct()
@@ -171,12 +174,12 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getUrlPhoto()
+    public function getUrlPhoto(): ?string
     {
         return $this->urlPhoto;
     }
 
-    public function setUrlPhoto($urlPhoto): self
+    public function setUrlPhoto(?string $urlPhoto): static
     {
         $this->urlPhoto = $urlPhoto;
 
@@ -191,6 +194,36 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCampus(?Campus $campus): static
     {
         $this->campus = $campus;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Sortie>
+     */
+    public function getSorties(): Collection
+    {
+        return $this->sorties;
+    }
+
+    public function addSorty(Sortie $sorty): static
+    {
+        if (!$this->sorties->contains($sorty)) {
+            $this->sorties->add($sorty);
+            $sorty->setOrganisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSorty(Sortie $sorty): static
+    {
+        if ($this->sorties->removeElement($sorty)) {
+            // set the owning side to null (unless already changed)
+            if ($sorty->getOrganisateur() === $this) {
+                $sorty->setOrganisateur(null);
+            }
+        }
 
         return $this;
     }
@@ -284,32 +317,5 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
-    }
-
-    /**
-     * @return Collection<int, Sortie>
-     */
-    public function getSorties(): Collection
-    {
-        return $this->sorties;
-    }
-
-    public function addSorty(Sortie $sorty): static
-    {
-        if (!$this->sorties->contains($sorty)) {
-            $this->sorties->add($sorty);
-            $sorty->addParticipant($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSorty(Sortie $sorty): static
-    {
-        if ($this->sorties->removeElement($sorty)) {
-            $sorty->removeParticipant($this);
-        }
-
-        return $this;
     }
 }

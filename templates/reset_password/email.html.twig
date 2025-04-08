@@ -1,0 +1,13 @@
+<p>Bonjour,</p>
+
+<p>Tu as demandé la réinitialisation de ton mot de passe.</p>
+
+<p>
+    Clique sur le lien suivant :<br>
+    <a href="{{ url('app_reset_password', {'token': resetToken.token}) }}">
+        Réinitialiser mon mot de passe
+    </a>
+</p>
+
+<p>Ce lien est valable 1 heure.</p>
+
