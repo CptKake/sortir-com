@@ -6,6 +6,7 @@ use App\Repository\LieuRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: LieuRepository::class)]
 class Lieu
@@ -16,26 +17,39 @@ class Lieu
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 50)]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     private ?string $rue = null;
 
     #[ORM\Column]
+    #[Assert\Type(type: 'float')]
     private ?float $latitude = null;
 
     #[ORM\Column]
+    #[Assert\Type(type: 'float')]
     private ?float $longitude = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Ville $ville = null;
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
+    private ?string $ville = null;
 
     /**
      * @var Collection<int, Sortie>
      */
     #[ORM\OneToMany(targetEntity: Sortie::class, mappedBy: 'lieu')]
     private Collection $sorties;
+
+    #[ORM\Column(length: 5)]
+    #[Assert\NotBlank]
+    #[Assert\Length(exactly: 5)]
+    #[Assert\Regex(pattern: '/^[0-9]{5}$/', message: 'Le code postal doit contenir 5 chiffres.')]
+    private ?string $codePostal = null;
 
     public function __construct()
     {
@@ -95,12 +109,24 @@ class Lieu
         return $this;
     }
 
-    public function getVille(): ?Ville
+    public function getVille(): string
     {
         return $this->ville;
     }
 
-    public function setVille(?Ville $ville): static
+    public function getCodePostal(): ?string
+    {
+        return $this->codePostal;
+    }
+
+    public function setCodePostal(string $codePostal): static
+    {
+        $this->codePostal = $codePostal;
+
+        return $this;
+    }
+
+    public function setVille(?string $ville): static
     {
         $this->ville = $ville;
 
@@ -136,4 +162,11 @@ class Lieu
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->nom . ' (' . $this->ville . ', ' . $this->codePostal . ')';
+    }
+
+
 }
