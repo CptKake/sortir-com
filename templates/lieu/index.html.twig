@@ -28,10 +28,10 @@
             {% for lieu in lieux %}
                 <tr>
                     <td>{{ lieu.nom }}</td>
-                    <td>{{ lieu.ville }}</td>
-                    <td>{{ lieu.codePostal }}</td>
+
+
                     <td>{{ lieu.rue }}</td>
-                    <td>{{ lieu.campus.nom }}</td>
+
                     <td>
                         <div class="buttons are-small">
                             <a href="{{ path('app_lieu_show', {'id': lieu.id}) }}" class="button is-info">
