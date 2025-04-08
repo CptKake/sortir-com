@@ -48,7 +48,7 @@ class Lieu
     #[ORM\Column(length: 5)]
     #[Assert\NotBlank]
     #[Assert\Length(exactly: 5)]
-    #[Assert\Regex(pattern: '/^[0-9]{5}$/', message: 'Le code postal doit contenir 5 chiffres.')]
+    #[Assert\Regex(pattern: '/^[0-9]{5}$/', message: 'Le format doit être respecté.')]
     private ?string $codePostal = null;
 
     public function __construct()
