@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un utilisateur{% endblock %}
+
+{% block body %}
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Créer un utilisateur</h1>
+
+            {% for message in app.flashes('success') %}
+                <div class="notification is-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="notification is-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+            {{ form_start(form, {'attr': {'class': 'box'}}) }}
+
+            {% for field in form %}
+                {% if field.vars.name != '_token' and field.vars.name != 'submit' %}
+                    <div class="field">
+                        {{ form_label(field, null, {'label_attr': {'class': 'label'}}) }}
+                        <div class="control">
+                            {{ form_widget(field, {'attr': {'class': 'input'}}) }}
+                        </div>
+                        {{ form_errors(field) }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="field mt-5">
+                <div class="control">
+                    {{ form_widget(form.submit, {'attr': {'class': 'button is-success is-fullwidth'}}) }}
+                </div>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </section>
+{% endblock %}
+
