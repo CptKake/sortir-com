@@ -37,6 +37,11 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $telephone = null;
 
     #[ORM\Column(length: 100, unique: true)]
+    #[Assert\Regex(
+        pattern: '/@campus-eni\.fr$/',
+        message: 'L’adresse email doit se terminer par @campus-eni.fr'
+    )]
+    #[Assert\NotBlank(message: 'L\'adresse email ne doit pas être vide !')]
     #[Assert\Email(
         message: 'L\'adresse email n\'est pas une adresse email valide !'
     )]
@@ -328,6 +333,12 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->motDePasse = $motDePasse;
 
+        return $this;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->motDePasse = $password;
         return $this;
     }
 
