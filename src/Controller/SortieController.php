@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Etat;
 use App\Entity\Sortie;
 use App\Form\SortieType;
+use App\Repository\EtatRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,7 +32,6 @@ final class SortieController extends AbstractController
 	{
 		$sortie = new Sortie();
 		$user = $this->getUser();
-		//dd($user);
 		$sortie->setOrganisateur($user);
 		$form = $this->createForm(SortieType::class, $sortie);
 		$form->handleRequest($request);
@@ -81,6 +82,28 @@ final class SortieController extends AbstractController
 			'sortie' => $sortie,
 			'form' => $form,
 		]);
+	}
+
+	#[Route('/{id}/annuler', name: 'annuler',requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+	public function annuler(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
+	{
+		$etat = $em->getRepository(Etat::class)->find(6);
+		// TODO Récupérer le motif d'annulation
+
+		// Changer l'état en 'Annulée'
+		$sortie->setEtat($etat);
+		// TODO Prévenir tous les participants de l'annulation
+		// Supprimer tous les participants
+		foreach ($sortie->getParticipants() as $participant) {
+			$em->remove($participant);
+		}
+
+		// Valider les modifications
+		$em->flush();
+
+		$this->addFlash('success', 'La sortie a été annulée');
+
+		return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
 	}
 
 	#[Route('/{id}/delete', name: 'supprimer',requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
