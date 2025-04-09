@@ -5,30 +5,48 @@
 {% block body %}
     <h1>Lieu</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ lieu.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ lieu.nom }}</td>
-            </tr>
-            <tr>
-                <th>Rue</th>
-                <td>{{ lieu.rue }}</td>
-            </tr>
-            <tr>
-                <th>Latitude</th>
-                <td>{{ lieu.latitude }}</td>
-            </tr>
-            <tr>
-                <th>Longitude</th>
-                <td>{{ lieu.longitude }}</td>
-            </tr>
-        </tbody>
-    </table>
+<div class="columns">
+    <div class="column is-half">
+        <table class="table is-striped is-fullwidth">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ lieu.id }}</td>
+                </tr>
+                <tr>
+                    <th>Nom</th>
+                    <td>{{ lieu.nom }}</td>
+                </tr>
+                <tr>
+                    <th>Rue</th>
+                    <td>{{ lieu.rue }}</td>
+                </tr>
+                <tr>
+                    <th>Ville</th>
+                    <td>{{ lieu.ville }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="column is-half">
+        <table class="table is-striped is-fullwidth">
+            <tbody>
+                <tr>
+                    <th>Code Postal</th>
+                    <td>{{ lieu.codePostal }}</td>
+                </tr>
+                <tr>
+                    <th>Latitude</th>
+                    <td>{{ lieu.latitude }}</td>
+                </tr>
+                <tr>
+                    <th>Longitude</th>
+                    <td>{{ lieu.longitude }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
     <div id="map" style="height: 50vh;"></div>
     {{ mapScript|raw }}
