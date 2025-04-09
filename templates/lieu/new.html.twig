@@ -24,6 +24,16 @@
                             <label class="label">Adresse</label>
                             <div class="box p-4 mb-3">
                                 <div class="field">
+                                    <label class="label">Rechercher une adresse</label>
+                                    <div class="control has-icons-left">
+                                        <input type="text" class="input adresse-autocomplete" placeholder="Commencez à taper une adresse...">
+                                        <span class="icon is-small is-left">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="field">
                                     <label class="label">{{ form_label(form.rue) }}</label>
                                     <div class="control">
                                         {{ form_widget(form.rue, {'attr': {'class': 'input'}}) }}
@@ -108,4 +118,10 @@
             </div>
         </div>
     </section>
+{% endblock %}
+
+
+{% block javascripts %}
+
+    {% include 'autocomplétionAdresse.html.twig' %}
 {% endblock %}
