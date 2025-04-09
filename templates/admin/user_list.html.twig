@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des utilisateurs{% endblock %}
+
+{% block body %}
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Liste des utilisateurs</h1>
+
+            {% for message in app.flashes('success') %}
+                <div class="notification is-success">{{ message }}</div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="notification is-danger">{{ message }}</div>
+            {% endfor %}
+
+            <form method="post" action="{{ path('admin_users_mass_action') }}">
+                <table class="table is-fullwidth is-striped is-hoverable">
+                    <thead>
+                    <tr>
+                        <th><input type="checkbox" id="select-all"></th>
+                        <th>Photo</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Email</th>
+                        <th>Pseudo</th>
+                        <th>Téléphone</th>
+                        <th>Campus</th>
+                        <th>Admin</th>
+                        <th>Actif</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for user in utilisateurs %}
+                        <tr>
+                            <td>
+                                {% if app.user.id != user.id %}
+                                    <input type="checkbox" name="users[]" value="{{ user.id }}">
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.urlPhoto %}
+                                    <figure class="image is-48x48">
+                                        <img class="is-rounded" src="{{ asset('uploads/photos/' ~ user.urlPhoto) }}" alt="Photo de {{ user.pseudo }}">
+                                    </figure>
+                                {% else %}
+                                    <span class="has-text-grey-light">Aucune</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.nom }}</td>
+                            <td>{{ user.prenom }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.pseudo }}</td>
+                            <td>{{ user.telephone }}</td>
+                            <td>{{ user.campus.nom }}</td>
+                            <td>{{ user.administrateur ? 'Oui' : 'Non' }}</td>
+                            <td>
+                                <span class="tag {{ user.actif ? 'is-success' : 'is-danger' }}">
+                                    {{ user.actif ? 'Oui' : 'Non' }}
+                                </span>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="10">Aucun utilisateur trouvé.</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="buttons mt-4">
+                    <button class="button is-danger" name="action" value="delete" onclick="return confirm('Supprimer les utilisateurs sélectionnés ?')">Supprimer</button>
+                    <button class="button is-warning" name="action" value="deactivate">Désactiver</button>
+                    <button class="button is-success" name="action" value="activate">Activer</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        document.getElementById('select-all').addEventListener('change', function () {
+            document.querySelectorAll('input[name="users[]"]').forEach(cb => cb.checked = this.checked);
+        });
+    </script>
+{% endblock %}

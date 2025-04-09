@@ -161,4 +161,77 @@ class AdminController extends AbstractController
         ]);
     }
 
+    #[Route('/admin/utilisateurs', name: 'admin_user_list')]
+    public function userList(EntityManagerInterface $em): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $utilisateurs = $em->getRepository(Participant::class)->findAll();
+
+        return $this->render('admin/user_list.html.twig', [
+            'utilisateurs' => $utilisateurs,
+        ]);
+    }
+
+    #[Route('/admin/utilisateurs/action', name: 'admin_users_mass_action', methods: ['POST'])]
+    public function massAction(Request $request, EntityManagerInterface $em): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $selectedIds = $request->request->all('users');
+        $adminIds = $request->request->all('admins'); // liste des IDs cochés pour le rôle admin
+        $action = $request->request->get('action');
+
+        if ($action !== 'admin_update' && empty($selectedIds)) {
+            $this->addFlash('error', 'Aucun utilisateur sélectionné.');
+            return $this->redirectToRoute('admin_user_list');
+        }
+
+        if ($action === 'admin_update') {
+            // Mise à jour du rôle administrateur pour TOUS les utilisateurs (pour être synchro avec les cases cochées)
+            $utilisateurs = $em->getRepository(Participant::class)->findAll();
+            foreach ($utilisateurs as $user) {
+                // On ne peut pas modifier soi-même son statut d'admin pour éviter de se retirer les droits
+                if ($user->getId() === $this->getUser()->getId()) {
+                    continue;
+                }
+
+                $isAdmin = in_array($user->getId(), $adminIds);
+                $user->setAdministrateur($isAdmin);
+            }
+        } else {
+            foreach ($selectedIds as $id) {
+                $user = $em->getRepository(Participant::class)->find($id);
+                if (!$user) continue;
+
+                // On empêche l'utilisateur courant de se supprimer lui-même
+                if ($user->getId() === $this->getUser()->getId()) {
+                    continue;
+                }
+
+                if ($action === 'delete') {
+                    foreach ($user->getInscriptions() as $inscription) {
+                        $em->remove($inscription);
+                    }
+                    foreach ($user->getSorties() as $sortie) {
+                        $sortie->setOrganisateur(null);
+                    }
+                    $em->remove($user);
+                } elseif ($action === 'activate') {
+                    $user->setActif(true);
+                } elseif ($action === 'deactivate') {
+                    $user->setActif(false);
+                }
+            }
+        }
+
+        $em->flush();
+
+        $this->addFlash('success', 'Action "' . $action . '" effectuée avec succès.');
+        return $this->redirectToRoute('admin_user_list');
+    }
+
+
+
+
 }
