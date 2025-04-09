@@ -1,4 +1,9 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-<button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+<div class="columns">
+    <div class="column is-8 is-offset-2">
+        <div class="box">
+            <h1 class="title">Créer un nouveau lieu</h1>
+
+                {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                <button class="btn">{{ button_label|default('Save') }}</button>
+                {{ form_end(form) }}

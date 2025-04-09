@@ -7,8 +7,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
+#[UniqueEntity(fields: ['nom', 'dateHeureDebut', 'organisateur'], message: 'Vous avez déja créé cette activité!')]
 class Sortie
 {
     #[ORM\Id]
@@ -17,38 +20,60 @@ class Sortie
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(min:3, max: 255,
+	    minMessage: 'Ce nom est trop court. min: {{ limit }} caractères',
+	    maxMessage: 'Ce nom est trop long. max: {{ limit }} caractères'
+    )]
+    #[Assert\NotBlank(message: 'L\'activité doit avoir un nom!')]
     private ?string $nom = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank(message: 'L\'activité doit avoir une date!')]
     private ?\DateTimeInterface $dateHeureDebut = null;
 
     #[ORM\Column]
+    #[Assert\NotNull]
     private ?int $duree = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank(message: 'L\'activité doit avoir une date de fin d\'inscription!')]
     private ?\DateTimeInterface $dateLimiteInscription = null;
 
     #[ORM\Column]
+    #[Assert\Positive(message: 'Le nombre de participants doit être supérieur à 0!')]
     private ?int $nbInscriptionsMax = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\Length(min:15, max: 1000,
+	    minMessage: 'Cette description est trop courte. min: {{ limit }} caractères',
+	    maxMessage: 'Cette description est trop longue. max: {{ limit }} caractères'
+    )]
+    #[Assert\NotBlank(message: 'L\'activité doit avoir une description!')]
     private ?string $infosSortie = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: true, onDelete: "SET NULL")]
+/*
+ * l'organisateur est passé en null mais les sorties ne sont pas delete
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
+*/
     private ?Participant $organisateur = null;
 
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?Campus $campus = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'L\'activité doit avoir un lieu!')]
     private ?Lieu $lieu = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?Etat $etat = null;
 
     /**
