@@ -3,48 +3,109 @@
 {% block title %}Nouveau lieu - {{ parent() }}{% endblock %}
 
 {% block body %}
-    <div class="columns">
-        <div class="column is-8 is-offset-2">
-            <div class="box">
-                <h1 class="title">Créer un nouveau lieu</h1>
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-8">
+                    <div class="box">
+                        <h1 class="title has-text-centered mb-5">Créer un nouveau lieu</h1>
 
-                {{ form_start(form) }}
+                        {{ form_start(form) }}
 
-                <div class="columns is-multiline">
-                    <div class="column is-6">
-                        {{ form_row(form.nom) }}
-                    </div>
-                    <div class="column is-6">
-                        {{ form_row(form.campus) }}
-                    </div>
-                    <div class="column is-12">
-                        {{ form_row(form.rue) }}
-                    </div>
-                    <div class="column is-6">
-                        {{ form_row(form.ville) }}
-                    </div>
-                    <div class="column is-6">
-                        {{ form_row(form.codePostal) }}
-                    </div>
-                    <div class="column is-6">
-                        {{ form_row(form.latitude) }}
-                    </div>
-                    <div class="column is-6">
-                        {{ form_row(form.longitude) }}
+                        <div class="field">
+                            <label class="label">{{ form_label(form.nom) }}</label>
+                            <div class="control">
+                                {{ form_widget(form.nom, {'attr': {'class': 'input is-medium'}}) }}
+                            </div>
+                            <p class="help is-danger">{{ form_errors(form.nom) }}</p>
+                        </div>
+
+                        <div class="field mt-4">
+                            <label class="label">Adresse</label>
+                            <div class="box p-4 mb-3">
+                                <div class="field">
+                                    <label class="label">{{ form_label(form.rue) }}</label>
+                                    <div class="control">
+                                        {{ form_widget(form.rue, {'attr': {'class': 'input'}}) }}
+                                    </div>
+                                    <p class="help is-danger">{{ form_errors(form.rue) }}</p>
+                                </div>
+
+                                <div class="columns">
+                                    <div class="column">
+                                        <div class="field">
+                                            <label class="label">{{ form_label(form.ville) }}</label>
+                                            <div class="control">
+                                                {{ form_widget(form.ville, {'attr': {'class': 'input'}}) }}
+                                            </div>
+                                            <p class="help is-danger">{{ form_errors(form.ville) }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="column">
+                                        <div class="field">
+                                            <label class="label">{{ form_label(form.codePostal) }}</label>
+                                            <div class="control">
+                                                {{ form_widget(form.codePostal, {'attr': {'class': 'input'}}) }}
+                                            </div>
+                                            <p class="help is-danger">{{ form_errors(form.codePostal) }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="box p-4">
+                                <label class="label mb-2">Coordonnées géographiques</label>
+                                <div class="columns">
+                                    <div class="column">
+                                        <div class="field">
+                                            <label class="label is-small">{{ form_label(form.latitude) }}</label>
+                                            <div class="control has-icons-left">
+                                                {{ form_widget(form.latitude, {'attr': {'class': 'input'}}) }}
+                                                <span class="icon is-small is-left">
+                                                        <i class="fas fa-map-marker-alt"></i>
+                                                    </span>
+                                            </div>
+                                            <p class="help is-danger">{{ form_errors(form.latitude) }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="column">
+                                        <div class="field">
+                                            <label class="label is-small">{{ form_label(form.longitude) }}</label>
+                                            <div class="control has-icons-left">
+                                                {{ form_widget(form.longitude, {'attr': {'class': 'input'}}) }}
+                                                <span class="icon is-small is-left">
+                                                        <i class="fas fa-map-marker-alt"></i>
+                                                    </span>
+                                            </div>
+                                            <p class="help is-danger">{{ form_errors(form.longitude) }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field is-grouped is-grouped-centered mt-5">
+                            <div class="control">
+                                <button class="button is-success is-medium">
+                                        <span class="icon">
+                                            <i class="fas fa-save"></i>
+                                        </span>
+                                    <span>{{ button_label|default('Enregistrer') }}</span>
+                                </button>
+                            </div>
+                            <div class="control">
+                                <a href="{{ path('app_lieu_index') }}" class="button is-light is-medium">
+                                        <span class="icon">
+                                            <i class="fas fa-times"></i>
+                                        </span>
+                                    <span>Annuler</span>
+                                </a>
+                            </div>
+                        </div>
+                        {{ form_end(form) }}
                     </div>
                 </div>
-
-                <div class="field is-grouped mt-5">
-                    <div class="control">
-                        <button class="button is-success">{{ button_label|default('Enregistrer') }}</button>
-                    </div>
-                    <div class="control">
-                        <a href="{{ path('app_lieu_index') }}" class="button is-light">Annuler</a>
-                    </div>
-                </div>
-
-                {{ form_end(form) }}
             </div>
         </div>
-    </div>
+    </section>
 {% endblock %}
