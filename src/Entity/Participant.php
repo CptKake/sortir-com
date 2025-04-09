@@ -15,7 +15,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ParticipantRepository::class)]
 #[UniqueEntity(fields: ['email'], message: 'Il existe déjà un compte avec cette adresse email')]
 #[UniqueEntity(fields: ['pseudo'], message: 'Il existe déjà un compte avec ce pseudo')]
+
+
+
 class Participant implements UserInterface, PasswordAuthenticatedUserInterface
+
+
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -46,13 +51,13 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $pseudo = null;
 
     #[ORM\Column]
-    private ?bool $administrateur = null;
+    private ?bool $administrateur = false;
 
     #[ORM\Column]
     private ?bool $actif = null;
 
-    #[Assert\Image(maxSize: '1024k', mimeTypes: ['image/jpeg', 'image/png', 'image/jpg'])]
-    private $urlPhoto;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $urlPhoto = null;
 
     #[ORM\Column(length: 255)]
     private ?string $motDePasse = null;
@@ -178,12 +183,12 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getUrlPhoto()
+    public function getUrlPhoto(): ?string
     {
         return $this->urlPhoto;
     }
 
-    public function setUrlPhoto($urlPhoto): self
+    public function setUrlPhoto(?string $urlPhoto): static
     {
         $this->urlPhoto = $urlPhoto;
 
