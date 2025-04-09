@@ -89,8 +89,8 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private $lastLogin;
+    /*#[ORM\Column(type: 'datetime', nullable: true)]
+    private $lastLogin;*/
 
 
     public function __construct()

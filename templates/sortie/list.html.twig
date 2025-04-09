@@ -2,22 +2,49 @@
 
 {% block title %}Sortis liste{% endblock %}
 
-{% block body %}
-    <h2>Liste des sorties</h2>
+{% block stylesheets %}
 
-    {% for sortie in sorties %}
-        <div class="card">
-            <p>{{ sortie.nom }}</p>
-            <p>Durée : {{ sortie.duree }}min</p>
-            <p>Début : {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</p>
-            <p>Inscription fermées le {{ sortie.dateLimiteInscription|date('d/m/Y H:i') }}</p>
-            <p>Description : {{ sortie.infosSortie }}</p>
-            {% if is_granted('ROLE_USER') %}
-                <a href="{{ path('sortie_detail', {'id': sortie.id}) }}">Détail</a>
-            {% endif %}
-            {% if app.user.id is same as sortie.organisateur.id  %}
-                <a href="{{ path('sortie_editer', {'id': sortie.id}) }}">Modifier</a>
-            {% endif %}
+<link rel="stylesheet" href="https://unpkg.com/bulma@1.0.2/css/bulma.min.css" />
+<script src="https://kit.fontawesome.com/7dc3015a44.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="{{ asset('../styles/cards.css') }}">
+{% endblock stylesheets %}
+
+
+{% block body %}
+        <div class="container">
+            <div class="section">
+                <div class="column has-text-centered">
+                    <h2 class="title" style="color: #a11616;">Liste des sorties</h2><br>
+                </div>
+                <div class="columns">
+                    <div id="app" class="row columns is-multiline">
+                        {% for sortie in sorties %}
+                        <div v-for="card in cardData" key="card.id" class="column is-4">
+                            <div class="card large">
+                                <div class="card-content">
+                                    <div class="media">
+                                        <div class="media-content">
+                                            <p class="title is-4 no-padding"><a href="{{ path('sortie_detail', {id: sortie.id }) }}">{{ sortie.nom }}</a></p>
+                                            <p>
+                                                 <span class="title is-6"><a href=""> {{ sortie.organisateur.pseudo }} </a></span>
+                                            </p>
+                                            <p class="subtitle is-6"> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }} </p>
+                                            <p class="subtitle is-6"> {{ sortie.lieu.ville }} </p>
+                                            {% set nbplaces = sortie.nbInscriptionsMax - sortie.inscriptions.count %}
+                                            <p class="subtitle is-6"> {{ nbplaces }} / {{ sortie.nbInscriptionsMax }} inscrits </p>
+                                        </div>
+                                    </div>
+                                    <div class="content">
+                                        {{ sortie.infosSortie }}
+                                        <div class="background-icon"><span class="icon-twitter"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
         </div>
-    {% endfor %}
+
 {% endblock %}
