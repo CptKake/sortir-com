@@ -3,39 +3,85 @@
 {% block title %}{{ sortie.nom|upper }}{% endblock %}
 
 {% block body %}
-    <h2>{{ sortie.nom|upper }}</h2>
-    <div class="card">
-        <ul>
-            <li>Nom de la sortie : {{ sortie.nom }}</li>
-            <li>Date et heure de la sortie : {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</li>
-            <li>Date limite d'inscription : {{ sortie.dateLimiteInscription|date('d/m/Y H:i') }}</li>
-            {% set nbplaces = sortie.nbInscriptionsMax - sortie.inscriptions.count %}
-            <li>Nombre de places : {{ nbplaces }}</li>
-            <li>Durée : {{ sortie.duree }} minutes</li>
-            <li>Description et infos : {{ sortie.infosSortie }}</li>
-            <li>Ville organisatrice : {{ sortie.lieu.ville }}</li>
-            <li>Lieu : {{ sortie.lieu.nom }}</li>
-            <li>Rue : {{ sortie.lieu.rue }}</li>
-            <li>Code postal : {{ sortie.lieu.codePostal }}</li>
-            <li>Latitude : {{ sortie.lieu.latitude }}</li>
-            <li>Longitude : {{ sortie.lieu.longitude }}</li>
-
-            {% if sortie.participants|length > 0 %}
-            <div class="card">
+    <div class="container">
+        <div class="section">
+            <div class="column has-text-centered">
+                <h1 class="title" style="color: #a11616;">{{ sortie.nom|upper }}</h1><br>
+            </div>
+            <div class="box">
                 <ul>
-                    {% for participant in sortie.participants %}
-                        <li>
-                            {{ participant.nom }} {{ participant.prenom }}
-                        </li>
-                    {% endfor %}
+                    <li class="box content"><strong>Date et heure de la sortie :</strong> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</li>
+                    <li class="box content"><strong>Date limite d'inscription :</strong> {{ sortie.dateLimiteInscription|date('d/m/Y H:i') }}</li>
+                    {% set nbplaces = sortie.inscriptions.count %}
+                    <li class="box content"><strong>Inscrits :</strong> {{ nbplaces }} / {{ sortie.nbInscriptionsMax }}</li>
+                    <li class="box content"><strong>Durée :</strong> {{ sortie.duree }} minutes</li>
+                    <li class="box content"><strong>Description et infos :</strong> {{ sortie.infosSortie }}</li>
+                    <li class="box content"><strong>Ville organisatrice :</strong> {{ sortie.lieu.ville }}</li>
+                    <li class="box content"><strong>Lieu :</strong> {{ sortie.lieu.nom }}</li>
+                    <li class="box content"><strong>Rue </strong> {{ sortie.lieu.rue }}</li>
+                    <li class="box content"><strong>Code postal :</strong> {{ sortie.lieu.codePostal }}</li>
+                    <li class="box content"><strong>Latitude :</strong> {{ sortie.lieu.latitude }}</li>
+                    <li class="box content"><strong>Longitude :</strong> {{ sortie.lieu.longitude }}</li>
+
+                    {% if sortie.participants|length > 0 %}
+                    <div class="box">
+                        <h2 class="title">Participants :</h2>
+                        <ul>
+                            {% for participant in sortie.participants %}
+                                <li>
+                                    <a href="app_profile_detail">{{ participant.nom }} {{ participant.prenom }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
                 </ul>
             </div>
-            {% endif %}
-        </ul>
+        </div>
     </div>
     {% if app.user.id is same as sortie.organisateur.id and sortie.etat.libelle is not same as 'Annulée' %}
-        <a href="{{ path('sortie_editer', {'id': sortie.id}) }}">Modifier</a>
-        <a href="{{ path('sortie_supprimer', {'id': sortie.id}) }}">Supprimer</a>
+        <div class="buttons mb-4">
+            <a href="{{ path('sortie_editer', {'id': sortie.id}) }}" class="button is-success">
+                <span class="icon"><i class="fas fa-plus"></i></span>
+                <span>Modifier</span>
+            </a>
+        </div>
+        <div class="buttons mb-4">
+            <a href="{{ path('sortie_supprimer', {'id': sortie.id}) }}" class="button is-danger">
+                <span class="icon"><i class="fas fa-minus"></i></span>
+                <span>Annuler</span>
+            </a>
+        </div>
     {% endif %}
+
+    {% set inscrit = 0 %}
+
+    {# Vérification de si je suis déjà inscrit #}
+    {% for participant in sortie.participants %}
+        {% if app.user.id is same as participant.id %}
+            {% set inscrit = 1 %}
+        {% endif %}
+    {% endfor %}
+
+    {# Si je ne suis pas l'organisateur, que je ne suis pas déjà inscrit et qu'il reste de la place #}
+    {% if app.user.id is not same as sortie.organisateur.id and nbplaces < sortie.nbInscriptionsMax and inscrit is same as 0 %}
+        <div class="buttons mb-4">
+            <a href="" class="button is-success">
+                <span class="icon"><i class="fas fa-plus"></i></span>
+                <span>Participer</span>
+            </a>
+        </div>
+    {% endif %}
+
+    {# Si je suis inscrit #}
+    {% if inscrit is same as 1 %}
+        <div class="buttons mb-4">
+            <a href="" class="button is-danger">
+                <span class="icon"><i class="fas fa-minus"></i></span>
+                <span>Se désinscrire</span>
+            </a>
+        </div>
+    {% endif %}
+
 {% endblock %}
 
