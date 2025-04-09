@@ -140,5 +140,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="7dc3015a44" level="application" />
+    <orderEntry type="library" name="bulma" level="application" />
   </component>
 </module>
