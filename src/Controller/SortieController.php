@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Etat;
+use App\Entity\Lieu;
 use App\Entity\Sortie;
 use App\Form\SortieType;
 use App\Repository\EtatRepository;
@@ -31,6 +32,7 @@ final class SortieController extends AbstractController
 	public function create(Request $request, EntityManagerInterface $em): Response
 	{
 		$sortie = new Sortie();
+		$lieu = new Lieu();
 		$user = $this->getUser();
 		$sortie->setOrganisateur($user);
 		$form = $this->createForm(SortieType::class, $sortie);
@@ -38,6 +40,7 @@ final class SortieController extends AbstractController
 
 		if ($form->isSubmitted() && $form->isValid()) {
 			$em->persist($sortie);
+			$em->persist($lieu);
 			$em->flush();
 
 			$this->addFlash('success', 'La sortie a été créée');

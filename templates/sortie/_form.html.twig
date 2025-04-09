@@ -1,9 +1,171 @@
-<div class="columns">
-    <div class="column is-8 is-offset-2">
-        <div class="box">
-            <h1 class="title">Créer un nouveau lieu</h1>
+{{ form_start(form) }}
 
-                {{ form_start(form) }}
-                    {{ form_widget(form) }}
-                <button class="btn">{{ button_label|default('Save') }}</button>
-                {{ form_end(form) }}
+    <div class="field">
+        <label class="label">{{ form_label(form.nom) }}</label>
+        <div class="control">
+            {{ form_widget(form.nom, {'attr': {'class': 'input is-medium'}}) }}
+        </div>
+        <p class="help is-danger">{{ form_errors(form.nom) }}</p>
+    </div>
+
+
+
+
+    <div class="columns">
+        <div class="column">
+            <div class="field">
+                <label class="label">{{ form_label(form.dateHeureDebut) }}</label>
+                <div class="control">
+                    {{ form_widget(form.dateHeureDebut, {'attr': {'class': 'input is-medium'}}) }}
+                </div>
+                <p class="help is-danger">{{ form_errors(form.dateHeureDebut) }}</p>
+            </div>
+        </div>
+        <div class="column">
+            <div class="field">
+                <label class="label">{{ form_label(form.dateLimiteInscription) }}</label>
+                <div class="control">
+                    {{ form_widget(form.dateLimiteInscription, {'attr': {'class': 'input is-medium'}}) }}
+                </div>
+                <p class="help is-danger">{{ form_errors(form.dateLimiteInscription) }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="columns">
+        <div class="column">
+            <div class="field">
+                <label class="label">{{ form_label(form.nbInscriptionsMax) }}</label>
+                <div class="control">
+                    {{ form_widget(form.nbInscriptionsMax, {'attr': {'class': 'input is-medium'}}) }}
+                </div>
+                <p class="help is-danger">{{ form_errors(form.nbInscriptionsMax) }}</p>
+            </div>
+        </div>
+        <div class="column">
+            <div class="field">
+                <label class="label">{{ form_label(form.duree) }}</label>
+                <div class="control">
+                    {{ form_widget(form.duree, {'attr': {'class': 'input is-medium'}}) }}
+                </div>
+                <p class="help is-danger">{{ form_errors(form.duree) }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label">{{ form_label(form.infosSortie) }}</label>
+        <div class="control">
+            {{ form_widget(form.infosSortie, {'attr': {'class': 'textarea is-medium'}}) }}
+        </div>
+        <p class="help is-danger">{{ form_errors(form.infosSortie) }}</p>
+    </div>
+
+    <div class="field">
+        <label class="label">{{ form_label(form.campus) }}</label>
+        <div class="control">
+            {{ form_widget(form.campus, {'attr': {'class': 'select is-medium'}}) }}
+        </div>
+        <p class="help is-danger">{{ form_errors(form.campus) }}</p>
+    </div>
+
+    <div class="field mt-4">
+        <label class="label">Adresse</label>
+        <div class="box p-4 mb-3">
+            <div class="field">
+                <label class="label">{{ form_label(form.lieu.nom) }}</label>
+                <div class="control">
+                    {{ form_widget(form.lieu.nom, {'attr': {'class': 'input is-medium'}}) }}
+                </div>
+                <p class="help is-danger">{{ form_errors(form.lieu.nom) }}</p>
+            </div>
+            <div class="field">
+                <label class="label">{{ form_label(form.lieu.rue) }}</label>
+                <div class="control">
+                    {{ form_widget(form.lieu.rue, {'attr': {'class': 'input is-small'}}) }}
+                </div>
+                <p class="help is-danger">{{ form_errors(form.lieu.rue) }}</p>
+            </div>
+
+            <div class="columns">
+                <div class="column">
+                    <div class="field">
+                        <label class="label">{{ form_label(form.lieu.ville) }}</label>
+                        <div class="control">
+                            {{ form_widget(form.lieu.ville, {'attr': {'class': 'input is-small'}}) }}
+                        </div>
+                        <p class="help is-danger">{{ form_errors(form.lieu.ville) }}</p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="field">
+                        <label class="label">{{ form_label(form.lieu.codePostal) }}</label>
+                        <div class="control">
+                            {{ form_widget(form.lieu.codePostal, {'attr': {'class': 'input is-small'}}) }}
+                        </div>
+                        <p class="help is-danger">{{ form_errors(form.lieu.codePostal) }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="box p-4">
+            <label class="label mb-2">Coordonnées géographiques</label>
+            <div class="columns">
+                <div class="column">
+                    <div class="field">
+                        <label class="label is-small">{{ form_label(form.lieu.latitude) }}</label>
+                        <div class="control has-icons-left">
+                            {{ form_widget(form.lieu.latitude, {'attr': {'class': 'input is-small'}}) }}
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </span>
+                        </div>
+                        <p class="help is-danger">{{ form_errors(form.lieu.latitude) }}</p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="field">
+                        <label class="label is-small">{{ form_label(form.lieu.longitude) }}</label>
+                        <div class="control has-icons-left">
+                            {{ form_widget(form.lieu.longitude, {'attr': {'class': 'input is-small'}}) }}
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </span>
+                        </div>
+                        <p class="help is-danger">{{ form_errors(form.lieu.longitude) }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label">{{ form_label(form.etat) }}</label>
+        <div class="control">
+                {{ form_widget(form.etat, {'attr': {'class': 'select'}}) }}
+        </div>
+        <p class="help is-danger">{{ form_errors(form.etat) }}</p>
+    </div>
+
+    <div class="field is-grouped is-grouped-centered mt-5">
+        <div class="control">
+            <button class="button is-success is-medium">
+                <span class="icon">
+                    <i class="fas fa-save"></i>
+                </span>
+                <span>{{ button_label|default('Enregistrer') }}</span>
+            </button>
+        </div>
+        <div class="control">
+            <a href="{{ path('app_lieu_index') }}" class="button is-light is-medium">
+                <span class="icon">
+                    <i class="fas fa-times"></i>
+                </span>
+                <span>Annuler</span>
+            </a>
+        </div>
+    </div>
+
+{{ form_end(form) }}
+
