@@ -7,6 +7,7 @@
         <div class="container">
             <h1 class="title">Créer un utilisateur</h1>
 
+            {# Flash messages #}
             {% for message in app.flashes('success') %}
                 <div class="notification is-success">
                     {{ message }}
@@ -20,21 +21,104 @@
 
             {{ form_start(form, {'attr': {'class': 'box'}}) }}
 
-            {% for field in form %}
-                {% if field.vars.name != '_token' and field.vars.name != 'submit' %}
+            <div class="columns">
+                <div class="column">
                     <div class="field">
-                        {{ form_label(field, null, {'label_attr': {'class': 'label'}}) }}
+                        {{ form_label(form.nom, null, { 'label_attr': { 'class': 'label' } }) }}
                         <div class="control">
-                            {{ form_widget(field, {'attr': {'class': 'input'}}) }}
+                            {{ form_widget(form.nom, { 'attr': { 'class': 'input' } }) }}
                         </div>
-                        {{ form_errors(field) }}
+                        {% for error in form.nom.vars.errors %}
+                            <p class="has-text-danger is-size-7">{{ error.message }}</p>
+                        {% endfor %}
                     </div>
-                {% endif %}
-            {% endfor %}
+                </div>
+                <div class="column">
+                    <div class="field">
+                        {{ form_label(form.prenom, null, { 'label_attr': { 'class': 'label' } }) }}
+                        <div class="control">
+                            {{ form_widget(form.prenom, { 'attr': { 'class': 'input' } }) }}
+                        </div>
+                        {% for error in form.prenom.vars.errors %}
+                            <p class="has-text-danger is-size-7">{{ error.message }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
 
-            <div class="field mt-5">
+            <div class="columns">
+                <div class="column">
+                    <div class="field">
+                        {{ form_label(form.pseudo, null, { 'label_attr': { 'class': 'label' } }) }}
+                        <div class="control">
+                            {{ form_widget(form.pseudo, { 'attr': { 'class': 'input' } }) }}
+                        </div>
+                        {% for error in form.pseudo.vars.errors %}
+                            <p class="has-text-danger is-size-7">{{ error.message }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="field">
+                        {{ form_label(form.email, null, { 'label_attr': { 'class': 'label' } }) }}
+                        <div class="control">
+                            {{ form_widget(form.email, { 'attr': { 'class': 'input' } }) }}
+                        </div>
+                        {% for error in form.email.vars.errors %}
+                            <p class="has-text-danger is-size-7">{{ error.message }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="columns">
+                <div class="column">
+                    <div class="field">
+                        {{ form_label(form.telephone, null, { 'label_attr': { 'class': 'label' } }) }}
+                        <div class="control">
+                            {{ form_widget(form.telephone, { 'attr': { 'class': 'input' } }) }}
+                        </div>
+                        {% for error in form.telephone.vars.errors %}
+                            <p class="has-text-danger is-size-7">{{ error.message }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="field">
+                        {{ form_label(form.campus, null, { 'label_attr': { 'class': 'label' } }) }}
+                        <div class="control">
+                            {{ form_widget(form.campus, { 'attr': { 'class': 'input' } }) }}
+                        </div>
+                        {% for error in form.campus.vars.errors %}
+                            <p class="has-text-danger is-size-7">{{ error.message }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                {{ form_label(form.motDePasse, 'Mot de passe', { 'label_attr': { 'class': 'label' } }) }}
                 <div class="control">
-                    {{ form_widget(form.submit, {'attr': {'class': 'button is-success is-fullwidth'}}) }}
+                    {{ form_widget(form.motDePasse, { 'attr': { 'class': 'input' } }) }}
+                </div>
+                {% for error in form.motDePasse.vars.errors %}
+                    <p class="has-text-danger is-size-7">{{ error.message }}</p>
+                {% endfor %}
+            </div>
+
+            <div class="field">
+                {{ form_label(form.administrateur, null, { 'label_attr': { 'class': 'label' } }) }}
+                <div class="control">
+                    {{ form_widget(form.administrateur) }}
+                </div>
+                {% for error in form.administrateur.vars.errors %}
+                    <p class="has-text-danger is-size-7">{{ error.message }}</p>
+                {% endfor %}
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    {{ form_widget(form.submit, {'attr': {'class': 'button is-primary is-fullwidth'}}) }}
                 </div>
             </div>
 
@@ -42,4 +126,3 @@
         </div>
     </section>
 {% endblock %}
-
