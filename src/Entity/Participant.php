@@ -15,6 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity(fields: ['email'], message: 'Il existe déjà un compte avec cette adresse email')]
 #[UniqueEntity(fields: ['pseudo'], message: 'Il existe déjà un compte avec ce pseudo')]
 
+
 class Participant implements UserInterface, PasswordAuthenticatedUserInterface
 
 {
