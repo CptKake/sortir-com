@@ -13,10 +13,10 @@
             <li>Nombre de places : {{ nbplaces }}</li>
             <li>Durée : {{ sortie.duree }} minutes</li>
             <li>Description et infos : {{ sortie.infosSortie }}</li>
-            <li>Ville organisatrice : {{ sortie.lieu.ville.nom }}</li>
+            <li>Ville organisatrice : {{ sortie.lieu.ville }}</li>
             <li>Lieu : {{ sortie.lieu.nom }}</li>
             <li>Rue : {{ sortie.lieu.rue }}</li>
-            <li>Code postal : {{ sortie.lieu.ville.codePostal }}</li>
+            <li>Code postal : {{ sortie.lieu.codePostal }}</li>
             <li>Latitude : {{ sortie.lieu.latitude }}</li>
             <li>Longitude : {{ sortie.lieu.longitude }}</li>
 
@@ -33,7 +33,7 @@
             {% endif %}
         </ul>
     </div>
-    {% if app.user.id is same as sortie.organisateur.id  %}
+    {% if app.user.id is same as sortie.organisateur.id and sortie.etat.libelle is not same as 'Annulée' %}
         <a href="{{ path('sortie_editer', {'id': sortie.id}) }}">Modifier</a>
         <a href="{{ path('sortie_supprimer', {'id': sortie.id}) }}">Supprimer</a>
     {% endif %}
