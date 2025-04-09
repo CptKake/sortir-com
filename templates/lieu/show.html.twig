@@ -5,33 +5,58 @@
 {% block body %}
     <h1>Lieu</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ lieu.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ lieu.nom }}</td>
-            </tr>
-            <tr>
-                <th>Rue</th>
-                <td>{{ lieu.rue }}</td>
-            </tr>
-            <tr>
-                <th>Latitude</th>
-                <td>{{ lieu.latitude }}</td>
-            </tr>
-            <tr>
-                <th>Longitude</th>
-                <td>{{ lieu.longitude }}</td>
-            </tr>
-        </tbody>
-    </table>
+<div class="columns">
+    <div class="column is-half">
+        <table class="table is-striped is-fullwidth">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ lieu.id }}</td>
+                </tr>
+                <tr>
+                    <th>Nom</th>
+                    <td>{{ lieu.nom }}</td>
+                </tr>
+                <tr>
+                    <th>Rue</th>
+                    <td>{{ lieu.rue }}</td>
+                </tr>
+                <tr>
+                    <th>Ville</th>
+                    <td>{{ lieu.ville }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="column is-half">
+        <table class="table is-striped is-fullwidth">
+            <tbody>
+                <tr>
+                    <th>Code Postal</th>
+                    <td>{{ lieu.codePostal }}</td>
+                </tr>
+                <tr>
+                    <th>Latitude</th>
+                    <td>{{ lieu.latitude }}</td>
+                </tr>
+                <tr>
+                    <th>Longitude</th>
+                    <td>{{ lieu.longitude }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
-    <div id="map" style="height: 400px;"></div>
+    <div id="map" style="height: 50vh;"></div>
     {{ mapScript|raw }}
+
+    <a href="https://www.google.com/maps?q={{ lieu.latitude }},{{ lieu.longitude }}" target="_blank" class="button is-info">
+    <span class="icon">
+        <i class="fas fa-map-marker-alt"></i>
+    </span>
+        <span>Voir sur Google Maps</span>
+    </a>
 
     <a  class="button is-primary" href="{{ path('app_lieu_index') }}">back to list</a>
 
