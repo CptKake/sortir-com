@@ -73,20 +73,38 @@
 
             <div class="column">
                 <div class="box">
-                    <p class="notification is-info is-light">
-                        La gestion des photos de profil n'est pas encore disponible.
-                    </p>
-
-                    {% if participant.urlPhoto %}
-                        <div class="field">
-                            <label class="label">Photo actuelle :</label>
-                            <div class="control">
-                                <figure class="image is-128x128">
-                                    <img class="is-rounded" src="{{ asset('uploads/photos/' ~ participant.urlPhoto) }}" alt="Photo de profil actuelle">
-                                </figure>
+                    <div class="field">
+                        <label class="label">Photo de profil</label>
+                        {% if participant.urlPhoto %}
+                            <div class="mb-4">
+                                <label class="label">Photo actuelle :</label>
+                                <div class="control">
+                                    <figure class="image is-128x128">
+                                        <img class="is-rounded" src="{{ asset('uploads/photos/' ~ participant.urlPhoto) }}" alt="Photo de profil actuelle">
+                                    </figure>
+                                </div>
                             </div>
+                        {% endif %}
+
+                        <div class="file has-name">
+                            <label class="file-label">
+                                {{ form_widget(form.urlPhoto, {'attr': {'class': 'file-input', 'id': 'photo-file-input'}}) }}
+                                <span class="file-cta">
+                    <span class="file-icon">
+                        <i class="fas fa-upload"></i>
+                    </span>
+                    <span class="file-label">
+                        Choisir un fichier
+                    </span>
+                </span>
+                                <span class="file-name" id="file-name-display">
+                    Aucun fichier choisi
+                </span>
+                            </label>
                         </div>
-                    {% endif %}
+                        <p class="help">Formats acceptés : JPG, PNG - 1Mo maximum</p>
+                        <p class="help is-danger">{{ form_errors(form.urlPhoto) }}</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -107,6 +125,27 @@
         </div>
         {{ form_end(form) }}
     </div>
+
+    {% block javascripts %}
+        {{ parent() }}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const fileInput = document.getElementById('photo-file-input');
+                const fileNameDisplay = document.getElementById('file-name-display');
+
+                if (fileInput && fileNameDisplay) {
+                    fileInput.addEventListener('change', function(e) {
+                        if (fileInput.files.length > 0) {
+                            fileNameDisplay.textContent = fileInput.files[0].name;
+                        } else {
+                            fileNameDisplay.textContent = 'Aucun fichier choisi';
+                        }
+                    });
+                }
+            });
+        </script>
+    {% endblock %}
+
 {% endblock %}
 
 {% block stylesheets %}

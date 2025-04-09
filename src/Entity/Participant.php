@@ -61,7 +61,7 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?bool $actif = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $urlPhoto = null;
 
     #[ORM\Column(length: 255)]
@@ -193,7 +193,7 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->urlPhoto;
     }
 
-    public function setUrlPhoto(?string $urlPhoto): static
+    public function setUrlPhoto(?string $urlPhoto): self
     {
         $this->urlPhoto = $urlPhoto;
 

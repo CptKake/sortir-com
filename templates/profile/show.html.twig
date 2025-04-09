@@ -12,9 +12,9 @@
                     <div class="card-image">
                         <figure class="image is-square">
                             {% if participant.urlPhoto %}
-                                <img src="{{ asset('uploads/photos/' ~ participant.urlPhoto) }}" alt="Photo de {{ participant.pseudo }}">
+                                <img src="{{ asset('uploads/photos/' ~ participant.urlPhoto) }}" alt="Photo de {{ participant.pseudo }}" >
                             {% else %}
-                                <img src="{{ asset('images/default-avatar.png') }}" alt="Photo de profil par défaut">
+                                <img src="{{ asset('images/défaut.png') }}" alt="Photo de profil par défaut" >
                             {% endif %}
                         </figure>
                     </div>
