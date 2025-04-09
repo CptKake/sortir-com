@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Importation d'utilisateurs{% endblock %}
+
+{% block body %}
+    <section class="section">
+        <div class="container">
+            <h1 class="title is-4">Importer des utilisateurs via un fichier CSV</h1>
+            <p class="subtitle is-6">Veuillez sélectionner un fichier CSV contenant les informations des utilisateurs à importer.</p>
+
+            {# Affichage des messages flash d'erreur et de succès #}
+            {% for flash_error in app.flashes('error') %}
+                <div class="notification is-danger">
+                    <button class="delete"></button>
+                    {{ flash_error }}
+                </div>
+            {% endfor %}
+            {% for flash_success in app.flashes('success') %}
+                <div class="notification is-success">
+                    <button class="delete"></button>
+                    {{ flash_success }}
+                </div>
+            {% endfor %}
+
+            <div class="box">
+                {{ form_start(form, { 'attr': { 'enctype': 'multipart/form-data' } }) }}
+                <div class="field">
+                    {{ form_label(form.csvFile, 'Fichier CSV', { 'label_attr': { 'class': 'label' } }) }}
+                    <div class="control">
+                        {{ form_widget(form.csvFile, { 'attr': { 'class': 'input' } }) }}
+                    </div>
+                    {{ form_errors(form.csvFile) }}
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-primary is-fullwidth">Importer</button>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </section>
+{% endblock %}
