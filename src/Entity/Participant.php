@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ParticipantRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,7 +17,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity(fields: ['pseudo'], message: 'Il existe déjà un compte avec ce pseudo')]
 
 
+
 class Participant implements UserInterface, PasswordAuthenticatedUserInterface
+
 
 {
     #[ORM\Id]
@@ -34,6 +37,11 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $telephone = null;
 
     #[ORM\Column(length: 100, unique: true)]
+    #[Assert\Regex(
+        pattern: '/@campus-eni\.fr$/',
+        message: 'L’adresse email doit se terminer par @campus-eni.fr'
+    )]
+    #[Assert\NotBlank(message: 'L\'adresse email ne doit pas être vide !')]
     #[Assert\Email(
         message: 'L\'adresse email n\'est pas une adresse email valide !'
     )]
@@ -77,6 +85,12 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\OneToMany(targetEntity: Inscription::class, mappedBy: 'participant')]
     private Collection $inscriptions;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private $lastLogin;
 
 
     public function __construct()
@@ -198,6 +212,17 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getLastLogin(): ?\DateTimeInterface
+    {
+        return $this->lastLogin;
+    }
+
+    public function setLastLogin(?\DateTimeInterface $lastLogin): self
+    {
+        $this->lastLogin = $lastLogin;
+        return $this;
+    }
+
     /**
      * @return Collection<int, Sortie>
      */
@@ -267,6 +292,12 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) $this->email;
     }
 
+    public function eraseCredentials(): void
+    {
+        // Si vous stockez des données sensibles temporaires sur l'utilisateur, effacez-les ici
+        // $this->plainPassword = null;
+    }
+
     /**
      * @see UserInterface
      */
@@ -293,7 +324,7 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @see PasswordAuthenticatedUserInterface
      */
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->motDePasse;
     }
@@ -305,17 +336,16 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function setPassword(string $password): static
+    {
+        $this->motDePasse = $password;
+        return $this;
+    }
+
     public function getMotDePasse(): ?string
     {
         return $this->motDePasse;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function eraseCredentials(): void
-    {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
-    }
+
 }

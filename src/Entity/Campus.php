@@ -112,4 +112,10 @@ class Campus
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->nom; // ou le champ que tu veux afficher dans le formulaire
+    }
+
 }

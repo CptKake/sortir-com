@@ -3,51 +3,113 @@
 {% block title %}Modifier mon profil - {{ parent() }}{% endblock %}
 
 {% block body %}
-    <div class="container mt-4">
-        <h1>Modifier mon profil</h1>
+    <div class="box">
+        <h1 class="title is-2">Modifier mon profil</h1>
 
-        {% for label, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="alert alert-{{ label }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endfor %}
-
-        {{ form_start(form, {'attr': {'class': 'mt-4'}}) }}
-        <div class="row">
-            <div class="col-md-6">
-                {{ form_row(form.pseudo) }}
-                {{ form_row(form.prenom) }}
-                {{ form_row(form.nom) }}
-            </div>
-            <div class="col-md-6">
-                {{ form_row(form.email) }}
-                {{ form_row(form.telephone) }}
-                {{ form_row(form.campus) }}
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6">
-                {{ form_row(form.photoFile) }}
-
-                {% if participant.urlPhoto %}
-                    <div class="mb-3">
-                        <p>Photo actuelle :</p>
-                        <img src="{{ asset('uploads/photos/' ~ participant.urlPhoto) }}"
-                             alt="Photo de profil actuelle"
-                             class="img-thumbnail"
-                             style="max-width: 200px;">
+        {{ form_start(form) }}
+        <div class="columns">
+            <div class="column is-two-thirds">
+                <div class="field">
+                    <label class="label">{{ form_label(form.pseudo) }}</label>
+                    <div class="control">
+                        {{ form_widget(form.pseudo, {'attr': {'class': 'input'}}) }}
                     </div>
-                {% endif %}
+                    <p class="help is-danger">{{ form_errors(form.pseudo) }}</p>
+                </div>
+
+                <div class="columns">
+                    <div class="column">
+                        <div class="field">
+                            <label class="label">{{ form_label(form.prenom) }}</label>
+                            <div class="control">
+                                {{ form_widget(form.prenom, {'attr': {'class': 'input'}}) }}
+                            </div>
+                            <p class="help is-danger">{{ form_errors(form.prenom) }}</p>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field">
+                            <label class="label">{{ form_label(form.nom) }}</label>
+                            <div class="control">
+                                {{ form_widget(form.nom, {'attr': {'class': 'input'}}) }}
+                            </div>
+                            <p class="help is-danger">{{ form_errors(form.nom) }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form_label(form.email) }}</label>
+                    <div class="control has-icons-left">
+                        {{ form_widget(form.email, {'attr': {'class': 'input'}}) }}
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-envelope"></i>
+                        </span>
+                    </div>
+                    <p class="help is-danger">{{ form_errors(form.email) }}</p>
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form_label(form.telephone) }}</label>
+                    <div class="control has-icons-left">
+                        {{ form_widget(form.telephone, {'attr': {'class': 'input'}}) }}
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-phone"></i>
+                        </span>
+                    </div>
+                    <p class="help is-danger">{{ form_errors(form.telephone) }}</p>
+                </div>
+
+                <div class="field">
+                    <label class="label">{{ form_label(form.campus) }}</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            {{ form_widget(form.campus) }}
+                        </div>
+                    </div>
+                    <p class="help is-danger">{{ form_errors(form.campus) }}</p>
+                </div>
+            </div>
+
+            <div class="column">
+                <div class="box">
+                    <p class="notification is-info is-light">
+                        La gestion des photos de profil n'est pas encore disponible.
+                    </p>
+
+                    {% if participant.urlPhoto %}
+                        <div class="field">
+                            <label class="label">Photo actuelle :</label>
+                            <div class="control">
+                                <figure class="image is-128x128">
+                                    <img class="is-rounded" src="{{ asset('uploads/photos/' ~ participant.urlPhoto) }}" alt="Photo de profil actuelle">
+                                </figure>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
 
-        <div class="d-flex justify-content-between mt-4">
-            <a href="{{ path('app_profile_show') }}" class="btn btn-secondary">Annuler</a>
-            <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+        <div class="field is-grouped mt-5">
+            <div class="control">
+                <button type="submit" class="button is-primary">
+                    <span class="icon"><i class="fas fa-save"></i></span>
+                    <span>Enregistrer les modifications</span>
+                </button>
+            </div>
+            <div class="control">
+                <a href="{{ path('app_profile_show') }}" class="button is-light">
+                    <span class="icon"><i class="fas fa-ban"></i></span>
+                    <span>Annuler</span>
+                </a>
+            </div>
         </div>
         {{ form_end(form) }}
     </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 {% endblock %}
