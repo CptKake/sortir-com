@@ -6,7 +6,9 @@ use App\Entity\Participant;
 use App\Entity\Campus;
 use App\Form\AdminUserType;
 use App\Form\ImportCsvType;
+use App\Repository\ParticipantRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -60,7 +62,7 @@ class AdminController extends AbstractController
                             continue;
                         }
 
-                        // Vérifier l'unicité par email et par pseudo
+
                         $existingByEmail = $entityManager->getRepository(Participant::class)->findOneBy(['email' => $email]);
                         $existingByPseudo = $entityManager->getRepository(Participant::class)->findOneBy(['pseudo' => $pseudo]);
 
@@ -82,18 +84,16 @@ class AdminController extends AbstractController
                         // Gestion du Campus
                         $campus = $entityManager->getRepository(Campus::class)->findOneBy(['nom' => $campusName]);
                         if (!$campus) {
-                            // Option 1 : Créer automatiquement le campus s'il n'existe pas
+
                             $campus = new Campus();
                             $campus->setNom($campusName);
                             $entityManager->persist($campus);
-                            // Option 2 : Si vous préférez signaler une erreur, vous pouvez ajouter une erreur ici et continuer
+
                         }
                         $participant->setCampus($campus);
 
-                        // Hasher le mot de passe. Ici, on peut définir un mot de passe par défaut ou le récupérer du CSV.
-                        // Attention : dans un cas réel, vous devrez définir une procédure pour forcer la réinitialisation du mot de passe.
                         if (!$plainPwd) {
-                            $plainPwd = 'DefaultPassword123!'; // ou générer aléatoirement
+                            $plainPwd = 'DefaultPassword123!';
                         }
                         $hashedPassword = $passwordHasher->hashPassword($participant, $plainPwd);
                         $participant->setPassword($hashedPassword);
@@ -162,14 +162,20 @@ class AdminController extends AbstractController
     }
 
     #[Route('/admin/utilisateurs', name: 'admin_user_list')]
-    public function userList(EntityManagerInterface $em): Response
+    public function userList(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        $utilisateurs = $em->getRepository(Participant::class)->findAll();
+        $query = $em->getRepository(Participant::class)->createQueryBuilder('u')->getQuery();
+
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            10
+        );
 
         return $this->render('admin/user_list.html.twig', [
-            'utilisateurs' => $utilisateurs,
+            'utilisateurs' => $pagination,
         ]);
     }
 
@@ -178,60 +184,69 @@ class AdminController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        $selectedIds = $request->request->all('users');
-        $adminIds = $request->request->all('admins'); // liste des IDs cochés pour le rôle admin
+        $ids = $request->request->all('users');
         $action = $request->request->get('action');
 
-        if ($action !== 'admin_update' && empty($selectedIds)) {
+        if (empty($ids)) {
             $this->addFlash('error', 'Aucun utilisateur sélectionné.');
             return $this->redirectToRoute('admin_user_list');
         }
 
-        if ($action === 'admin_update') {
-            // Mise à jour du rôle administrateur pour TOUS les utilisateurs (pour être synchro avec les cases cochées)
-            $utilisateurs = $em->getRepository(Participant::class)->findAll();
-            foreach ($utilisateurs as $user) {
-                // On ne peut pas modifier soi-même son statut d'admin pour éviter de se retirer les droits
-                if ($user->getId() === $this->getUser()->getId()) {
-                    continue;
+        $modifications = 0;
+        $skipped = 0;
+
+        foreach ($ids as $id) {
+            $user = $em->getRepository(Participant::class)->find($id);
+            if (!$user) continue;
+
+            if ($action === 'delete') {
+                foreach ($user->getInscriptions() as $inscription) {
+                    $em->remove($inscription);
                 }
+                $em->remove($user);
+                $modifications++;
 
-                $isAdmin = in_array($user->getId(), $adminIds);
-                $user->setAdministrateur($isAdmin);
-            }
-        } else {
-            foreach ($selectedIds as $id) {
-                $user = $em->getRepository(Participant::class)->find($id);
-                if (!$user) continue;
-
-                // On empêche l'utilisateur courant de se supprimer lui-même
-                if ($user->getId() === $this->getUser()->getId()) {
-                    continue;
-                }
-
-                if ($action === 'delete') {
-                    foreach ($user->getInscriptions() as $inscription) {
-                        $em->remove($inscription);
-                    }
-                    foreach ($user->getSorties() as $sortie) {
-                        $sortie->setOrganisateur(null);
-                    }
-                    $em->remove($user);
-                } elseif ($action === 'activate') {
+            } elseif ($action === 'activate') {
+                if (!$user->isActif()) {
                     $user->setActif(true);
-                } elseif ($action === 'deactivate') {
+                    $modifications++;
+                } else {
+                    $skipped++;
+                }
+
+            } elseif ($action === 'deactivate') {
+                if ($user->isActif()) {
                     $user->setActif(false);
+                    $modifications++;
+                } else {
+                    $skipped++;
                 }
             }
         }
 
         $em->flush();
 
-        $this->addFlash('success', 'Action "' . $action . '" effectuée avec succès.');
+        if ($modifications > 0) {
+            $this->addFlash('success', "Action effectuée avec succès.");
+        }
+        if ($skipped > 0) {
+            $this->addFlash('error', "$skipped utilisateur(s) étaient déjà dans l'état souhaité.");
+        }
+
         return $this->redirectToRoute('admin_user_list');
     }
 
 
+
+    #[Route('/{id}', name: 'app_profile_detail',requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function showById(    ParticipantRepository $participantRepository,   $id): Response
+    {
+        $participant = $participantRepository->find($id);
+        return $this->render('profile/show.html.twig', [
+            'participant'=>$participant
+        ]
+        );
+    }
 
 
 }

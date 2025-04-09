@@ -47,4 +47,20 @@
             </div>
         </div>
 
+    {% if sorties.pageCount > 1 %}
+        <nav class="pagination is-centered mt-5" role="navigation" aria-label="pagination">
+            <ul class="pagination-list">
+                {% for page in 1..sorties.pageCount %}
+                    <li>
+                        <a class="pagination-link {{ page == sorties.currentPageNumber ? 'is-current' : '' }}"
+                           href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': page})) }}">
+                            {{ page }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </nav>
+    {% endif %}
+
+
 {% endblock %}

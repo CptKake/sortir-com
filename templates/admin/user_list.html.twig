@@ -1,21 +1,25 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des utilisateurs{% endblock %}
+{% block title %}Utilisateurs{% endblock %}
 
 {% block body %}
     <section class="section">
         <div class="container">
-            <h1 class="title">Liste des utilisateurs</h1>
+            <h1 class="title is-4 has-text-weight-semibold">Liste des utilisateurs</h1>
 
             {% for message in app.flashes('success') %}
-                <div class="notification is-success">{{ message }}</div>
+                <div class="notification is-success is-light">
+                    {{ message }}
+                </div>
             {% endfor %}
             {% for message in app.flashes('error') %}
-                <div class="notification is-danger">{{ message }}</div>
+                <div class="notification is-danger is-light">
+                    {{ message }}
+                </div>
             {% endfor %}
 
             <form method="post" action="{{ path('admin_users_mass_action') }}">
-                <table class="table is-fullwidth is-striped is-hoverable">
+                <table class="table is-fullwidth is-striped">
                     <thead>
                     <tr>
                         <th><input type="checkbox" id="select-all"></th>
@@ -41,39 +45,67 @@
                             <td>
                                 {% if user.urlPhoto %}
                                     <figure class="image is-48x48">
-                                        <img class="is-rounded" src="{{ asset('uploads/photos/' ~ user.urlPhoto) }}" alt="Photo de {{ user.pseudo }}">
+                                        <img class="is-rounded" src="{{ asset('uploads/photos/' ~ user.urlPhoto) }}" alt="Photo">
                                     </figure>
                                 {% else %}
-                                    <span class="has-text-grey-light">Aucune</span>
+                                    <span class="has-text-grey-light is-size-7">Aucune</span>
                                 {% endif %}
                             </td>
                             <td>{{ user.nom }}</td>
                             <td>{{ user.prenom }}</td>
                             <td>{{ user.email }}</td>
-                            <td>{{ user.pseudo }}</td>
+                            <td>
+                                <a href="{{ path('app_profile_detail', {id: user.id}) }}" class="has-text-link has-text-weight-semibold">
+                                    {{ user.pseudo }}
+                                </a>
+                            </td>
                             <td>{{ user.telephone }}</td>
                             <td>{{ user.campus.nom }}</td>
                             <td>{{ user.administrateur ? 'Oui' : 'Non' }}</td>
                             <td>
-                                <span class="tag {{ user.actif ? 'is-success' : 'is-danger' }}">
+                                <span class="tag is-rounded is-small {{ user.actif ? 'is-success' : 'is-light has-text-grey' }}">
                                     {{ user.actif ? 'Oui' : 'Non' }}
                                 </span>
                             </td>
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="10">Aucun utilisateur trouvé.</td>
+                            <td colspan="10" class="has-text-centered">Aucun utilisateur trouvé.</td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
 
-                <div class="buttons mt-4">
-                    <button class="button is-danger" name="action" value="delete" onclick="return confirm('Supprimer les utilisateurs sélectionnés ?')">Supprimer</button>
-                    <button class="button is-warning" name="action" value="deactivate">Désactiver</button>
-                    <button class="button is-success" name="action" value="activate">Activer</button>
+                <div class="buttons is-centered mt-4">
+                    <button class="button is-light has-text-danger" name="action" value="delete" onclick="return confirm('Supprimer les utilisateurs sélectionnés ?')">
+                        <span class="icon"><i class="fas fa-trash"></i></span>
+                        <span>Supprimer</span>
+                    </button>
+                    <button class="button is-light has-text-warning" name="action" value="deactivate">
+                        <span class="icon"><i class="fas fa-user-slash"></i></span>
+                        <span>Désactiver</span>
+                    </button>
+                    <button class="button is-light has-text-success" name="action" value="activate">
+                        <span class="icon"><i class="fas fa-user-check"></i></span>
+                        <span>Activer</span>
+                    </button>
                 </div>
             </form>
+
+            {% if utilisateurs.pageCount > 1 %}
+                <nav class="pagination is-centered mt-5" role="navigation" aria-label="pagination">
+                    <ul class="pagination-list">
+                        {% for page in 1..utilisateurs.pageCount %}
+                            <li>
+                                <a class="pagination-link {{ page == utilisateurs.currentPageNumber ? 'is-current' : '' }}"
+                                   href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': page})) }}">
+                                    {{ page }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </nav>
+            {% endif %}
         </div>
     </section>
 
