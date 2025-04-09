@@ -30,8 +30,15 @@
         </tbody>
     </table>
 
-    <div id="map" style="height: 400px;"></div>
+    <div id="map" style="height: 50vh;"></div>
     {{ mapScript|raw }}
+
+    <a href="https://www.google.com/maps?q={{ lieu.latitude }},{{ lieu.longitude }}" target="_blank" class="button is-info">
+    <span class="icon">
+        <i class="fas fa-map-marker-alt"></i>
+    </span>
+        <span>Voir sur Google Maps</span>
+    </a>
 
     <a  class="button is-primary" href="{{ path('app_lieu_index') }}">back to list</a>
 
