@@ -3,9 +3,18 @@
 {% block title %}Sortie{% endblock %}
 
 {% block body %}
-    <h2>Créer une sortie</h2>
-
-    {{ include('sortie/_form.html.twig') }}
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-10">
+                    <div class="box">
+                        <h1 class="title has-text-centered mb-5">Créer une nouvelle sortie</h1>
+                        {{ include('sortie/_form.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
 {% endblock %}
 
