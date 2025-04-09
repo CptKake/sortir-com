@@ -39,6 +39,8 @@ class ParticipantFixtures extends Fixture implements DependentFixtureInterface
 
         $admin->setCampus($this->getReference(CampusFixtures::CAMPUS_NANTES, Campus::class));
 
+        $admin->setUrlPhoto('défaut.png');
+
         $manager->persist($admin);
         $this->addReference('PARTICIPANT_ADMIN', $admin);
 
@@ -66,10 +68,7 @@ class ParticipantFixtures extends Fixture implements DependentFixtureInterface
             $participant->setAdministrateur(false);
             $participant->setActif(true);
 
-            // Assigner des photos aléatoires pour certains utilisateurs
-            if ($faker->boolean(30)) {
-                $participant->setUrlPhoto('https://i.pravatar.cc/150?img=' . $faker->numberBetween(1, 70));
-            }
+            $participant->setUrlPhoto('défaut.png');
 
             $password = 'password';
             $hashedPassword = $this->passwordHasher->hashPassword($participant, $password);

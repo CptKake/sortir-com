@@ -80,7 +80,11 @@ class ProfileController extends AbstractController
     }
 
     #[Route('/password', name: 'app_profile_password')]
-    public function updatePassword(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
+    public function updatePassword(
+        Request $request,
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $entityManager
+    ): Response
     {
         $participant = $this->getUser();
 
