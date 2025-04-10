@@ -24,7 +24,7 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
-=======
+
 # Cache and logs (Symfony2)
 /app/cache/*
 /app/logs/*
@@ -77,4 +77,4 @@
 
 # Embedded web-server pid file
 /.web-server-pid
->>>>>>> d1915c2aaac85bdf86035c6a0cd1399557213eef
+
