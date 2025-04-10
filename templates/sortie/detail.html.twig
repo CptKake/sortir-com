@@ -20,21 +20,50 @@
                     <li class="box content"><strong>Lieu :</strong> {{ sortie.lieu.nom }}</li>
                     <li class="box content"><strong>Rue </strong> {{ sortie.lieu.rue }}</li>
                     <li class="box content"><strong>Code postal :</strong> {{ sortie.lieu.codePostal }}</li>
-                    <li class="box content"><strong>Latitude :</strong> {{ sortie.lieu.latitude }}</li>
-                    <li class="box content"><strong>Longitude :</strong> {{ sortie.lieu.longitude }}</li>
 
-                    {% if sortie.participants|length > 0 %}
-                    <div class="box">
-                        <h2 class="title">Participants :</h2>
-                        <ul>
-                            {% for participant in sortie.participants %}
-                                <li>
-                                    <a href="app_profile_detail">{{ participant.nom }} {{ participant.prenom }}</a>
-                                </li>
-                            {% endfor %}
-                        </ul>
+                    <div id="map" style="height: 50vh;">
+                        {{ mapScript|raw }}
                     </div>
-                    {% endif %}
+                        <a href="https://www.google.com/maps?q={{ lieu.latitude }},{{ lieu.longitude }}" target="_blank" class="button is-info">
+                            <span class="icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </span>
+                            <span>Voir sur Google Maps</span>
+                        </a>
+
+                    <div class="box">
+                        <h2 class="title">Participants</h2>
+                        <div class="table-container">
+                            <table class="table is-fullwidth is-striped is-hoverable">
+                                <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Prénom</th>
+                                    <th>Voir le profil</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for participant in sortie.participants %}
+                                    <tr>
+                                        <td>{{ participant.nom }}</td>
+                                        <td>{{ participant.prenom }}</td>
+                                        <td>
+                                            <div class="buttons are-small">
+                                                <a href="{{ path('app_lieu_show', {'id': lieu.id}) }}" class="button is-info">
+                                                    <span class="icon"><i class="fas fa-eye"></i></span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="has-text-centered">Aucun participant</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </ul>
             </div>
         </div>

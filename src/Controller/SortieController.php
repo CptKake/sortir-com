@@ -6,6 +6,7 @@ use App\Entity\Etat;
 use App\Entity\Lieu;
 use App\Entity\Sortie;
 use App\Form\SortieType;
+use App\Services\MapService;
 use App\Repository\EtatRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\SortieRepository;
@@ -20,7 +21,13 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/sortie', name: 'sortie_')]
 final class SortieController extends AbstractController
 {
-    #[Route('', name: 'index', methods: ['GET'])]
+	private $mapService;
+
+	public function __construct(MapService $mapService){
+		$this->mapService = $mapService;
+	}
+
+	#[Route('', name: 'index', methods: ['GET'])]
     public function index(SortieRepository $sortieRepository): Response
     {
         return $this->render('sortie/list.html.twig', [
@@ -54,14 +61,19 @@ final class SortieController extends AbstractController
 	}
 
 	#[Route('/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET'])]
-	public function show(Sortie $sortie): Response
+	public function show(Sortie $sortie, EntityManagerInterface $em): Response
 	{
 		if (!$sortie) {
 			throw $this->createNotFoundException('Sortie inconnue');
 		}
 
+		$lieu = $em->getRepository(Lieu::class)->findOneBy(array('id' => $sortie->getLieu()->getId()));
+		$mapScript = $this->mapService->generateMapScript($lieu->getLatitude(), $lieu->getLongitude(), $lieu->getNom());
+
 		return $this->render('sortie/detail.html.twig', [
 			'sortie' => $sortie,
+			'lieu' => $lieu,
+			'mapScript' => $mapScript,
 		]);
 	}
 
