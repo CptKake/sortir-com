@@ -75,13 +75,15 @@
                 <span>Modifier</span>
             </a>
         </div>
-        <div class="buttons mb-4">
-            <a href="{{ path('sortie_annuler', {'id': sortie.id}) }}" class="button is-danger">
-                <span class="icon"><i class="fas fa-minus"></i></span>
-                <span>Annuler</span>
-            </a>
-        </div>
     {% endif %}
+        {% if (app.user == sortie.organisateur or is_granted('ROLE_ADMIN'))
+            and sortie.etat.id not in [5, 6] %} {# 5=Passée, 6=Annulée #}
+            <a href="{{ path('sortie_annuler', {'id': sortie.id}) }}" class="button is-danger">
+                <span class="icon"><i class="fas fa-ban"></i></span>
+                <span>Annuler la sortie</span>
+            </a>
+        {% endif %}
+
 
     {% set inscrit = 0 %}
 
@@ -111,7 +113,7 @@
     {# Si je suis inscrit #}
     {% if inscrit is same as 1 %}
         <div class="buttons mb-4">
-            <a href="" class="button is-danger">
+            <a href="{{ path('sortie_desistement', {'id': sortie.id}) }}" class="button is-danger">
                 <span class="icon"><i class="fas fa-minus"></i></span>
                 <span>Se désinscrire</span>
             </a>

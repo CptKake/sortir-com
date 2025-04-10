@@ -172,9 +172,12 @@ final class SortieController extends AbstractController
         EmailService $emailService
     ): Response
 	{
-        // Vérifier que l'utilisateur est l'organisateur
+        // Vérifier que l'utilisateur est l'organisateur OU un administrateur
         $currentUser = $this->getUser();
-        if (!$currentUser || $sortie->getOrganisateur() !== $currentUser) {
+        $isAdmin = $currentUser && in_array('ROLE_ADMIN', $currentUser->getRoles());
+        $isOrganisateur = $currentUser && $currentUser === $sortie->getOrganisateur();
+
+        if (!$currentUser || (!$isAdmin && !$isOrganisateur)) {
             $this->addFlash('error', "Vous n'êtes pas autorisé à annuler cette sortie.");
             return $this->redirectToRoute('sortie_detail', ['id'=> $sortie->getId()]);
         }
@@ -211,7 +214,16 @@ final class SortieController extends AbstractController
 
             // Changer l'état en 'Annulée'
             $sortie->setEtat($etatAnnulee);
-            $sortie->setMotifAnnulation($motifAnnulation);
+
+            //Ajouter un préfixe au motif si c'est un admin qui annule
+            if($isAdmin && !$isOrganisateur) {
+                $sortie->setMotifAnnulation("Annulation de la sortie par un administrateur : " . $motifAnnulation);
+
+                // Notifier l'organisateur de l'annulation par un admin
+                $emailService->notifyOrganisateurOfAdminCancellation($sortie);
+            } else {
+                $sortie->setMotifAnnulation($motifAnnulation);
+            }
 
             // Envoyer les emails aux participants
             $emailService->sendAnnulationEmails($sortie);
@@ -233,6 +245,8 @@ final class SortieController extends AbstractController
         return $this->render('sortie/annuler_sortie.html.twig', [
             'sortie' => $sortie,
             'form' => $form->createView(),
+            'isAdmin' => $isAdmin,
+            'isOrganisateur' => $isOrganisateur,
         ]);
 	}
 

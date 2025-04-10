@@ -41,4 +41,25 @@ class EmailService
             $this->mailer->send($email);
         }
     }
+
+    public function notifyOrganisateurOfAdminCancellation(Sortie $sortie): void
+    {
+        $organisateur = $sortie->getOrganisateur();
+
+        // Vérifier que l'organisateur existe
+        if (!$organisateur) {
+            return;
+        }
+
+        $email = (new TemplatedEmail())
+            ->from($this->senderEmail)
+            ->to($organisateur->getEmail())
+            ->subject('Annulation de la sortie : '.$sortie->getNom().' a été annulée par un administrateur')
+            ->htmlTemplate('emails/annulation_admin_notification.html.twig')
+            ->context([
+                'organisateur'=>$organisateur,
+                'sortie'=>$sortie,
+                'lien_accueil' => $this->urlGenerator->generate('app_main', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            ]);
+    }
 }
