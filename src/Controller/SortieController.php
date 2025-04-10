@@ -31,7 +31,7 @@ final class SortieController extends AbstractController
 		$this->mapService = $mapService;
 	}
 
-    #[Route('', name: 'index', methods: ['GET', 'POST'])]
+    #[Route('', name: 'index', methods: ['GET'])]
     public function index(SortieRepository $sortieRepository, Request $request, PaginatorInterface $paginator): Response
     {
         $form = $this->createForm(SortieFilterType::class);
@@ -41,7 +41,7 @@ final class SortieController extends AbstractController
             ->leftJoin('s.organisateur', 'o')
             ->leftJoin('s.inscriptions', 'i')
             ->leftJoin('s.campus', 'c')
-            ->leftJoin('s.etat', 'e') // Ajoute la jointure avec l'état
+            ->leftJoin('s.etat', 'e')
             ->addSelect('o', 'i', 'c', 'e')
             ->where('e.libelle IN (:etats)')
             ->setParameter('etats', ['Ouverte']);
