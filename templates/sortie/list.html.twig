@@ -16,20 +16,24 @@
 
     <div class="box mb-5">
         {{ form_start(form, {'method': 'get'}) }}
-        <div class="columns is-multiline is-vcentered">
 
+        <div class="columns is-multiline">
+            {# Ligne 1 : campus, search, dateDebut, dateFin #}
             <div class="column is-3">
                 <div class="field">
-                    <label class="label">Site :</label>
-                    <div class="control">
-                        {{ form_widget(form.campus, {'attr': {'class': 'input'}}) }}
+                    {{ form_label(form.campus, null, {'label_attr': {'class': 'label'}}) }}
+                    <div class="control has-icons-right">
+                        {{ form_widget(form.campus, {'attr': {'class': 'select is-fullwidth'}}) }}
+                        <span class="icon is-small is-right">
+                        <i class="fas fa-angle-down"></i>
+                    </span>
                     </div>
                 </div>
             </div>
 
             <div class="column is-3">
                 <div class="field">
-                    <label class="label">Le nom de la sortie contient :</label>
+                    {{ form_label(form.search, 'Le nom de la sortie contient :', {'label_attr': {'class': 'label'}}) }}
                     <div class="control has-icons-left">
                         {{ form_widget(form.search, {'attr': {'class': 'input', 'placeholder': 'Rechercher...'}}) }}
                         <span class="icon is-left">
@@ -41,7 +45,7 @@
 
             <div class="column is-3">
                 <div class="field">
-                    <label class="label">Entre :</label>
+                    {{ form_label(form.dateDebut, 'Entre :', {'label_attr': {'class': 'label'}}) }}
                     <div class="control">
                         {{ form_widget(form.dateDebut, {'attr': {'class': 'input'}}) }}
                     </div>
@@ -50,13 +54,14 @@
 
             <div class="column is-3">
                 <div class="field">
-                    <label class="label">et :</label>
+                    {{ form_label(form.dateFin, 'et :', {'label_attr': {'class': 'label'}}) }}
                     <div class="control">
                         {{ form_widget(form.dateFin, {'attr': {'class': 'input'}}) }}
                     </div>
                 </div>
             </div>
 
+            {# Ligne 2 : Checkboxes #}
             <div class="column is-12">
                 <div class="field is-grouped is-grouped-multiline">
                     <div class="control">
@@ -86,8 +91,9 @@
                 </div>
             </div>
 
+            {# Ligne 3 : Boutons #}
             <div class="column is-12 has-text-right">
-                <div class="buttons is-right">
+                <div class="buttons">
                     <button class="button is-link">
                         <span class="icon"><i class="fas fa-search"></i></span>
                         <span>Rechercher</span>
@@ -98,12 +104,14 @@
                     </a>
                 </div>
             </div>
-
-
         </div>
+
         {{ form_end(form) }}
     </div>
-        <div class="container">
+
+
+
+    <div class="container">
             <div class="section">
                 <div class="buttons mb-4">
                     <a href="{{ path('sortie_create') }}" class="button is-success">

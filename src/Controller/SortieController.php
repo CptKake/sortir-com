@@ -41,7 +41,11 @@ final class SortieController extends AbstractController
             ->leftJoin('s.organisateur', 'o')
             ->leftJoin('s.inscriptions', 'i')
             ->leftJoin('s.campus', 'c')
-            ->addSelect('o', 'i', 'c');
+            ->leftJoin('s.etat', 'e') // Ajoute la jointure avec l'état
+            ->addSelect('o', 'i', 'c', 'e')
+            ->where('e.libelle IN (:etats)')
+            ->setParameter('etats', ['Ouverte']);
+
 
         $user = $this->getUser();
         $data = $form->getData();

@@ -16,13 +16,13 @@ class SortieFilterType extends AbstractType
 {
 public function buildForm(FormBuilderInterface $builder, array $options): void
 {
-$builder
-->add('campus', EntityType::class, [
-'class' => Campus::class,
-'choice_label' => 'nom',
-'required' => false,
-'label' => 'Site',
-])
+    $builder->add('campus', EntityType::class, [
+        'class' => Campus::class,
+        'choice_label' => 'nom',
+        'required' => false,
+        'placeholder' => 'Liste des campus',
+    ])
+
 ->add('search', SearchType::class, [
 'required' => false,
 'label' => 'Le nom de la sortie contient',
