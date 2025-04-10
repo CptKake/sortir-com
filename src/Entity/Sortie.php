@@ -66,7 +66,7 @@ class Sortie
     #[Assert\NotNull]
     private ?Campus $campus = null;
 
-    #[ORM\ManyToOne(inversedBy: 'sorties')]
+    #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: 'L\'activité doit avoir un lieu!')]
     private ?Lieu $lieu = null;

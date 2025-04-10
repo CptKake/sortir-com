@@ -22,7 +22,18 @@
 
                         <div class="field mt-4">
                             <label class="label">Adresse</label>
-                            <div class="box p-4 mb-3">
+                            <div class="box p-4 mb-3 adresse-item">
+                                <!-- Champ de recherche d'adresse pour l'autocomplétion -->
+                                <div class="field">
+                                    <label class="label">Rechercher une adresse</label>
+                                    <div class="control has-icons-left">
+                                        <input type="text" class="input adresse-autocomplete" placeholder="Commencez à taper une adresse...">
+                                        <span class="icon is-small is-left">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                    </div>
+                                </div>
+
                                 <div class="field">
                                     <label class="label">{{ form_label(form.rue) }}</label>
                                     <div class="control">
@@ -62,8 +73,8 @@
                                             <div class="control has-icons-left">
                                                 {{ form_widget(form.latitude, {'attr': {'class': 'input'}}) }}
                                                 <span class="icon is-small is-left">
-                                                        <i class="fas fa-map-marker-alt"></i>
-                                                    </span>
+                                                    <i class="fas fa-map-marker-alt"></i>
+                                                </span>
                                             </div>
                                             <p class="help is-danger">{{ form_errors(form.latitude) }}</p>
                                         </div>
@@ -74,8 +85,8 @@
                                             <div class="control has-icons-left">
                                                 {{ form_widget(form.longitude, {'attr': {'class': 'input'}}) }}
                                                 <span class="icon is-small is-left">
-                                                        <i class="fas fa-map-marker-alt"></i>
-                                                    </span>
+                                                    <i class="fas fa-map-marker-alt"></i>
+                                                </span>
                                             </div>
                                             <p class="help is-danger">{{ form_errors(form.longitude) }}</p>
                                         </div>
@@ -87,17 +98,17 @@
                         <div class="field is-grouped is-grouped-centered mt-5">
                             <div class="control">
                                 <button class="button is-success is-medium">
-                                        <span class="icon">
-                                            <i class="fas fa-save"></i>
-                                        </span>
+                                    <span class="icon">
+                                        <i class="fas fa-save"></i>
+                                    </span>
                                     <span>{{ button_label|default('Enregistrer') }}</span>
                                 </button>
                             </div>
                             <div class="control">
                                 <a href="{{ path('app_lieu_index') }}" class="button is-light is-medium">
-                                        <span class="icon">
-                                            <i class="fas fa-times"></i>
-                                        </span>
+                                    <span class="icon">
+                                        <i class="fas fa-times"></i>
+                                    </span>
                                     <span>Annuler</span>
                                 </a>
                             </div>
@@ -108,4 +119,237 @@
             </div>
         </div>
     </section>
+{% endblock %}
+
+{% block javascripts %}
+
+    <script>
+        // Utiliser une approche plus robuste pour l'initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fonction pour tenter l'initialisation avec plusieurs essais
+            let attempts = 0;
+            const maxAttempts = 5;
+
+            function attemptInitialization() {
+                const searchField = document.querySelector('.adresse-autocomplete');
+                if (searchField) {
+                    console.log("Champ d'autocomplétion trouvé, initialisation...");
+                    initAutocomplete(searchField);
+                } else {
+                    attempts++;
+                    if (attempts < maxAttempts) {
+                        console.log(`Tentative ${attempts}/${maxAttempts} - Champ non trouvé, nouvel essai dans 200ms`);
+                        setTimeout(attemptInitialization, 200);
+                    } else {
+                        console.warn("Impossible de trouver le champ d'autocomplétion après plusieurs tentatives");
+                    }
+                }
+            }
+
+            // Démarrer la tentative d'initialisation
+            setTimeout(attemptInitialization, 100);
+
+            // Fonction pour initialiser l'autocomplétion
+            function initAutocomplete(field) {
+                field.addEventListener('input', debounce(function() {
+                    const query = this.value;
+                    if (query.length < 3) {
+                        // Supprimer les suggestions si la requête est trop courte
+                        const existingSuggestions = document.querySelector('.address-suggestions');
+                        if (existingSuggestions) {
+                            existingSuggestions.remove();
+                        }
+                        return;
+                    }
+
+                    fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(query)}&limit=5`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Supprimer les suggestions précédentes
+                            const existingSuggestions = document.querySelector('.address-suggestions');
+                            if (existingSuggestions) {
+                                existingSuggestions.remove();
+                            }
+
+                            // S'il n'y a pas de résultats, ne pas afficher la liste
+                            if (!data.features || data.features.length === 0) {
+                                return;
+                            }
+
+                            // Créer la liste des suggestions avec un style amélioré
+                            const suggestions = document.createElement('div');
+                            suggestions.classList.add('address-suggestions');
+
+                            // Style pour les suggestions
+                            suggestions.style.position = 'absolute';
+                            suggestions.style.zIndex = '1000';
+                            suggestions.style.width = '100%';
+                            suggestions.style.backgroundColor = 'white';
+                            suggestions.style.border = '1px solid #dbdbdb';
+                            suggestions.style.borderRadius = '4px';
+                            suggestions.style.boxShadow = '0 2px 3px rgba(10, 10, 10, 0.1)';
+                            suggestions.style.maxHeight = '200px';
+                            suggestions.style.overflowY = 'auto';
+
+                            data.features.forEach((feature, index) => {
+                                const suggestion = document.createElement('div');
+                                suggestion.classList.add('suggestion');
+                                if (index === 0) suggestion.classList.add('active');
+
+                                // Style pour chaque suggestion
+                                suggestion.style.padding = '10px';
+                                suggestion.style.cursor = 'pointer';
+                                suggestion.style.borderBottom = '1px solid #f5f5f5';
+                                suggestion.style.transition = 'background-color 0.2s';
+
+                                // Formater l'affichage de manière plus élégante
+                                const address = feature.properties;
+                                suggestion.innerHTML = `
+                                    <span class="suggestion-text">${address.label}</span>
+                                `;
+
+                                suggestion.addEventListener('mouseover', function() {
+                                    this.style.backgroundColor = '#f5f5f5';
+                                });
+
+                                suggestion.addEventListener('mouseout', function() {
+                                    this.style.backgroundColor = 'white';
+                                });
+
+                                suggestion.addEventListener('click', function() {
+                                    // Remplir les champs avec les données de l'adresse
+                                    const adresseItem = field.closest('.adresse-item');
+
+                                    // Adapter les noms des champs à votre structure de formulaire
+                                    const rueField = adresseItem.querySelector('[id$="_rue"]');
+                                    const villeField = adresseItem.querySelector('[id$="_ville"]');
+                                    const codePostalField = adresseItem.querySelector('[id$="_codePostal"]');
+                                    const latitudeField = document.querySelector('[id$="_latitude"]');
+                                    const longitudeField = document.querySelector('[id$="_longitude"]');
+
+                                    if (rueField) rueField.value = address.name;
+                                    if (codePostalField) codePostalField.value = address.postcode;
+                                    if (villeField) villeField.value = address.city;
+
+                                    // Ajouter les coordonnées géographiques si disponibles
+                                    if (latitudeField && longitudeField && feature.geometry) {
+                                        longitudeField.value = feature.geometry.coordinates[0];
+                                        latitudeField.value = feature.geometry.coordinates[1];
+                                    }
+
+                                    // Mettre à jour le champ de recherche
+                                    field.value = address.label;
+
+                                    // Animation de succès
+                                    const parentDiv = adresseItem;
+                                    parentDiv.style.transition = 'background-color 0.5s';
+                                    parentDiv.style.backgroundColor = '#ebffeb';
+                                    setTimeout(() => {
+                                        parentDiv.style.backgroundColor = '';
+                                    }, 1000);
+
+                                    // Supprimer les suggestions
+                                    suggestions.remove();
+                                });
+
+                                suggestions.appendChild(suggestion);
+                            });
+
+                            // Positionner les suggestions correctement
+                            const fieldRect = field.getBoundingClientRect();
+                            field.parentNode.style.position = 'relative';
+
+                            // Ajouter les suggestions après le champ
+                            field.parentNode.appendChild(suggestions);
+
+                            // Ajouter un événement pour fermer les suggestions lors d'un clic ailleurs
+                            document.addEventListener('click', function(e) {
+                                if (!field.contains(e.target) && !suggestions.contains(e.target)) {
+                                    suggestions.remove();
+                                }
+                            }, { once: true });
+                        })
+                        .catch(error => console.error('Erreur lors de la récupération des adresses:', error));
+                }, 300));
+
+                // Ajouter la gestion des touches (haut, bas, entrée)
+                field.addEventListener('keydown', function(e) {
+                    const suggestions = document.querySelector('.address-suggestions');
+                    if (!suggestions) return;
+
+                    const active = suggestions.querySelector('.suggestion.active');
+                    const items = suggestions.querySelectorAll('.suggestion');
+
+                    switch (e.key) {
+                        case 'ArrowDown':
+                            e.preventDefault();
+                            if (active) {
+                                active.classList.remove('active');
+                                active.style.backgroundColor = '';
+                                const next = active.nextElementSibling || items[0];
+                                next.classList.add('active');
+                                next.style.backgroundColor = '#f5f5f5';
+                                next.scrollIntoView({ block: 'nearest' });
+                            } else if (items.length) {
+                                items[0].classList.add('active');
+                                items[0].style.backgroundColor = '#f5f5f5';
+                            }
+                            break;
+
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            if (active) {
+                                active.classList.remove('active');
+                                active.style.backgroundColor = '';
+                                const prev = active.previousElementSibling || items[items.length - 1];
+                                prev.classList.add('active');
+                                prev.style.backgroundColor = '#f5f5f5';
+                                prev.scrollIntoView({ block: 'nearest' });
+                            } else if (items.length) {
+                                items[items.length - 1].classList.add('active');
+                                items[items.length - 1].style.backgroundColor = '#f5f5f5';
+                            }
+                            break;
+
+                        case 'Enter':
+                            if (active) {
+                                e.preventDefault();
+                                active.click();
+                            }
+                            break;
+
+                        case 'Escape':
+                            suggestions.remove();
+                            break;
+                    }
+                });
+            }
+
+            // Fonction debounce pour limiter les appels API
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func.apply(this, args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            // Ajout d'un style CSS pour la sélection active
+            const style = document.createElement('style');
+            style.textContent = `
+                .suggestion.active {
+                    background-color: #f5f5f5;
+                }
+                .address-selected {
+                    background-color: #ebffeb !important;
+                    transition: background-color 0.5s;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
 {% endblock %}

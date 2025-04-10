@@ -8,8 +8,8 @@ use App\Form\SortieType;
 use App\Repository\EtatRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\SortieRepository;
+use App\Services\MapService;
 use Doctrine\ORM\EntityManagerInterface;
-use Knp\Component\Pager\PaginatorInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -20,6 +20,12 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/sortie', name: 'sortie_')]
 final class SortieController extends AbstractController
 {
+	private $mapService;
+
+	public function __construct(MapService $mapService){
+		$this->mapService = $mapService;
+	}
+
     #[Route('', name: 'index', methods: ['GET'])]
     public function index(SortieRepository $sortieRepository, Request $request, PaginatorInterface $paginator): Response
     {

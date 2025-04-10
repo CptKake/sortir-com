@@ -3,18 +3,24 @@
 {% block title %}Sortis liste{% endblock %}
 
 {% block stylesheets %}
-
-<link rel="stylesheet" href="https://unpkg.com/bulma@1.0.2/css/bulma.min.css" />
-<script src="https://kit.fontawesome.com/7dc3015a44.js" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="{{ asset('../styles/cards.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/bulma@1.0.2/css/bulma.min.css" />
+    <script src="https://kit.fontawesome.com/7dc3015a44.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{{ asset('styles/cards.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
 {% endblock stylesheets %}
 
 
 {% block body %}
         <div class="container">
             <div class="section">
+                <div class="buttons mb-4">
+                    <a href="{{ path('sortie_create') }}" class="button is-success">
+                        <span class="icon"><i class="fas fa-plus"></i></span>
+                        <span>Créer une sortie</span>
+                    </a>
+                </div>
                 <div class="column has-text-centered">
-                    <h2 class="title" style="color: #a11616;">Liste des sorties</h2><br>
+                    <h1 class="title" style="color: #a11616;">Liste des sorties</h1><br>
                 </div>
                 <div class="columns">
                     <div id="app" class="row columns is-multiline">
@@ -30,7 +36,7 @@
                                             </p>
                                             <p class="subtitle is-6"> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }} </p>
                                             <p class="subtitle is-6"> {{ sortie.lieu.ville }} </p>
-                                            {% set nbplaces = sortie.nbInscriptionsMax - sortie.inscriptions.count %}
+                                            {% set nbplaces = sortie.inscriptions.count %}
                                             <p class="subtitle is-6"> {{ nbplaces }} / {{ sortie.nbInscriptionsMax }} inscrits </p>
                                         </div>
                                     </div>
