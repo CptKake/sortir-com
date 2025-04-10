@@ -69,9 +69,15 @@
         <p class="help is-danger">{{ form_errors(form.campus) }}</p>
     </div>
 
-    <div class="field mt-4">
+    <div class="field mt-4 adresse-item">
         <label class="label">Adresse</label>
         <div class="box p-4 mb-3">
+            <div class="field">
+                <label class="label">Rechercher une adresse</label>
+                <div class="control">
+                    <input type="text" class="input is-medium adresse-autocomplete" placeholder="Commencez à saisir une adresse...">
+                </div>
+            </div>
             <div class="field">
                 <label class="label">{{ form_label(form.lieu.nom) }}</label>
                 <div class="control">

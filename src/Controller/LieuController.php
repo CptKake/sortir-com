@@ -53,6 +53,8 @@ final class LieuController extends AbstractController{
             $entityManager->persist($lieu);
             $entityManager->flush();
 
+            $this->addFlash('success', '');
+
             return $this->redirectToRoute('app_lieu_index', [], Response::HTTP_SEE_OTHER);
         }
 
