@@ -5,12 +5,15 @@ namespace App\Controller;
 use App\Entity\Lieu;
 use App\Form\LieuType;
 use App\Repository\LieuRepository;
+use App\Services\AddressAutocompleteService;
 use App\Services\MapService;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/lieu')]
 final class LieuController extends AbstractController{
@@ -21,16 +24,26 @@ final class LieuController extends AbstractController{
         $this->mapService = $mapService;
     }
 
+    #[IsGranted("ROLE_USER")]
     #[Route(name: 'app_lieu_index', methods: ['GET'])]
-    public function index(LieuRepository $lieuRepository): Response
+    public function index(LieuRepository $lieuRepository, PaginatorInterface $paginator, Request $request): Response
     {
+        $query = $lieuRepository->createQueryBuilder('s')->getQuery();
+
+        $lieux = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            12
+        );
+
         return $this->render('lieu/index.html.twig', [
-            'lieux' => $lieuRepository->findAll(),
+            'lieux' => $lieux,
         ]);
     }
 
+    #[IsGranted("ROLE_USER")]
     #[Route('/new', name: 'app_lieu_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, AddressAutocompleteService $addressService): Response
     {
         $lieu = new Lieu();
         $form = $this->createForm(LieuType::class, $lieu);
@@ -46,9 +59,14 @@ final class LieuController extends AbstractController{
         return $this->render('lieu/new.html.twig', [
             'lieu' => $lieu,
             'form' => $form,
+            'address_script' => $addressService->generateAutocompleteScript('.adresse-autocomplete'), [
+                'limit'=>8,
+                'minLength'=>3,
+            ]
         ]);
     }
 
+    #[IsGranted("ROLE_USER")]
     #[Route('/{id}', name: 'app_lieu_show', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function show(Lieu $lieu): Response
     {
@@ -60,6 +78,7 @@ final class LieuController extends AbstractController{
         ]);
     }
 
+    #[IsGranted("ROLE_USER")]
     #[Route('/{id}/edit', name: 'app_lieu_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function edit(Request $request, Lieu $lieu, EntityManagerInterface $entityManager): Response
     {
@@ -78,6 +97,7 @@ final class LieuController extends AbstractController{
         ]);
     }
 
+    #[IsGranted("ROLE_ADMIN")]
     #[Route('/{id}', name: 'app_lieu_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(Request $request, Lieu $lieu, EntityManagerInterface $entityManager): Response
     {
