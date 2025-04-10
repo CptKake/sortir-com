@@ -16,23 +16,24 @@
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 20px;
-            border-left: 4px solid #e53935;
-        }
-        .header.admin {
             border-left: 4px solid #1565c0;
         }
         .title {
-            color: #e53935;
-            margin: 0;
-        }
-        .title.admin {
             color: #1565c0;
+            margin: 0;
         }
         .content {
             background-color: #fff;
             padding: 20px;
             border-radius: 5px;
             border: 1px solid #ddd;
+        }
+        .notification {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #1565c0;
         }
         .motif {
             background-color: #f9f9f9;
@@ -61,37 +62,29 @@
     </style>
 </head>
 <body>
-{% set isAdminCancellation = sortie.motifAnnulation starts with '[Annulation administrative]' %}
-
-<div class="header {% if isAdminCancellation %}admin{% endif %}">
-    <h1 class="title {% if isAdminCancellation %}admin{% endif %}">
-        {% if isAdminCancellation %}
-            Annulation administrative de sortie
-        {% else %}
-            Annulation de sortie
-        {% endif %}
-    </h1>
+<div class="header">
+    <h1 class="title">Annulation administrative de votre sortie</h1>
 </div>
 
 <div class="content">
-    <p>Bonjour {{ participant.prenom }},</p>
+    <p>Bonjour {{ organisateur.prenom }},</p>
 
-    <p>Nous vous informons que la sortie <strong>"{{ sortie.nom }}"</strong> prévue le <strong>{{ sortie.dateHeureDebut|date('d/m/Y à H:i') }}</strong>
-        {% if isAdminCancellation %}
-            a été annulée par l'administration du site.
-        {% else %}
-            a été annulée par l'organisateur.
-        {% endif %}
-    </p>
+    <div class="notification">
+        <p><strong>IMPORTANT :</strong> Un administrateur a annulé votre sortie <strong>"{{ sortie.nom }}"</strong> prévue le <strong>{{ sortie.dateHeureDebut|date('d/m/Y à H:i') }}</strong>.</p>
+    </div>
+
+    <p>Tous les participants inscrits ont été automatiquement notifiés de cette annulation.</p>
 
     <div class="motif">
         <h3>Motif d'annulation :</h3>
         <p>{{ sortie.motifAnnulation | replace({'[Annulation administrative] ': ''}) }}</p>
     </div>
 
-    <p>Pour découvrir d'autres sorties disponibles, n'hésitez pas à consulter notre site.</p>
+    <p>Si vous avez des questions concernant cette annulation, veuillez contacter l'équipe administrative.</p>
 
-    <a href="{{ lien_accueil }}" class="button">Voir les sorties disponibles</a>
+    <p>Vous pouvez créer une nouvelle sortie à tout moment depuis votre espace personnel.</p>
+
+    <a href="{{ lien_accueil }}" class="button">Accéder à mon espace</a>
 </div>
 
 <div class="footer">
