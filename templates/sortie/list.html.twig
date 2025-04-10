@@ -32,7 +32,7 @@
                                         <div class="media-content">
                                             <p class="title is-4 no-padding"><a href="{{ path('sortie_detail', {id: sortie.id }) }}">{{ sortie.nom }}</a></p>
                                             <p>
-                                                 <span class="title is-6"><a href=""> {{ sortie.organisateur.pseudo }} </a></span>
+                                                 <span class="title is-6"><a href="{{ path('app_profile_detail' , {'id': sortie.organisateur.id}) }}"> {{ sortie.organisateur.pseudo }} </a></span>
                                             </p>
                                             <p class="subtitle is-6"> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }} </p>
                                             <p class="subtitle is-6"> {{ sortie.lieu.ville }} </p>
