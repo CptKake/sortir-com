@@ -51,10 +51,15 @@ class Sortie
     #[Assert\NotBlank(message: 'L\'activité doit avoir une description!')]
     private ?string $infosSortie = null;
 
+    /*l'organisateur est passé en null mais les sorties ne sont pas delete
+
+    #[ORM\JoinColumn(nullable: true, onDelete: "SET NULL")]*/
+
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull]
     private ?Participant $organisateur = null;
+
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
