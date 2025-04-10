@@ -1,88 +1,113 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon Profil - {{ parent() }}{% endblock %}
+{% block title %}
+    {% if isOwnProfile %}
+        Mon Profil - {{ parent() }}
+    {% else %}
+        Profil de {{ participant.pseudo }} - {{ parent() }}
+    {% endif %}
+{% endblock %}
 
 {% block body %}
     <div class="box">
-        <h1 class="title is-2">Mon Profil</h1>
+        {# Titre différent selon qu'on consulte son propre profil ou celui d'un autre #}
+        <h1 class="title is-2">
+            {% if isOwnProfile %}
+                Mon Profil
+            {% else %}
+                Profil de {{ participant.pseudo }}
+            {% endif %}
+        </h1>
 
-        <div class="columns">
-            <div class="column is-one-third">
-                <div class="card">
-                    <div class="card-image">
-                        <figure class="image is-square">
-                            {% if participant.urlPhoto %}
-                                <img src="{{ asset('uploads/photos/' ~ participant.urlPhoto) }}" alt="Photo de {{ participant.pseudo }}" >
-                            {% else %}
-                                <img src="{{ asset('images/défaut.png') }}" alt="Photo de profil par défaut" >
+        {# Messages flash #}
+        {% for message in app.flashes('success') %}
+            <div class="notification is-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+            <div class="notification is-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% if participant is defined and participant is not null %}
+            <div class="columns">
+                <div class="column is-one-third">
+                    <div class="card">
+                        <div class="card-image">
+                            <figure class="image is-square">
+                                {% if participant.urlPhoto is defined and participant.urlPhoto %}
+                                    <img src="{{ asset('uploads/photos/' ~ participant.urlPhoto) }}" alt="Photo de {{ participant.pseudo }}">
+                                {% else %}
+                                    <img src="{{ asset('images/défaut.png') }}" alt="Photo de profil par défaut">
+                                {% endif %}
+                            </figure>
+                        </div>
+                        <div class="card-content">
+                            <p class="title is-4">{{ participant.pseudo }}</p>
+                            <p class="subtitle is-6">{{ participant.campus.nom }}</p>
+                        </div>
+
+                        {# Boutons d'action uniquement pour son propre profil #}
+                        {% if isOwnProfile %}
+                            <div class="card-footer">
+                                <a href="{{ path('app_profile_edit') }}" class="card-footer-item button is-primary">
+                                    <span class="icon"><i class="fas fa-edit"></i></span>
+                                    <span>Modifier mon profil</span>
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="column">
+                    <div class="box">
+                        <h2 class="title is-4">Informations personnelles</h2>
+                        <div class="content">
+                            <p><strong>Nom :</strong> {{ participant.nom }}</p>
+                            <p><strong>Prénom :</strong> {{ participant.prenom }}</p>
+                            <p><strong>Email :</strong> {{ participant.email }}</p>
+                            <p><strong>Téléphone :</strong> {{ participant.telephone }}</p>
+                            <p><strong>Campus :</strong> {{ participant.campus.nom }}</p>
+                        </div>
+                    </div>
+
+                    <div class="box">
+                        <h2 class="title is-4">Activité</h2>
+                        <div class="content">
+                            <p><strong>Dernière connexion :</strong> Information non disponible</p>
+                            <p><strong>Membre depuis :</strong> Information non disponible</p>
+                        </div>
+                    </div>
+
+                    {# Boutons d'action pour son propre profil #}
+                    {% if isOwnProfile %}
+                        <div class="buttons">
+                            <a href="{{ path('app_profile_password') }}" class="button is-info">
+                                <span class="icon"><i class="fas fa-key"></i></span>
+                                <span>Changer mon mot de passe</span>
+                            </a>
+
+                            {% if participant.urlPhoto and participant.urlPhoto != 'défaut.png' %}
+                                <form action="{{ path('app_profile_delete_photo') }}" method="post" onsubmit="return confirm('Voulez-vous vraiment supprimer votre photo ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete-photo') }}">
+                                    <button type="submit" class="button is-danger">
+                                        <span class="icon"><i class="fas fa-trash-alt"></i></span>
+                                        <span>Supprimer ma photo</span>
+                                    </button>
+                                </form>
                             {% endif %}
-                        </figure>
-                    </div>
-                    <div class="card-content">
-                        <p class="title is-4">{{ participant.pseudo }}</p>
-                        <p class="subtitle is-6">{{ participant.campus.nom }}</p>
-                    </div>
-                </div>
-
-                <div class="buttons mt-4">
-                    <a href="{{ path('app_profile_edit') }}" class="button is-primary is-fullwidth">
-                        <span class="icon"><i class="fas fa-edit"></i></span>
-                        <span>Modifier mon profil</span>
-                    </a>
-                    <a href="{{ path('app_profile_password') }}" class="button is-info is-fullwidth">
-                        <span class="icon"><i class="fas fa-key"></i></span>
-                        <span>Changer mon mot de passe</span>
-                    </a>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
-
-            <div class="column">
-                <div class="box">
-                    <h2 class="title is-4">Informations personnelles</h2>
-
-                    <div class="field">
-                        <label class="label">Nom</label>
-                        <div class="control">
-                            <p>{{ participant.nom }}</p>
-                        </div>
-                    </div>
-
-                    <div class="field">
-                        <label class="label">Prénom</label>
-                        <div class="control">
-                            <p>{{ participant.prenom }}</p>
-                        </div>
-                    </div>
-
-                    <div class="field">
-                        <label class="label">Email</label>
-                        <div class="control">
-                            <p>{{ participant.email }}</p>
-                        </div>
-                    </div>
-
-                    <div class="field">
-                        <label class="label">Téléphone</label>
-                        <div class="control">
-                            <p>{{ participant.telephone ? participant.telephone : 'Non renseigné' }}</p>
-                        </div>
-                    </div>
-
-                    <div class="field">
-                        <label class="label">Campus</label>
-                        <div class="control">
-                            <p>{{ participant.campus.nom }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="box">
-                    <h2 class="title is-4">Activité</h2>
-                    <p class="mb-2">Dernière connexion: Information non disponible</p>
-                    <p>Membre depuis: Information non disponible</p>
-                </div>
+        {% else %}
+            <div class="notification is-warning">
+                <p>Aucun profil trouvé. Veuillez vous connecter ou vérifier l'URL.</p>
             </div>
-        </div>
+        {% endif %}
     </div>
 {% endblock %}
 

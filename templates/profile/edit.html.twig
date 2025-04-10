@@ -6,105 +6,143 @@
     <div class="box">
         <h1 class="title is-2">Modifier mon profil</h1>
 
+        {% for message in app.flashes('success') %}
+            <div class="notification is-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+            <div class="notification is-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+
         {{ form_start(form) }}
         <div class="columns">
             <div class="column is-two-thirds">
-                <div class="field">
-                    <label class="label">{{ form_label(form.pseudo) }}</label>
-                    <div class="control">
-                        {{ form_widget(form.pseudo, {'attr': {'class': 'input'}}) }}
-                    </div>
-                    <p class="help is-danger">{{ form_errors(form.pseudo) }}</p>
-                </div>
+                {# Informations personnelles #}
+                <div class="box">
+                    <h2 class="title is-4">Informations personnelles</h2>
 
-                <div class="columns">
-                    <div class="column">
-                        <div class="field">
-                            <label class="label">{{ form_label(form.prenom) }}</label>
-                            <div class="control">
-                                {{ form_widget(form.prenom, {'attr': {'class': 'input'}}) }}
+                    <div class="field">
+                        <label class="label">{{ form_label(form.pseudo) }}</label>
+                        <div class="control has-icons-left">
+                            {{ form_widget(form.pseudo, {'attr': {'class': 'input'}}) }}
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-user"></i>
+                            </span>
+                        </div>
+                        <p class="help is-danger">{{ form_errors(form.pseudo) }}</p>
+                    </div>
+
+                    <div class="columns">
+                        <div class="column">
+                            <div class="field">
+                                <label class="label">{{ form_label(form.prenom) }}</label>
+                                <div class="control">
+                                    {{ form_widget(form.prenom, {'attr': {'class': 'input'}}) }}
+                                </div>
+                                <p class="help is-danger">{{ form_errors(form.prenom) }}</p>
                             </div>
-                            <p class="help is-danger">{{ form_errors(form.prenom) }}</p>
                         </div>
-                    </div>
-                    <div class="column">
-                        <div class="field">
-                            <label class="label">{{ form_label(form.nom) }}</label>
-                            <div class="control">
-                                {{ form_widget(form.nom, {'attr': {'class': 'input'}}) }}
+                        <div class="column">
+                            <div class="field">
+                                <label class="label">{{ form_label(form.nom) }}</label>
+                                <div class="control">
+                                    {{ form_widget(form.nom, {'attr': {'class': 'input'}}) }}
+                                </div>
+                                <p class="help is-danger">{{ form_errors(form.nom) }}</p>
                             </div>
-                            <p class="help is-danger">{{ form_errors(form.nom) }}</p>
                         </div>
                     </div>
-                </div>
 
-                <div class="field">
-                    <label class="label">{{ form_label(form.email) }}</label>
-                    <div class="control has-icons-left">
-                        {{ form_widget(form.email, {'attr': {'class': 'input'}}) }}
-                        <span class="icon is-small is-left">
-                            <i class="fas fa-envelope"></i>
-                        </span>
-                    </div>
-                    <p class="help is-danger">{{ form_errors(form.email) }}</p>
-                </div>
-
-                <div class="field">
-                    <label class="label">{{ form_label(form.telephone) }}</label>
-                    <div class="control has-icons-left">
-                        {{ form_widget(form.telephone, {'attr': {'class': 'input'}}) }}
-                        <span class="icon is-small is-left">
-                            <i class="fas fa-phone"></i>
-                        </span>
-                    </div>
-                    <p class="help is-danger">{{ form_errors(form.telephone) }}</p>
-                </div>
-
-                <div class="field">
-                    <label class="label">{{ form_label(form.campus) }}</label>
-                    <div class="control">
-                        <div class="select is-fullwidth">
-                            {{ form_widget(form.campus) }}
+                    <div class="field">
+                        <label class="label">{{ form_label(form.email) }}</label>
+                        <div class="control has-icons-left">
+                            {{ form_widget(form.email, {'attr': {'class': 'input'}}) }}
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-envelope"></i>
+                            </span>
                         </div>
+                        <p class="help is-danger">{{ form_errors(form.email) }}</p>
                     </div>
-                    <p class="help is-danger">{{ form_errors(form.campus) }}</p>
+
+                    <div class="field">
+                        <label class="label">{{ form_label(form.telephone) }}</label>
+                        <div class="control has-icons-left">
+                            {{ form_widget(form.telephone, {'attr': {'class': 'input'}}) }}
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-phone"></i>
+                            </span>
+                        </div>
+                        <p class="help is-danger">{{ form_errors(form.telephone) }}</p>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">{{ form_label(form.campus) }}</label>
+                        <div class="control has-icons-left">
+                            <div class="select is-fullwidth">
+                                {{ form_widget(form.campus) }}
+                            </div>
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-school"></i>
+                            </span>
+                        </div>
+                        <p class="help is-danger">{{ form_errors(form.campus) }}</p>
+                    </div>
                 </div>
             </div>
 
             <div class="column">
+                {# Photo de profil #}
                 <div class="box">
-                    <div class="field">
-                        <label class="label">Photo de profil</label>
-                        {% if participant.urlPhoto %}
-                            <div class="mb-4">
-                                <label class="label">Photo actuelle :</label>
-                                <div class="control">
-                                    <figure class="image is-128x128">
-                                        <img class="is-rounded" src="{{ asset('uploads/photos/' ~ participant.urlPhoto) }}" alt="Photo de profil actuelle">
-                                    </figure>
-                                </div>
-                            </div>
-                        {% endif %}
+                    <h2 class="title is-4">Photo de profil</h2>
 
-                        <div class="file has-name">
+                    {% if participant.urlPhoto %}
+                        <div class="mb-4">
+                            <div class="has-text-centered">
+                                <figure class="image is-128x128 mx-auto mb-3">
+                                    <img class="is-rounded" src="{{ asset('uploads/photos/' ~ participant.urlPhoto) }}" alt="Photo de profil actuelle">
+                                </figure>
+                                <p class="is-size-6 has-text-weight-semibold">Photo actuelle</p>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="field">
+                        <label class="label">Changer ma photo</label>
+                        <div class="file has-name is-fullwidth">
                             <label class="file-label">
-                                {{ form_widget(form.urlPhoto, {'attr': {'class': 'file-input', 'id': 'photo-file-input'}}) }}
+                                {{ form_widget(form.urlPhoto, {'attr': {'class': 'file-input photo-file-input'}}) }}
                                 <span class="file-cta">
-                    <span class="file-icon">
-                        <i class="fas fa-upload"></i>
-                    </span>
-                    <span class="file-label">
-                        Choisir un fichier
-                    </span>
-                </span>
+                                    <span class="file-icon">
+                                        <i class="fas fa-upload"></i>
+                                    </span>
+                                    <span class="file-label">
+                                        Choisir un fichier
+                                    </span>
+                                </span>
                                 <span class="file-name" id="file-name-display">
-                    Aucun fichier choisi
-                </span>
+                                    Aucun fichier choisi
+                                </span>
                             </label>
                         </div>
-                        <p class="help">Formats acceptés : JPG, PNG - 1Mo maximum</p>
+                        <p class="help">Formats acceptés : JPEG, PNG - 1Mo maximum</p>
                         <p class="help is-danger">{{ form_errors(form.urlPhoto) }}</p>
                     </div>
+
+                    {% if participant.urlPhoto and participant.urlPhoto != 'défaut.png' %}
+                        <div class="mt-4">
+                            <form action="{{ path('app_profile_delete_photo') }}" method="post" onsubmit="return confirm('Voulez-vous vraiment supprimer votre photo ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete-photo') }}">
+                                <button type="submit" class="button is-danger is-fullwidth">
+                                    <span class="icon"><i class="fas fa-trash-alt"></i></span>
+                                    <span>Supprimer ma photo</span>
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -122,33 +160,45 @@
                     <span>Annuler</span>
                 </a>
             </div>
+            <div class="control ml-auto">
+                <a href="{{ path('app_profile_password') }}" class="button is-info">
+                    <span class="icon"><i class="fas fa-key"></i></span>
+                    <span>Changer mon mot de passe</span>
+                </a>
+            </div>
         </div>
         {{ form_end(form) }}
     </div>
-
-    {% block javascripts %}
-        {{ parent() }}
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const fileInput = document.getElementById('photo-file-input');
-                const fileNameDisplay = document.getElementById('file-name-display');
-
-                if (fileInput && fileNameDisplay) {
-                    fileInput.addEventListener('change', function(e) {
-                        if (fileInput.files.length > 0) {
-                            fileNameDisplay.textContent = fileInput.files[0].name;
-                        } else {
-                            fileNameDisplay.textContent = 'Aucun fichier choisi';
-                        }
-                    });
-                }
-            });
-        </script>
-    {% endblock %}
-
 {% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .file-name {
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fileInput = document.querySelector('.photo-file-input');
+            const fileNameDisplay = document.getElementById('file-name-display');
+
+            if (fileInput) {
+                fileInput.addEventListener('change', function () {
+                    if (fileInput.files.length > 0) {
+                        fileNameDisplay.textContent = fileInput.files[0].name;
+                    } else {
+                        fileNameDisplay.textContent = "Aucun fichier choisi";
+                    }
+                });
+            }
+        });
+    </script>
 {% endblock %}

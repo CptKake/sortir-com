@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Participant;
 use App\Form\RegistrationType;
+use App\Services\ImageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -14,7 +16,12 @@ use Symfony\Component\Routing\Attribute\Route;
 final class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
+    public function register(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $passwordHasher,
+        ImageService $imageService
+    ): Response
     {
         $user = new Participant();
         $form = $this->createForm(RegistrationType::class, $user);
@@ -35,6 +42,19 @@ final class RegistrationController extends AbstractController
             );
             $user->setMotDePasse($hashedPassword);
 
+            // Définir l'image par défaut
+            $user->setUrlPhoto('défaut.png');
+
+            // Gestion de l'upload de photo
+            $photoFile = $form->get('urlPhoto')->getData();
+            if ($photoFile) {
+                try {
+                    $imageService->uploadImage($user, $photoFile);
+                } catch (FileException $fileException) {
+                    $this->addFlash('error', 'Une erreur est survenue lors du téléchargement de votre photo.');
+                }
+            }
+
             // Rôle par défaut
             $user->setRoles(['ROLE_USER']);
             $user->setActif(true);
@@ -43,6 +63,7 @@ final class RegistrationController extends AbstractController
             $entityManager->flush();
 
             // Rediriger vers login après inscription
+            $this->addFlash('success', 'Votre compte a été créé avec succès !');
             return $this->redirectToRoute('app_login');
         }
 

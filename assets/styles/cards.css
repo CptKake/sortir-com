@@ -3,10 +3,6 @@
     --card-bg: #041221;
 }
 
-body {
-    background: var(--bg);
-}
-
 .box {
 
     background: var(--card-bg);
