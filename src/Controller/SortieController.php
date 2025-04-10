@@ -7,6 +7,7 @@ use App\Entity\Lieu;
 use App\Entity\Sortie;
 use App\Form\AnnulationType;
 use App\Form\SortieType;
+use App\Services\AddressAutocompleteService;
 use App\Services\EmailService;
 use App\Services\MapService;
 use App\Repository\EtatRepository;
@@ -48,7 +49,7 @@ final class SortieController extends AbstractController
     }
 
 	#[Route('/create', name: 'create', methods: ['GET', 'POST'])]
-	public function create(Request $request, EntityManagerInterface $em): Response
+	public function create(Request $request, EntityManagerInterface $em, AddressAutocompleteService $addressService): Response
 	{
 		$sortie = new Sortie();
 		$user = $this->getUser();
@@ -65,9 +66,12 @@ final class SortieController extends AbstractController
 			return $this->redirectToRoute('sortie_index');
 		}
 
+        $addressScript = $addressService->generateAutocompleteScript('.adresse-autocomplete');
+
 		return $this->render('sortie/create.html.twig', [
 			'sortie' => $sortie,
 			'form' => $form,
+            'address_script' => $addressScript,
 		]);
 
 	}
@@ -88,7 +92,7 @@ final class SortieController extends AbstractController
     }
 
 	#[Route('/{id}/editer', name: 'editer', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
-	public function edit(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
+	public function edit(Request $request, Sortie $sortie, EntityManagerInterface $em, AddressAutocompleteService $addressService): Response
 	{
 		$form = $this->createForm(SortieType::class, $sortie);
 		$form->handleRequest($request);
@@ -101,9 +105,12 @@ final class SortieController extends AbstractController
 			return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
 		}
 
+        $addressScript = $addressService->generateAutocompleteScript('.adresse-autocomplete');
+
 		return $this->render('sortie/edit.html.twig', [
 			'sortie' => $sortie,
 			'form' => $form,
+            'address_script' => $addressScript,
 		]);
 	}
 
