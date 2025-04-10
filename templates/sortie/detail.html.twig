@@ -111,7 +111,7 @@
     {# Si je suis inscrit #}
     {% if inscrit is same as 1 %}
         <div class="buttons mb-4">
-            <a href="" class="button is-danger">
+            <a href="{{ path('sortie_desistement', {'id': sortie.id}) }}" class="button is-danger">
                 <span class="icon"><i class="fas fa-minus"></i></span>
                 <span>Se désinscrire</span>
             </a>
