@@ -12,6 +12,7 @@ use App\Services\MapService;
 use App\Repository\EtatRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\SortieRepository;
+use App\Services\MapService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,6 +20,8 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Knp\Component\Pager\PaginatorInterface;
+
 
 #[Route('/sortie', name: 'sortie_')]
 final class SortieController extends AbstractController
@@ -29,11 +32,19 @@ final class SortieController extends AbstractController
 		$this->mapService = $mapService;
 	}
 
-	#[Route('', name: 'index', methods: ['GET'])]
-    public function index(SortieRepository $sortieRepository): Response
+    #[Route('', name: 'index', methods: ['GET'])]
+    public function index(SortieRepository $sortieRepository, Request $request, PaginatorInterface $paginator): Response
     {
+        $query = $sortieRepository->createQueryBuilder('s')->getQuery();
+
+        $sorties = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            6
+        );
+
         return $this->render('sortie/list.html.twig', [
-            'sorties' => $sortieRepository->findAll(),
+            'sorties' => $sorties,
         ]);
     }
 
@@ -62,22 +73,20 @@ final class SortieController extends AbstractController
 
 	}
 
-	#[Route('/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET'])]
-	public function show(Sortie $sortie, EntityManagerInterface $em): Response
-	{
-		if (!$sortie) {
-			throw $this->createNotFoundException('Sortie inconnue');
-		}
-
-		$lieu = $em->getRepository(Lieu::class)->findOneBy(array('id' => $sortie->getLieu()->getId()));
-		$mapScript = $this->mapService->generateMapScript($lieu->getLatitude(), $lieu->getLongitude(), $lieu->getNom());
-
-		return $this->render('sortie/detail.html.twig', [
-			'sortie' => $sortie,
-			'lieu' => $lieu,
-			'mapScript' => $mapScript,
-		]);
-	}
+    #[Route('/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function show(Sortie $sortie, EntityManagerInterface $em): Response
+    {
+        if (!$sortie) {
+            throw $this->createNotFoundException('Sortie inconnue');
+        }
+        $lieu = $em->getRepository(Lieu::class)->findOneBy(array('id' => $sortie->getLieu()->getId()));
+        $mapScript = $this->mapService->generateMapScript($lieu->getLatitude(), $lieu->getLongitude(), $lieu->getNom());
+        return $this->render('sortie/detail.html.twig', [
+            'sortie' => $sortie,
+            'lieu' => $lieu,
+            'mapScript' => $mapScript,
+            ]);
+    }
 
 	#[Route('/{id}/editer', name: 'editer', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
 	public function edit(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
