@@ -36,6 +36,8 @@ a:hover {
     background-color: #ffffff; /* Couleur au survol, légèrement plus foncée pour le contraste */
 }
 
+
+
 @media screen and (max-width: 768px) {
     .hide-on-mobile {
         display: none !important;
