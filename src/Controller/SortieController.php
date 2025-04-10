@@ -5,15 +5,12 @@ namespace App\Controller;
 use App\Entity\Etat;
 use App\Entity\Lieu;
 use App\Entity\Sortie;
+use App\Form\SortieFilterType;
 use App\Form\SortieType;
-use App\Repository\EtatRepository;
-use App\Repository\ParticipantRepository;
 use App\Repository\SortieRepository;
 use App\Services\MapService;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Container\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -29,19 +26,72 @@ final class SortieController extends AbstractController
 		$this->mapService = $mapService;
 	}
 
-    #[Route('', name: 'index', methods: ['GET'])]
+    #[Route('', name: 'index', methods: ['GET', 'POST'])]
     public function index(SortieRepository $sortieRepository, Request $request, PaginatorInterface $paginator): Response
     {
-        $query = $sortieRepository->createQueryBuilder('s')->getQuery();
+        $form = $this->createForm(SortieFilterType::class);
+        $form->handleRequest($request);
+
+        $qb = $sortieRepository->createQueryBuilder('s')
+            ->leftJoin('s.organisateur', 'o')
+            ->leftJoin('s.inscriptions', 'i')
+            ->leftJoin('s.campus', 'c')
+            ->addSelect('o', 'i', 'c');
+
+        $user = $this->getUser();
+        $data = $form->getData();
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            if (!empty($data['campus'])) {
+                $qb->andWhere('s.campus = :campus')
+                    ->setParameter('campus', $data['campus']);
+            }
+
+            if (!empty($data['search'])) {
+                $qb->andWhere('s.nom LIKE :search')
+                    ->setParameter('search', '%' . $data['search'] . '%');
+            }
+
+            if (!empty($data['dateDebut'])) {
+                $qb->andWhere('s.dateHeureDebut >= :dateDebut')
+                    ->setParameter('dateDebut', $data['dateDebut']);
+            }
+
+            if (!empty($data['dateFin'])) {
+                $qb->andWhere('s.dateHeureDebut <= :dateFin')
+                    ->setParameter('dateFin', $data['dateFin']);
+            }
+
+            if (!empty($data['organisateur'])) {
+                $qb->andWhere('s.organisateur = :user')
+                    ->setParameter('user', $user);
+            }
+
+            if (!empty($data['inscrit'])) {
+                $qb->andWhere(':user MEMBER OF s.inscriptions')
+                    ->setParameter('user', $user);
+            }
+
+            if (!empty($data['nonInscrit'])) {
+                $qb->andWhere(':user NOT MEMBER OF s.inscriptions')
+                    ->setParameter('user', $user);
+            }
+
+            if (empty($data['passees'])) {
+                $qb->andWhere('s.dateHeureDebut > :now')
+                    ->setParameter('now', new \DateTime());
+            }
+        }
 
         $sorties = $paginator->paginate(
-            $query,
+            $qb->getQuery(),
             $request->query->getInt('page', 1),
             6
         );
 
         return $this->render('sortie/list.html.twig', [
             'sorties' => $sorties,
+            'form' => $form->createView(),
         ]);
     }
 
