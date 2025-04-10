@@ -6,6 +6,15 @@
     <div class="box">
         <h1 class="title is-2">Annulation de sortie</h1>
 
+        {% if isAdmin and not isOrganisateur %}
+            <div class="notification is-info">
+            <span class="icon">
+                <i class="fas fa-shield-alt"></i>
+            </span>
+                <span>Mode administrateur : Vous annulez cette sortie en tant qu'administrateur.</span>
+            </div>
+        {% endif %}
+
         <div class="notification is-warning">
         <span class="icon">
             <i class="fas fa-exclamation-triangle"></i>
@@ -19,6 +28,7 @@
                 <p><strong>Nom :</strong> {{ sortie.nom }}</p>
                 <p><strong>Date :</strong> {{ sortie.dateHeureDebut|date('d/m/Y à H:i') }}</p>
                 <p><strong>Lieu :</strong> {{ sortie.lieu.nom }}</p>
+                <p><strong>Organisateur :</strong> {{ sortie.organisateur.pseudo }}</p>
                 <p><strong>Participants inscrits :</strong> {{ sortie.participants|length }}</p>
             </div>
         </div>
@@ -30,7 +40,7 @@
                 {{ form_widget(form.motifAnnulation) }}
             </div>
             <p class="help is-danger">{{ form_errors(form.motifAnnulation) }}</p>
-            <p class="help">Ce motif sera communiqué par email à tous les participants inscrits.</p>
+            <p class="help">Ce motif sera communiqué par email à tous les participants inscrits{% if isAdmin and not isOrganisateur %} et à l'organisateur{% endif %}.</p>
         </div>
 
         <div class="field is-grouped mt-5">
