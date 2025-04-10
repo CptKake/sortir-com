@@ -5,8 +5,11 @@ namespace App\Entity;
 use App\Repository\InscriptionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: InscriptionRepository::class)]
+#[UniqueEntity(fields: ['participant', 'sortie'], message: 'Vous êtes déjà inscrit à cette sortie !')]
 class Inscription
 {
     #[ORM\Id]
@@ -19,10 +22,12 @@ class Inscription
 
     #[ORM\ManyToOne(inversedBy: 'inscriptions')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?Participant $participant = null;
 
     #[ORM\ManyToOne(inversedBy: 'inscriptions')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?Sortie $sortie = null;
 
     public function getId(): ?int
