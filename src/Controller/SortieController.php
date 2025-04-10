@@ -12,7 +12,6 @@ use App\Services\MapService;
 use App\Repository\EtatRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\SortieRepository;
-use App\Services\MapService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
