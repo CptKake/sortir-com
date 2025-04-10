@@ -11,7 +11,107 @@
 
 
 {% block body %}
-        <div class="container">
+
+    {# Test filtre form #}
+
+    <div class="box mb-5">
+        {{ form_start(form, {'method': 'get'}) }}
+
+        <div class="columns is-multiline">
+            {# Ligne 1 : campus, search, dateDebut, dateFin #}
+            <div class="column is-3">
+                <div class="field">
+                    {{ form_label(form.campus, null, {'label_attr': {'class': 'label'}}) }}
+                    <div class="control has-icons-right">
+                        {{ form_widget(form.campus, {'attr': {'class': 'select is-fullwidth'}}) }}
+                        <span class="icon is-small is-right">
+                        <i class="fas fa-angle-down"></i>
+                    </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-3">
+                <div class="field">
+                    {{ form_label(form.search, 'Le nom de la sortie contient :', {'label_attr': {'class': 'label'}}) }}
+                    <div class="control has-icons-left">
+                        {{ form_widget(form.search, {'attr': {'class': 'input', 'placeholder': 'Rechercher...'}}) }}
+                        <span class="icon is-left">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-3">
+                <div class="field">
+                    {{ form_label(form.dateDebut, 'Entre :', {'label_attr': {'class': 'label'}}) }}
+                    <div class="control">
+                        {{ form_widget(form.dateDebut, {'attr': {'class': 'input'}}) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-3">
+                <div class="field">
+                    {{ form_label(form.dateFin, 'et :', {'label_attr': {'class': 'label'}}) }}
+                    <div class="control">
+                        {{ form_widget(form.dateFin, {'attr': {'class': 'input'}}) }}
+                    </div>
+                </div>
+            </div>
+
+            {# Ligne 2 : Checkboxes #}
+            <div class="column is-12">
+                <div class="field is-grouped is-grouped-multiline">
+                    <div class="control">
+                        <label class="checkbox">
+                            {{ form_widget(form.organisateur) }}
+                            Sorties dont je suis l'organisateur/trice
+                        </label>
+                    </div>
+                    <div class="control">
+                        <label class="checkbox">
+                            {{ form_widget(form.inscrit) }}
+                            Sorties auxquelles je suis inscrit/e
+                        </label>
+                    </div>
+                    <div class="control">
+                        <label class="checkbox">
+                            {{ form_widget(form.nonInscrit) }}
+                            Sorties auxquelles je ne suis pas inscrit/e
+                        </label>
+                    </div>
+                    <div class="control">
+                        <label class="checkbox">
+                            {{ form_widget(form.passees) }}
+                            Sorties passées
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            {# Ligne 3 : Boutons #}
+            <div class="column is-12 has-text-right">
+                <div class="buttons">
+                    <button class="button is-link">
+                        <span class="icon"><i class="fas fa-search"></i></span>
+                        <span>Rechercher</span>
+                    </button>
+                    <a href="{{ path('sortie_index') }}" class="button is-light">
+                        <span class="icon"><i class="fas fa-times"></i></span>
+                        <span>Réinitialiser</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+
+
+    <div class="container">
             <div class="section">
                 <div class="buttons mb-4">
                     <a href="{{ path('sortie_create') }}" class="button is-success">
@@ -67,6 +167,10 @@
             </ul>
         </nav>
     {% endif %}
+
+
+
+
 
 
 {% endblock %}
