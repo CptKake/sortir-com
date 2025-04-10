@@ -36,7 +36,34 @@ a:hover {
     background-color: #ffffff; /* Couleur au survol, légèrement plus foncée pour le contraste */
 }
 
+.navbar {
+    /* Augmente la hauteur de la navbar */
+    min-height: 4rem;
+}
 
+.navbar-item {
+    /* Agrandit le texte */
+    font-size: 1.5rem;
+    /* Ajoute plus d'espacement */
+    padding: 1rem 1rem;
+}
+
+.navbar-item img {
+    /* Agrandit le logo */
+    max-height: 2.5rem;
+}
+
+.navbar-brand .navbar-item {
+    /* Espace pour le logo et le nom du site */
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Pour les icônes */
+.navbar .icon {
+    margin-right: 0.5rem;
+    font-size: 1.5rem;
+}
 
 @media screen and (max-width: 768px) {
     .hide-on-mobile {

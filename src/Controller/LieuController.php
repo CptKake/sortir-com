@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/lieu')]
 final class LieuController extends AbstractController{
 
-    private $mapService;
+    private MapService $mapService;
 
     public function __construct(MapService $mapService){
         $this->mapService = $mapService;
@@ -49,7 +49,7 @@ final class LieuController extends AbstractController{
         ]);
     }
 
-    #[Route('/{id}', name: 'app_lieu_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_lieu_show', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function show(Lieu $lieu): Response
     {
         $mapScript = $this->mapService->generateMapScript($lieu->getLatitude(), $lieu->getLongitude(), $lieu->getNom());
@@ -60,7 +60,7 @@ final class LieuController extends AbstractController{
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_lieu_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_lieu_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function edit(Request $request, Lieu $lieu, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(LieuType::class, $lieu);
@@ -78,7 +78,7 @@ final class LieuController extends AbstractController{
         ]);
     }
 
-    #[Route('/{id}', name: 'app_lieu_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_lieu_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(Request $request, Lieu $lieu, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$lieu->getId(), $request->getPayload()->getString('_token'))) {

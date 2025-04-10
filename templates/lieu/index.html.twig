@@ -5,12 +5,14 @@
 {% block body %}
     <h1 class="title">Liste des lieux</h1>
 
+    {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
     <div class="buttons mb-4">
         <a href="{{ path('app_lieu_new') }}" class="button is-success">
             <span class="icon"><i class="fas fa-plus"></i></span>
             <span>Ajouter un lieu</span>
         </a>
     </div>
+    {% endif %}
 
     <div class="table-container">
         <table class="table is-fullwidth is-striped is-hoverable">
@@ -20,7 +22,6 @@
                 <th>Ville</th>
                 <th>Code postal</th>
                 <th>Rue</th>
-
                 <th>Actions</th>
             </tr>
             </thead>
@@ -32,9 +33,8 @@
                     <td>{{ lieu.codePostal }}</td>
                     <td>{{ lieu.rue }}</td>
 
-
-
                     <td>
+                        {% if is_granted('ROLE_ADMIN') %}
                         <div class="buttons are-small">
                             <a href="{{ path('app_lieu_show', {'id': lieu.id}) }}" class="button is-info">
                                 <span class="icon"><i class="fas fa-eye"></i></span>
@@ -50,6 +50,7 @@
                                 </button>
                             </form>
                         </div>
+                        {% endif %}
                     </td>
                 </tr>
             {% else %}

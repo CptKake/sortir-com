@@ -59,5 +59,7 @@
 
     <a class="button is-primary" href="{{ path('app_lieu_edit', {'id': lieu.id}) }}">edit</a>
 
-    {{ include('lieu/_delete_form.html.twig') }}
+    {% if is_granted('ROLE_ADMIN') %}
+        {{ include('lieu/_delete_form.html.twig') }}
+    {% endif %}
 {% endblock %}
