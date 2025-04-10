@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Etat;
+use App\Entity\Lieu;
 use App\Entity\Sortie;
 use App\Form\SortieType;
 use App\Repository\EtatRepository;
@@ -69,17 +70,20 @@ final class SortieController extends AbstractController
 
 	}
 
-	#[Route('/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET'])]
-	public function show(Sortie $sortie): Response
-	{
-		if (!$sortie) {
-			throw $this->createNotFoundException('Sortie inconnue');
-		}
-
-		return $this->render('sortie/detail.html.twig', [
-			'sortie' => $sortie,
-		]);
-	}
+    #[Route('/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function show(Sortie $sortie, EntityManagerInterface $em): Response
+    {
+        if (!$sortie) {
+            throw $this->createNotFoundException('Sortie inconnue');
+        }
+        $lieu = $em->getRepository(Lieu::class)->findOneBy(array('id' => $sortie->getLieu()->getId()));
+        $mapScript = $this->mapService->generateMapScript($lieu->getLatitude(), $lieu->getLongitude(), $lieu->getNom());
+        return $this->render('sortie/detail.html.twig', [
+            'sortie' => $sortie,
+            'lieu' => $lieu,
+            'mapScript' => $mapScript,
+            ]);
+    }
 
 	#[Route('/{id}/editer', name: 'editer', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
 	public function edit(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
