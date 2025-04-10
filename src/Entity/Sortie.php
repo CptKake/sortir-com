@@ -51,10 +51,15 @@ class Sortie
     #[Assert\NotBlank(message: 'L\'activité doit avoir une description!')]
     private ?string $infosSortie = null;
 
+    /*l'organisateur est passé en null mais les sorties ne sont pas delete
+
+    #[ORM\JoinColumn(nullable: true, onDelete: "SET NULL")]*/
+
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull]
     private ?Participant $organisateur = null;
+
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
@@ -82,6 +87,9 @@ class Sortie
      */
     #[ORM\ManyToMany(targetEntity: Participant::class, inversedBy: 'sorties')]
     private Collection $participants;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $motif_annulation = null;
 
     public function __construct()
     {
@@ -276,6 +284,18 @@ class Sortie
     public function removeParticipant(Participant $participant): static
     {
         $this->participants->removeElement($participant);
+
+        return $this;
+    }
+
+    public function getMotifAnnulation(): ?string
+    {
+        return $this->motif_annulation;
+    }
+
+    public function setMotifAnnulation(?string $motif_annulation): static
+    {
+        $this->motif_annulation = $motif_annulation;
 
         return $this;
     }
