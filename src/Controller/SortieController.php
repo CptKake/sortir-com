@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Etat;
 use App\Entity\Lieu;
 use App\Entity\Sortie;
+use App\Form\SortieFilterType;
 use App\Form\AnnulationType;
 use App\Form\SortieType;
 use App\Services\AddressAutocompleteService;
@@ -14,9 +15,7 @@ use App\Repository\EtatRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Container\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -35,18 +34,85 @@ final class SortieController extends AbstractController
     #[Route('', name: 'index', methods: ['GET'])]
     public function index(SortieRepository $sortieRepository, Request $request, PaginatorInterface $paginator): Response
     {
-        $query = $sortieRepository->createQueryBuilder('s')->getQuery();
+        $form = $this->createForm(SortieFilterType::class);
+        $form->handleRequest($request);
+
+        $qb = $sortieRepository->createQueryBuilder('s')
+            ->leftJoin('s.organisateur', 'o')
+            ->leftJoin('s.inscriptions', 'i')
+            ->leftJoin('s.campus', 'c')
+            ->leftJoin('s.etat', 'e')
+            ->addSelect('o', 'i', 'c', 'e');
+
+        $user = $this->getUser();
+        $data = $form->getData();
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Filtre campus
+            if (!empty($data['campus'])) {
+                $qb->andWhere('s.campus = :campus')
+                    ->setParameter('campus', $data['campus']);
+            }
+
+            // Filtre nom
+            if (!empty($data['search'])) {
+                $qb->andWhere('s.nom LIKE :search')
+                    ->setParameter('search', '%' . $data['search'] . '%');
+            }
+
+            // Dates
+            if (!empty($data['dateDebut'])) {
+                $qb->andWhere('s.dateHeureDebut >= :dateDebut')
+                    ->setParameter('dateDebut', $data['dateDebut']);
+            }
+            if (!empty($data['dateFin'])) {
+                $qb->andWhere('s.dateHeureDebut <= :dateFin')
+                    ->setParameter('dateFin', $data['dateFin']);
+            }
+
+            // Filtre organisateur : on affiche toutes les sorties qu’il a créées, peu importe leur état
+            if (!empty($data['organisateur'])) {
+                $qb->andWhere('s.organisateur = :user')
+                    ->setParameter('user', $user);
+            } else {
+                // Sinon, on ne montre que certaines sorties
+                $qb->andWhere('e.libelle IN (:etats)')
+                    ->setParameter('etats', ['Ouverte']);
+            }
+
+            if (!empty($data['inscrit'])) {
+                $qb->andWhere(':user MEMBER OF s.inscriptions')
+                    ->setParameter('user', $user);
+            }
+
+            if (!empty($data['nonInscrit'])) {
+                $qb->andWhere(':user NOT MEMBER OF s.inscriptions')
+                    ->setParameter('user', $user);
+            }
+
+            if (empty($data['passees'])) {
+                $qb->andWhere('s.dateHeureDebut > :now')
+                    ->setParameter('now', new \DateTime());
+            }
+
+        } else {
+            // Par défaut (aucun filtre soumis) : on ne montre que les sorties ouvertes
+            $qb->andWhere('e.libelle IN (:etats)')
+                ->setParameter('etats', ['Ouverte']);
+        }
 
         $sorties = $paginator->paginate(
-            $query,
+            $qb->getQuery(),
             $request->query->getInt('page', 1),
             6
         );
 
         return $this->render('sortie/list.html.twig', [
             'sorties' => $sorties,
+            'form' => $form->createView(),
         ]);
     }
+
 
 	#[Route('/create', name: 'create', methods: ['GET', 'POST'])]
 	public function create(Request $request, EntityManagerInterface $em, AddressAutocompleteService $addressService): Response
@@ -122,9 +188,12 @@ final class SortieController extends AbstractController
         EmailService $emailService
     ): Response
 	{
-        // Vérifier que l'utilisateur est l'organisateur
+        // Vérifier que l'utilisateur est l'organisateur OU un administrateur
         $currentUser = $this->getUser();
-        if (!$currentUser || $sortie->getOrganisateur() !== $currentUser) {
+        $isAdmin = $currentUser && in_array('ROLE_ADMIN', $currentUser->getRoles());
+        $isOrganisateur = $currentUser && $currentUser === $sortie->getOrganisateur();
+
+        if (!$currentUser || (!$isAdmin && !$isOrganisateur)) {
             $this->addFlash('error', "Vous n'êtes pas autorisé à annuler cette sortie.");
             return $this->redirectToRoute('sortie_detail', ['id'=> $sortie->getId()]);
         }
@@ -161,7 +230,16 @@ final class SortieController extends AbstractController
 
             // Changer l'état en 'Annulée'
             $sortie->setEtat($etatAnnulee);
-            $sortie->setMotifAnnulation($motifAnnulation);
+
+            //Ajouter un préfixe au motif si c'est un admin qui annule
+            if($isAdmin && !$isOrganisateur) {
+                $sortie->setMotifAnnulation("Annulation de la sortie par un administrateur : " . $motifAnnulation);
+
+                // Notifier l'organisateur de l'annulation par un admin
+                $emailService->notifyOrganisateurOfAdminCancellation($sortie);
+            } else {
+                $sortie->setMotifAnnulation($motifAnnulation);
+            }
 
             // Envoyer les emails aux participants
             $emailService->sendAnnulationEmails($sortie);
@@ -183,6 +261,8 @@ final class SortieController extends AbstractController
         return $this->render('sortie/annuler_sortie.html.twig', [
             'sortie' => $sortie,
             'form' => $form->createView(),
+            'isAdmin' => $isAdmin,
+            'isOrganisateur' => $isOrganisateur,
         ]);
 	}
 

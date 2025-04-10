@@ -1,72 +1,162 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Sortis liste{% endblock %}
+{% block title %}Sorties liste{% endblock %}
 
 {% block stylesheets %}
     <link rel="stylesheet" href="https://unpkg.com/bulma@1.0.2/css/bulma.min.css" />
     <script src="https://kit.fontawesome.com/7dc3015a44.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="{{ asset('styles/cards.css') }}">
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
-{% endblock stylesheets %}
-
+{% endblock %}
 
 {% block body %}
-        <div class="container">
-            <div class="section">
-                <div class="buttons mb-4">
-                    <a href="{{ path('sortie_create') }}" class="button is-success">
-                        <span class="icon"><i class="fas fa-plus"></i></span>
-                        <span>Créer une sortie</span>
-                    </a>
-                </div>
-                <div class="column has-text-centered">
-                    <h1 class="title" style="color: #a11616;">Liste des sorties</h1><br>
-                </div>
-                <div class="columns">
-                    <div id="app" class="row columns is-multiline">
-                        {% for sortie in sorties %}
-                        <div v-for="card in cardData" key="card.id" class="column is-4">
-                            <div class="card large">
-                                <div class="card-content">
-                                    <div class="media">
-                                        <div class="media-content">
-                                            <p class="title is-4 no-padding"><a href="{{ path('sortie_detail', {id: sortie.id }) }}">{{ sortie.nom }}</a></p>
-                                            <p>
-                                                 <span class="title is-6"><a href=""> {{ sortie.organisateur.pseudo }} </a></span>
-                                            </p>
-                                            <p class="subtitle is-6"> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }} </p>
-                                            <p class="subtitle is-6"> {{ sortie.lieu.ville }} </p>
-                                            {% set nbplaces = sortie.inscriptions.count %}
-                                            <p class="subtitle is-6"> {{ nbplaces }} / {{ sortie.nbInscriptionsMax }} inscrits </p>
-                                        </div>
-                                    </div>
-                                    <div class="content">
-                                        {{ sortie.infosSortie }}
-                                        <div class="background-icon"><span class="icon-twitter"></span></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
+
+    {# ----- Filtre de recherche ----- #}
+    <div class="box mb-5">
+        {{ form_start(form, {'method': 'get'}) }}
+        <div class="columns is-multiline">
+
+            <div class="column is-3">
+                <div class="field">
+                    {{ form_label(form.campus, null, {'label_attr': {'class': 'label'}}) }}
+                    <div class="control has-icons-right">
+                        {{ form_widget(form.campus, {'attr': {'class': 'select is-fullwidth'}}) }}
+                        <span class="icon is-small is-right"><i class="fas fa-angle-down"></i></span>
                     </div>
                 </div>
             </div>
+
+            <div class="column is-3">
+                <div class="field">
+                    {{ form_label(form.search, 'Le nom de la sortie contient :', {'label_attr': {'class': 'label'}}) }}
+                    <div class="control has-icons-left">
+                        {{ form_widget(form.search, {'attr': {'class': 'input', 'placeholder': 'Rechercher...'}}) }}
+                        <span class="icon is-left"><i class="fas fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-3">
+                <div class="field">
+                    {{ form_label(form.dateDebut, 'Entre :', {'label_attr': {'class': 'label'}}) }}
+                    <div class="control">
+                        {{ form_widget(form.dateDebut, {'attr': {'class': 'input'}}) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-3">
+                <div class="field">
+                    {{ form_label(form.dateFin, 'et :', {'label_attr': {'class': 'label'}}) }}
+                    <div class="control">
+                        {{ form_widget(form.dateFin, {'attr': {'class': 'input'}}) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-12">
+                <div class="field is-grouped is-grouped-multiline">
+                    <div class="control">
+                        <label class="checkbox">
+                            {{ form_widget(form.organisateur) }} Sorties dont je suis l'organisateur/trice
+                        </label>
+                    </div>
+                    <div class="control">
+                        <label class="checkbox">
+                            {{ form_widget(form.inscrit) }} Sorties auxquelles je suis inscrit/e
+                        </label>
+                    </div>
+                    <div class="control">
+                        <label class="checkbox">
+                            {{ form_widget(form.nonInscrit) }} Sorties auxquelles je ne suis pas inscrit/e
+                        </label>
+                    </div>
+                    <div class="control">
+                        <label class="checkbox">
+                            {{ form_widget(form.passees) }} Sorties passées
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-12 has-text-right">
+                <div class="buttons">
+                    <button class="button is-link">
+                        <span class="icon"><i class="fas fa-search"></i></span>
+                        <span>Rechercher</span>
+                    </button>
+                    <a href="{{ path('sortie_index') }}" class="button is-light">
+                        <span class="icon"><i class="fas fa-times"></i></span>
+                        <span>Réinitialiser</span>
+                    </a>
+                </div>
+            </div>
         </div>
+        {{ form_end(form) }}
+    </div>
 
-    {% if sorties.pageCount > 1 %}
-        <nav class="pagination is-centered mt-5" role="navigation" aria-label="pagination">
-            <ul class="pagination-list">
-                {% for page in 1..sorties.pageCount %}
-                    <li>
-                        <a class="pagination-link {{ page == sorties.currentPageNumber ? 'is-current' : '' }}"
-                           href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': page})) }}">
-                            {{ page }}
-                        </a>
-                    </li>
+    {# ----- Bouton créer une sortie ----- #}
+    <div class="container">
+        <div class="section">
+            <div class="buttons mb-4">
+                <a href="{{ path('sortie_create') }}" class="button is-success">
+                    <span class="icon"><i class="fas fa-plus"></i></span>
+                    <span>Créer une sortie</span>
+                </a>
+            </div>
+
+            <div class="column has-text-centered">
+                <h1 class="title has-text-danger">Liste des sorties</h1>
+            </div>
+
+            {# ----- Affichage des cartes ----- #}
+            <div class="columns is-multiline">
+                {% for sortie in sorties %}
+                    <div class="column is-4">
+                        <div class="card">
+                            <div class="card-content">
+                                <p class="title is-4">
+                                    <a href="{{ path('sortie_detail', {id: sortie.id}) }}">
+                                        {{ sortie.nom }}
+                                    </a>
+                                </p>
+                                <p class="subtitle is-6">
+                                    <a href="{{ path('app_profile_detail', {'id': sortie.organisateur.id}) }}">
+                                        {{ sortie.organisateur.pseudo }}
+                                    </a>
+                                </p>
+                                <p><strong>Début :</strong> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</p>
+                                <p><strong>Lieu :</strong> {{ sortie.lieu.ville }}</p>
+                                <p><strong>Inscriptions :</strong> {{ sortie.inscriptions.count }} / {{ sortie.nbInscriptionsMax }}</p>
+                                <div class="mt-3">
+                                    {{ sortie.infosSortie }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="column is-12 has-text-centered">
+                        <p class="has-text-grey">Aucune sortie trouvée.</p>
+                    </div>
                 {% endfor %}
-            </ul>
-        </nav>
-    {% endif %}
+            </div>
 
+            {# ----- Pagination ----- #}
+            {% if sorties.pageCount > 1 %}
+                <nav class="pagination is-centered mt-5" role="navigation" aria-label="pagination">
+                    <ul class="pagination-list">
+                        {% for page in 1..sorties.pageCount %}
+                            <li>
+                                <a class="pagination-link {{ page == sorties.currentPageNumber ? 'is-current' : '' }}"
+                                   href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': page})) }}">
+                                    {{ page }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    </div>
 
 {% endblock %}
