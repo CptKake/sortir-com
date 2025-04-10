@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Annuler une sortie - {{ parent() }}{% endblock %}
+
+{% block body %}
+    <div class="box">
+        <h1 class="title is-2">Annulation de sortie</h1>
+
+        <div class="notification is-warning">
+        <span class="icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </span>
+            <span>Attention ! Cette action est irréversible.</span>
+        </div>
+
+        <div class="box">
+            <h2 class="title is-4">Détails de la sortie</h2>
+            <div class="content">
+                <p><strong>Nom :</strong> {{ sortie.nom }}</p>
+                <p><strong>Date :</strong> {{ sortie.dateHeureDebut|date('d/m/Y à H:i') }}</p>
+                <p><strong>Lieu :</strong> {{ sortie.lieu.nom }}</p>
+                <p><strong>Participants inscrits :</strong> {{ sortie.participants|length }}</p>
+            </div>
+        </div>
+
+        {{ form_start(form) }}
+        <div class="field">
+            <label class="label">{{ form_label(form.motifAnnulation) }}</label>
+            <div class="control">
+                {{ form_widget(form.motifAnnulation) }}
+            </div>
+            <p class="help is-danger">{{ form_errors(form.motifAnnulation) }}</p>
+            <p class="help">Ce motif sera communiqué par email à tous les participants inscrits.</p>
+        </div>
+
+        <div class="field is-grouped mt-5">
+            <div class="control">
+                <button type="submit" class="button is-danger">
+                    <span class="icon"><i class="fas fa-ban"></i></span>
+                    <span>Confirmer l'annulation</span>
+                </button>
+            </div>
+            <div class="control">
+                <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" class="button is-light">
+                    <span class="icon"><i class="fas fa-arrow-left"></i></span>
+                    <span>Retour</span>
+                </a>
+            </div>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}

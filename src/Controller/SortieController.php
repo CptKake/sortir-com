@@ -5,7 +5,10 @@ namespace App\Controller;
 use App\Entity\Etat;
 use App\Entity\Lieu;
 use App\Entity\Sortie;
+use App\Form\AnnulationType;
 use App\Form\SortieType;
+use App\Services\EmailService;
+use App\Services\MapService;
 use App\Repository\EtatRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\SortieRepository;
@@ -106,25 +109,75 @@ final class SortieController extends AbstractController
 	}
 
 	#[Route('/{id}/annuler', name: 'annuler',requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
-	public function annuler(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
+	public function annuler(
+        Request $request,
+        Sortie $sortie,
+        EntityManagerInterface $em,
+        EmailService $emailService
+    ): Response
 	{
-		$etat = $em->getRepository(Etat::class)->find(6);
-		// TODO Récupérer le motif d'annulation
+        // Vérifier que l'utilisateur est l'organisateur
+        $currentUser = $this->getUser();
+        if (!$currentUser || $sortie->getOrganisateur() !== $currentUser) {
+            $this->addFlash('error', "Vous n'êtes pas autorisé à annuler cette sortie.");
+            return $this->redirectToRoute('sortie_detail', ['id'=> $sortie->getId()]);
+        }
 
-		// Changer l'état en 'Annulée'
-		$sortie->setEtat($etat);
-		// TODO Prévenir tous les participants de l'annulation
-		// Supprimer tous les participants
-		foreach ($sortie->getParticipants() as $participant) {
-			$em->remove($participant);
-		}
+        // Vérifier que la sortie n'est pas déjà annulée ou passée ou en cours
+        $etatAnnulee = $em->getRepository(Etat::class)->find(6);
+        $etatPassee = $em->getRepository(Etat::class)->find(5);
+        $etatEnCours = $em->getRepository(Etat::class)->find(4);
 
-		// Valider les modifications
-		$em->flush();
+        if($sortie->getEtat() === $etatAnnulee) {
+            $this->addFlash('error', "Cette sortie est déjà annulée.");
+            return $this->redirectToRoute('sortie_detail', ['id'=> $sortie->getId()]);
+        }
+        if($sortie->getEtat() === $etatPassee) {
+            $this->addFlash('error', "Impossible d'annuler une sortie passée.");
+            return $this->redirectToRoute('sortie_detail', ['id'=> $sortie->getId()]);
+        }
+        if($sortie->getEtat() === $etatEnCours) {
+            $this->addFlash('error', "Impossible d'annuler une sortie en cours.");
+            return $this->redirectToRoute('sortie_detail', ['id'=> $sortie->getId()]);
+        }
 
-		$this->addFlash('success', 'La sortie a été annulée');
+        // Créer le formulaire pour le motif d'annulation
+        $form = $this->createForm(AnnulationType::class);
+        $form->handleRequest($request);
 
-		return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
+        if($form->isSubmitted() && $form->isValid()) {
+            // Récupérer le motif d'annulation
+            $data = $form->getData();
+            $motifAnnulation = $data['motifAnnulation'];
+
+            //Sauvegarder les participants avant de les détacher pour l'email
+            $participants = clone $sortie->getParticipants();
+
+            // Changer l'état en 'Annulée'
+            $sortie->setEtat($etatAnnulee);
+            $sortie->setMotifAnnulation($motifAnnulation);
+
+            // Envoyer les emails aux participants
+            $emailService->sendAnnulationEmails($sortie);
+
+            // Supprimer les inscriptions (ne pas supprimer les participants eux-mêmes!)
+            foreach ($participants as $participant) {
+                $sortie->removeParticipant($participant);
+            }
+
+            // Valider les modifications
+            $em->flush();
+
+            $this->addFlash('success', "La sortie a été annulée. Les participants ont été notifiés par email.");
+
+            return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        // Afficher le formulaire
+        return $this->render('sortie/annuler_sortie.html.twig', [
+            'sortie' => $sortie,
+            'form' => $form->createView(),
+        ]);
 	}
 
 	#[Route('/{id}/delete', name: 'supprimer',requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
