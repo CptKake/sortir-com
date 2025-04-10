@@ -42,38 +42,42 @@ final class SortieController extends AbstractController
             ->leftJoin('s.inscriptions', 'i')
             ->leftJoin('s.campus', 'c')
             ->leftJoin('s.etat', 'e')
-            ->addSelect('o', 'i', 'c', 'e')
-            ->where('e.libelle IN (:etats)')
-            ->setParameter('etats', ['Ouverte']);
-
+            ->addSelect('o', 'i', 'c', 'e');
 
         $user = $this->getUser();
         $data = $form->getData();
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Filtre campus
             if (!empty($data['campus'])) {
                 $qb->andWhere('s.campus = :campus')
                     ->setParameter('campus', $data['campus']);
             }
 
+            // Filtre nom
             if (!empty($data['search'])) {
                 $qb->andWhere('s.nom LIKE :search')
                     ->setParameter('search', '%' . $data['search'] . '%');
             }
 
+            // Dates
             if (!empty($data['dateDebut'])) {
                 $qb->andWhere('s.dateHeureDebut >= :dateDebut')
                     ->setParameter('dateDebut', $data['dateDebut']);
             }
-
             if (!empty($data['dateFin'])) {
                 $qb->andWhere('s.dateHeureDebut <= :dateFin')
                     ->setParameter('dateFin', $data['dateFin']);
             }
 
+            // Filtre organisateur : on affiche toutes les sorties qu’il a créées, peu importe leur état
             if (!empty($data['organisateur'])) {
                 $qb->andWhere('s.organisateur = :user')
                     ->setParameter('user', $user);
+            } else {
+                // Sinon, on ne montre que certaines sorties
+                $qb->andWhere('e.libelle IN (:etats)')
+                    ->setParameter('etats', ['Ouverte']);
             }
 
             if (!empty($data['inscrit'])) {
@@ -90,6 +94,11 @@ final class SortieController extends AbstractController
                 $qb->andWhere('s.dateHeureDebut > :now')
                     ->setParameter('now', new \DateTime());
             }
+
+        } else {
+            // Par défaut (aucun filtre soumis) : on ne montre que les sorties ouvertes
+            $qb->andWhere('e.libelle IN (:etats)')
+                ->setParameter('etats', ['Ouverte']);
         }
 
         $sorties = $paginator->paginate(
@@ -104,7 +113,8 @@ final class SortieController extends AbstractController
         ]);
     }
 
-	#[Route('/create', name: 'create', methods: ['GET', 'POST'])]
+
+    #[Route('/create', name: 'create', methods: ['GET', 'POST'])]
 	public function create(Request $request, EntityManagerInterface $em): Response
 	{
 		$sortie = new Sortie();
