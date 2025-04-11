@@ -5,6 +5,26 @@
 {% block body %}
     <h1 class="title">Liste des lieux</h1>
 
+    {# Filtre #}
+    {{ form_start(form, {'method': 'get'}) }}
+    <div class="field has-addons mb-5">
+        <div class="control is-expanded">
+            {{ form_widget(form.search) }}
+        </div>
+        <div class="control">
+            <button class="button is-link" type="submit">
+                <span class="icon"><i class="fas fa-search"></i></span>
+            </button>
+        </div>
+        <div class="control">
+            <a href="{{ path('app_lieu_index') }}" class="button is-light">
+                <span class="icon"><i class="fas fa-times"></i></span>
+            </a>
+        </div>
+    </div>
+    {{ form_end(form) }}
+
+
     {% if is_granted('ROLE_USER') %}
     <div class="buttons mb-4">
         <a href="{{ path('app_lieu_new') }}" class="button is-success">

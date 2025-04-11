@@ -4,7 +4,7 @@
     /* Remplace la couleur primaire de Bulma */
     --bulmaswatch-primary: #77182a;
 
-    /* Ces propriétés utilisent la nouvelle couleur principale */
+    /* Ces propriétés utilisent la couleur principale */
     --bulma-primary: var(--bulmaswatch-primary);
     --bulma-primary-invert: #fff;
 }
