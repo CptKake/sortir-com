@@ -4,7 +4,7 @@
 
 {% block body %}
     <!-- Hero Section -->
-    <section class="hero is-medium has-background-primary-light">
+    <section class="box hero is-medium has-background-light ">
         <div class="hero-body">
             <div class="container">
                 <div class="columns is-vcentered">
@@ -15,6 +15,9 @@
                         <h2 class="subtitle is-4 mb-5">
                             La plateforme des stagiaires ENI pour organiser vos sorties extra-scolaires
                         </h2>
+                        <p class="subtitle is-6 mb-5">
+                            Conçue par les étudiants POUR les étudiants !
+                        </p>
                         {% if not app.user %}
                             <div class="buttons">
                                 <a href="{{ path('app_login') }}" class="button is-primary is-medium">
@@ -36,8 +39,8 @@
                         {% endif %}
                     </div>
                     <div class="column is-6">
-                        <figure class="image">
-                            <img src="{{ asset('images/team-event.jpg') }}" alt="Groupe de personnes lors d'une sortie" onerror="this.src='/api/placeholder/600/400';this.onerror='';">
+                        <figure class="image box">
+                            <img src="{{ asset('images/groupe2.png') }}" alt="Groupe de personnes lors d'une sortie" onerror="this.src='/api/placeholder/600/400';this.onerror='';">
                         </figure>
                     </div>
                 </div>
@@ -53,7 +56,7 @@
             <div class="columns is-multiline">
                 <div class="column is-4">
                     <div class="box has-text-centered has-background-white-ter h-100">
-                        <span class="icon is-large has-text-primary mb-4">
+                        <span class="icon is-large mb-4" style="color: var(--bulma-primary);">
                             <i class="fas fa-calendar-check fa-3x"></i>
                         </span>
                         <h3 class="title is-4">Organisez facilement</h3>
@@ -63,7 +66,7 @@
 
                 <div class="column is-4">
                     <div class="box has-text-centered has-background-white-ter h-100">
-                        <span class="icon is-large has-text-primary mb-4">
+                        <span class="icon is-large mb-4" style="color: var(--bulma-primary);">
                             <i class="fas fa-users fa-3x"></i>
                         </span>
                         <h3 class="title is-4">Créez du lien</h3>
@@ -73,7 +76,7 @@
 
                 <div class="column is-4">
                     <div class="box has-text-centered has-background-white-ter h-100">
-                        <span class="icon is-large has-text-primary mb-4">
+                        <span class="icon is-large mb-4" style="color: var(--bulma-primary);">
                             <i class="fas fa-map-marker-alt fa-3x"></i>
                         </span>
                         <h3 class="title is-4">Par campus</h3>
@@ -86,8 +89,10 @@
 
 
 
+
+
     <!-- Call to Action -->
-    <section class="section has-background-primary">
+    <section class="box section has-background-primary">
         <div class="container">
             <div class="has-text-centered has-text-white">
                 <h2 class="title is-2 has-text-white mb-4">Prêt à rejoindre la communauté ?</h2>
@@ -118,18 +123,44 @@
     </section>
 {% endblock %}
 
+
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        .event-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .event-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-        .h-100 {
+
+        .h-100
+        {
             height: 100%;
         }
+
+    @media (prefers-color-scheme: dark) {
+        /* Modifier spécifiquement les fonds clairs */
+        .has-background-light {
+            background-color: #252525 !important; /* Fond sombre au lieu de clair */
+            color: #f5f5f5 !important; /* Texte clair sur fond sombre */
+        }
+
+        /* S'assurer que les titres et sous-titres restent visibles */
+        .has-background-light .title,
+        .has-background-light .subtitle {
+            color: #f5f5f5 !important;
+        }
+
+        /* Ajuster également les éléments avec fond blanc */
+        .has-background-white-ter {
+            background-color: #1e1e1e !important;
+            color: #f5f5f5 !important;
+        }
+
+        /* Assurer la visibilité du texte dans les boîtes */
+        .box {
+            background-color: #1e1e1e;
+            color: #f5f5f5;
+        }
+    }
+
+
+
+
     </style>
 {% endblock %}
