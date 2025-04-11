@@ -18,9 +18,8 @@
 
 {% endblock %}
 
-{#
+
 {% block javascripts %}
     {{ parent() }}
-
+    {{ address_script|raw }}
 {% endblock %}
-#}
