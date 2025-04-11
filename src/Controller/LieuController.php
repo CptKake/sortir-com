@@ -99,7 +99,7 @@ final class LieuController extends AbstractController{
 
     #[IsGranted("ROLE_USER")]
     #[Route('/{id}/edit', name: 'app_lieu_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
-    public function edit(Request $request, Lieu $lieu, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Lieu $lieu, EntityManagerInterface $entityManager, AddressAutocompleteService $addressService): Response
     {
         $form = $this->createForm(LieuType::class, $lieu);
         $form->handleRequest($request);
@@ -113,6 +113,10 @@ final class LieuController extends AbstractController{
         return $this->render('lieu/edit.html.twig', [
             'lieu' => $lieu,
             'form' => $form,
+            'address_script' => $addressService->generateAutocompleteScript('.adresse-autocomplete'), [
+                'limit'=>8,
+                'minLength'=>3,
+                ]
         ]);
     }
 

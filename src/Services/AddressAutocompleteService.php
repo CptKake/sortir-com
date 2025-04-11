@@ -43,6 +43,35 @@ class AddressAutocompleteService
             .suggestion.active {
                 background-color: #f5f5f5;
             }
+            
+          
+        @media (prefers-color-scheme: dark) {
+            .address-suggestions {
+                position: absolute;
+                z-index: 1000;
+                width: 100%;
+                background-color: #333; /* Fond sombre */
+                border: 1px solid #555; /* Bordure plus claire */
+                border-radius: 4px;
+                box-shadow: 0 2px 5px rgba(255, 255, 255, 0.2); /* Ombre claire */
+                max-height: 200px;
+                overflow-y: auto;
+                color: #fff; /* Texte clair */
+            }
+            .suggestion {
+                padding: 10px;
+                cursor: pointer;
+                border-bottom: 1px solid #444; /* Bordure plus claire */
+                transition: background-color 0.2s;
+            }
+            .suggestion:hover {
+                background-color: #444; /* Fond légèrement plus clair au survol */
+            }
+            .suggestion.active {
+                background-color: #555; /* Fond légèrement plus clair quand actif */
+            }
+        }
+   
         </style>
         
         <script>

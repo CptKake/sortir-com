@@ -1,4 +1,141 @@
+{% block stylesheets %}
+    <style>
+        @media (prefers-color-scheme: dark) {
+            .address-suggestions {
+                position: absolute;
+                z-index: 1000;
+                width: 100%;
+                background-color: #333; /* Fond sombre */
+                border: 1px solid #555; /* Bordure plus claire */
+                border-radius: 4px;
+                box-shadow: 0 2px 5px rgba(255, 255, 255, 0.2); /* Ombre claire */
+                max-height: 200px;
+                overflow-y: auto;
+                color: #fff; /* Texte clair */
+            }
+            .suggestion {
+                padding: 10px;
+                cursor: pointer;
+                border-bottom: 1px solid #444; /* Bordure plus claire */
+                transition: background-color 0.2s;
+            }
+            .suggestion:hover {
+                background-color: #444; /* Fond légèrement plus clair au survol */
+            }
+            .suggestion.active {
+                background-color: #555; /* Fond légèrement plus clair quand actif */
+            }
+        }
+    </style>
+
+{% endblock %}
+
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+    <div class="field">
+        <label class="label">{{ form_label(form.nom) }}</label>
+        <div class="control">
+            {{ form_widget(form.nom, {'attr': {'class': 'input is-medium'}}) }}
+        </div>
+        <p class="help is-danger">{{ form_errors(form.nom) }}</p>
+    </div>
+
+    <div class="field mt-4">
+        <label class="label">Adresse</label>
+        <div class="box p-4 mb-3 adresse-item">
+            <!-- Champ de recherche d'adresse pour l'autocomplétion -->
+            <div class="field">
+                <label class="label">Rechercher une adresse</label>
+                <div class="control has-icons-left">
+                    <input type="text" class="input adresse-autocomplete" placeholder="Commencez à taper une adresse...">
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-search"></i>
+                    </span>
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label">{{ form_label(form.rue) }}</label>
+                <div class="control">
+                    {{ form_widget(form.rue, {'attr': {'class': 'input'}}) }}
+                </div>
+                <p class="help is-danger">{{ form_errors(form.rue) }}</p>
+            </div>
+
+            <div class="columns">
+                <div class="column">
+                    <div class="field">
+                        <label class="label">{{ form_label(form.ville) }}</label>
+                        <div class="control">
+                            {{ form_widget(form.ville, {'attr': {'class': 'input'}}) }}
+                        </div>
+                        <p class="help is-danger">{{ form_errors(form.ville) }}</p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="field">
+                        <label class="label">{{ form_label(form.codePostal) }}</label>
+                        <div class="control">
+                            {{ form_widget(form.codePostal, {'attr': {'class': 'input'}}) }}
+                        </div>
+                        <p class="help is-danger">{{ form_errors(form.codePostal) }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="box p-4">
+            <label class="label mb-2">Coordonnées géographiques</label>
+            <div class="columns">
+                <div class="column">
+                    <div class="field">
+                        <label class="label is-small">{{ form_label(form.latitude) }}</label>
+                        <div class="control has-icons-left">
+                            {{ form_widget(form.latitude, {'attr': {'class': 'input'}}) }}
+                            <span class="icon is-small is-left">
+                                                        <i class="fas fa-map-marker-alt"></i>
+                                                    </span>
+                        </div>
+                        <p class="help is-danger">{{ form_errors(form.latitude) }}</p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="field">
+                        <label class="label is-small">{{ form_label(form.longitude) }}</label>
+                        <div class="control has-icons-left">
+                            {{ form_widget(form.longitude, {'attr': {'class': 'input'}}) }}
+                            <span class="icon is-small is-left">
+                                                        <i class="fas fa-map-marker-alt"></i>
+                                                    </span>
+                        </div>
+                        <p class="help is-danger">{{ form_errors(form.longitude) }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="field is-grouped is-grouped-centered mt-5">
+        <div class="control">
+            <button class="button is-success is-medium">
+                    <span class="icon">
+                        <i class="fas fa-save"></i>
+                    </span>
+                <span>{{ button_label|default('Enregistrer') }}</span>
+            </button>
+        </div>
+        <div class="control">
+            <a href="{{ path('app_lieu_index') }}" class="button is-light is-medium">
+                                        <span class="icon">
+                                            <i class="fas fa-times"></i>
+                                        </span>
+                <span>Annuler</span>
+            </a>
+        </div>
+    </div>
 {{ form_end(form) }}
+
+{% block javascripts %}
+    {{ address_script|raw }}
+{% endblock %}
+
+
