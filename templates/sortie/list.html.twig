@@ -112,8 +112,29 @@
             {# ----- Affichage des cartes ----- #}
             <div class="columns is-multiline is-variable is-2">
                 {% for sortie in sorties %}
+                    {# ----- Initilialisation de la couleur du tag selon sortie.etat.libelle ----- #}
+                    {% if sortie.etat.libelle is same as 'Annulée' %}
+                        {% set tag = 'is-danger' %}
+                    {% endif %}
+                    {% if sortie.etat.libelle is same as 'Passée' %}
+                        {% set tag = 'is-danger' %}
+                    {% endif %}
+                    {% if sortie.etat.libelle is same as 'Complète' %}
+                        {% set tag = 'is-warning' %}
+                    {% endif %}
+                    {% if sortie.etat.libelle is same as 'Activité en cours' %}
+                        {% set tag = 'is-info' %}
+                    {% endif %}
+                    {% if sortie.etat.libelle is same as 'Clôturée' %}
+                        {% set tag = 'is-warning' %}
+                    {% endif %}
+                    {% if sortie.etat.libelle is same as 'Ouverte' %}
+                        {% set tag = 'is-success' %}
+                    {% endif %}
+
                     <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
                         <div class="card">
+                            <span class="tag {{ tag }}">{{ sortie.etat.libelle }}</span>
                             <div class="card-content">
                                 <p class="title is-4">
                                     <a href="{{ path('sortie_detail', {id: sortie.id}) }}">
