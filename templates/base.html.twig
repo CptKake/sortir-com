@@ -2,6 +2,8 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
         <title>{% block title %}Sortir.com{% endblock %}</title>
         <link rel="icon" href={{ asset('images/favicon.png') }}>
         {% block stylesheets %}
@@ -14,11 +16,12 @@
 
     </head>
     <body>
+    <div class="wrapper is-flex is-flex-direction-column" style="min-height: 100vh;">
         {% block header %}
             {% include 'partials/_navbar.html.twig' %}
         {% endblock %}
 
-        <section class="section">
+        <section class="section is-flex-grow-1">
             <div class="container">
                 {% for label, messages in app.flashes %}
                     {% for message in messages %}
@@ -29,25 +32,13 @@
                     {% endfor %}
                 {% endfor %}
 
-        {% block body %}{% endblock %}
+                {% block body %}{% endblock %}
             </div>
         </section>
-    {% block footer %}
-        {% include'partials/_footer.html.twig' %}
-    {% endblock %}
 
-        {% block javascripts %}
-            <script>        // Pour fermer les notifications
-                document.addEventListener('DOMContentLoaded', () => {
-                    (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
-                        const $notification = $delete.parentNode;
-                    $delete.addEventListener('click', () => {
-                        $notification.parentNode.removeChild($notification);
-                    });
-                    });
-                });
-            </script>
-
+        {% block footer %}
+            {% include 'partials/_footer.html.twig' %}
         {% endblock %}
+    </div>
     </body>
 </html>
