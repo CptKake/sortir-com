@@ -1,11 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Utilisateurs{% endblock %}
+{% block title %}Gestion des utilisateurs{% endblock %}
 
 {% block body %}
     <section class="section">
         <div class="container">
-            <h1 class="title is-4 has-text-weight-semibold">Liste des utilisateurs</h1>
+
+            <h1 class="title is-3 has-text-weight-bold has-text-centered mb-5">Utilisateurs</h1>
 
             {% for message in app.flashes('success') %}
                 <div class="notification is-success is-light">{{ message }}</div>
@@ -14,76 +15,108 @@
                 <div class="notification is-danger is-light">{{ message }}</div>
             {% endfor %}
 
+            {# Barre de recherche et filtres #}
+            <form method="get" class="box mb-5">
+                <div class="columns is-multiline is-vcentered">
+                    <div class="column is-4">
+                        <input class="input" type="text" name="search" placeholder="Rechercher un nom, pseudo ou email"
+                               value="{{ app.request.get('search') }}">
+                    </div>
+                    <div class="column is-2">
+                        <label class="checkbox">
+                            <input type="checkbox" name="admin" value="1" {% if app.request.get('admin') %}checked{% endif %}>
+                            <strong class="ml-2">Admin</strong>
+                        </label>
+                    </div>
+                    <div class="column is-2">
+                        <label class="checkbox">
+                            <input type="checkbox" name="actif" value="1" {% if app.request.get('actif') %}checked{% endif %}>
+                            <strong class="ml-2">Actif</strong>
+                        </label>
+                    </div>
+                    <div class="column is-4 has-text-right">
+                        <div class="buttons">
+                            <button class="button is-link is-outlined">
+                                <span class="icon"><i class="fas fa-filter"></i></span>
+                                <span>Filtrer</span>
+                            </button>
+                            <a href="{{ path('admin_user_list') }}" class="button is-light">
+                                <span class="icon"><i class="fas fa-times"></i></span>
+                                <span>Réinitialiser</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            {# Formulaire pour actions groupées #}
             <form method="post" action="{{ path('admin_users_mass_action') }}">
-                <div class="table-container"> {# ✅ Permet le scroll horizontal sur mobile/tablette #}
-                    <table class="table is-fullwidth is-striped">
-                        <thead>
-                        <tr>
-                            <th><input type="checkbox" id="select-all"></th>
-                            <th>Photo</th>
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th>Email</th>
-                            <th>Pseudo</th>
-                            <th>Téléphone</th>
-                            <th>Campus</th>
-                            <th>Admin</th>
-                            <th>Actif</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for user in utilisateurs %}
-                            <tr>
-                                <td>
-                                    {% if app.user.id != user.id %}
-                                        <input type="checkbox" name="users[]" value="{{ user.id }}">
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if user.urlPhoto %}
-                                        <figure class="image is-48x48">
-                                            <img class="is-rounded" src="{{ asset('uploads/photos/' ~ user.urlPhoto) }}" alt="Photo">
-                                        </figure>
-                                    {% else %}
-                                        <span class="has-text-grey-light is-size-7">Aucune</span>
-                                    {% endif %}
-                                </td>
-                                <td>{{ user.nom }}</td>
-                                <td>{{ user.prenom }}</td>
-                                <td>{{ user.email }}</td>
-                                <td>
-                                    <a href="{{ path('app_profile_detail', {id: user.id}) }}" class="has-text-link has-text-weight-semibold">
-                                        {{ user.pseudo }}
-                                    </a>
-                                </td>
-                                <td>{{ user.telephone }}</td>
-                                <td>{{ user.campus.nom }}</td>
-                                <td>{{ user.administrateur ? 'Oui' : 'Non' }}</td>
-                                <td>
-                                    <span class="tag is-rounded is-small {{ user.actif ? 'is-success' : 'is-light has-text-grey' }}">
-                                        {{ user.actif ? 'Oui' : 'Non' }}
-                                    </span>
-                                </td>
-                            </tr>
-                        {% else %}
-                            <tr>
-                                <td colspan="10" class="has-text-centered">Aucun utilisateur trouvé.</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                <div class="columns is-multiline">
+                    {% for user in utilisateurs %}
+                        <div class="column is-4">
+                            <div class="card">
+                                <header class="card-header">
+                                    <p class="card-header-title">
+                                        <label class="checkbox">
+                                            {% if app.user.id != user.id %}
+                                                <input type="checkbox" name="users[]" value="{{ user.id }}">
+                                            {% endif %}
+                                            <span class="ml-2">{{ user.nom }} {{ user.prenom }}</span>
+                                        </label>
+                                    </p>
+                                </header>
+                                <div class="card-content">
+                                    <div class="media">
+                                        <div class="media-left">
+                                            {% if user.urlPhoto %}
+                                                <figure class="image is-64x64">
+                                                    <img class="is-rounded" src="{{ asset('uploads/photos/' ~ user.urlPhoto) }}" alt="Photo">
+                                                </figure>
+                                            {% else %}
+                                                <figure class="image is-64x64 has-background-light has-text-grey is-flex is-align-items-center is-justify-content-center">
+                                                    <span class="icon"><i class="fas fa-user"></i></span>
+                                                </figure>
+                                            {% endif %}
+                                        </div>
+                                        <div class="media-content">
+                                            <p><strong>Pseudo :</strong>
+                                                <a href="{{ path('app_profile_detail', {id: user.id}) }}" class="has-text-link">
+                                                    {{ user.pseudo }}
+                                                </a>
+                                            </p>
+                                            <p><strong>Email :</strong> {{ user.email }}</p>
+                                            <p><strong>Tél :</strong> {{ user.telephone }}</p>
+                                            <p><strong>Campus :</strong> {{ user.campus.nom }}</p>
+                                            <p>
+                                                <strong>Admin :</strong> {{ user.administrateur ? 'Oui' : 'Non' }} |
+                                                <strong>Actif :</strong>
+                                                <span class="tag is-rounded is-small {{ user.actif ? 'is-success' : 'is-light has-text-grey' }}">
+                                                {{ user.actif ? 'Oui' : 'Non' }}
+                                            </span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="column is-12 has-text-centered">
+                            <p class="has-text-grey">Aucun utilisateur trouvé.</p>
+                        </div>
+                    {% endfor %}
                 </div>
 
-                <div class="buttons is-centered mt-4">
-                    <button class="button is-light has-text-danger" name="action" value="delete" onclick="return confirm('Supprimer les utilisateurs sélectionnés ?')">
+                <div class="buttons is-centered mt-5">
+                    <button class="button is-danger is-light" name="action" value="delete"
+                            onclick="return confirm('Supprimer les utilisateurs sélectionnés ?')">
                         <span class="icon"><i class="fas fa-trash"></i></span>
                         <span>Supprimer</span>
                     </button>
-                    <button class="button is-light has-text-warning" name="action" value="deactivate">
+                    <button class="button is-warning is-light" name="action" value="deactivate">
                         <span class="icon"><i class="fas fa-user-slash"></i></span>
                         <span>Désactiver</span>
                     </button>
-                    <button class="button is-light has-text-success" name="action" value="activate">
+                    <button class="button is-success is-light" name="action" value="activate">
                         <span class="icon"><i class="fas fa-user-check"></i></span>
                         <span>Activer</span>
                     </button>
@@ -91,7 +124,7 @@
             </form>
 
             {% if utilisateurs.pageCount > 1 %}
-                <nav class="pagination is-centered mt-5" role="navigation" aria-label="pagination">
+                <nav class="pagination is-centered mt-6" role="navigation" aria-label="pagination">
                     <ul class="pagination-list">
                         {% for page in 1..utilisateurs.pageCount %}
                             <li>

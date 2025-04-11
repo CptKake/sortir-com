@@ -26,20 +26,37 @@ final class LieuController extends AbstractController{
 
     #[IsGranted("ROLE_USER")]
     #[Route(name: 'app_lieu_index', methods: ['GET'])]
-    public function index(LieuRepository $lieuRepository, PaginatorInterface $paginator, Request $request): Response
-    {
-        $query = $lieuRepository->createQueryBuilder('s')->getQuery();
+    public function index(
+        LieuRepository $lieuRepository,
+        PaginatorInterface $paginator,
+        Request $request
+    ): Response {
+        $form = $this->createForm(\App\Form\LieuFilterType::class, null, [
+            'method' => 'GET',
+        ]);
+        $form->handleRequest($request);
+
+        $qb = $lieuRepository->createQueryBuilder('s');
+
+        $search = $form->get('search')->getData();
+        if (!empty($search)) {
+            $qb->andWhere('s.nom LIKE :search OR s.ville LIKE :search OR s.codePostal LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
 
         $lieux = $paginator->paginate(
-            $query,
+            $qb->getQuery(),
             $request->query->getInt('page', 1),
             12
         );
 
         return $this->render('lieu/index.html.twig', [
             'lieux' => $lieux,
+            'form' => $form->createView(),
         ]);
     }
+
+
 
     #[IsGranted("ROLE_USER")]
     #[Route('/new', name: 'app_lieu_new', methods: ['GET', 'POST'])]
