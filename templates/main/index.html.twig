@@ -1,19 +1,135 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil{% endblock %}
+{% block title %}Accueil - {{ parent() }}{% endblock %}
 
 {% block body %}
-    <section class="section has-text-centered">
-        <h1 class="title is-centered">Bienvenue sur Sortir.com</h1>
-
-        <div class="container">
-            <div class="card-content">
-                <p class="subtitle">
-                    Une site conçu par les étudiants pour les étudiants
-                </p>
+    <!-- Hero Section -->
+    <section class="hero is-medium has-background-primary-light">
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns is-vcentered">
+                    <div class="column is-6">
+                        <h1 class="title is-1 mb-4">
+                            Bienvenue sur Sortir.com
+                        </h1>
+                        <h2 class="subtitle is-4 mb-5">
+                            La plateforme des stagiaires ENI pour organiser vos sorties extra-scolaires
+                        </h2>
+                        {% if not app.user %}
+                            <div class="buttons">
+                                <a href="{{ path('app_login') }}" class="button is-primary is-medium">
+                                    <span class="icon"><i class="fas fa-sign-in-alt"></i></span>
+                                    <span>Se connecter</span>
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="buttons">
+                                <a href="{{ path('sortie_index') }}" class="button is-primary is-medium">
+                                    <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+                                    <span>Voir les sorties</span>
+                                </a>
+                                <a href="{{ path('sortie_create') }}" class="button is-success is-medium">
+                                    <span class="icon"><i class="fas fa-plus"></i></span>
+                                    <span>Créer une sortie</span>
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="column is-6">
+                        <figure class="image">
+                            <img src="{{ asset('images/team-event.jpg') }}" alt="Groupe de personnes lors d'une sortie" onerror="this.src='/api/placeholder/600/400';this.onerror='';">
+                        </figure>
+                    </div>
+                </div>
             </div>
+        </div>
+    </section>
 
+    <!-- Features Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="title is-2 has-text-centered mb-6">Pourquoi utiliser Sortir.com ?</h2>
+
+            <div class="columns is-multiline">
+                <div class="column is-4">
+                    <div class="box has-text-centered has-background-white-ter h-100">
+                        <span class="icon is-large has-text-primary mb-4">
+                            <i class="fas fa-calendar-check fa-3x"></i>
+                        </span>
+                        <h3 class="title is-4">Organisez facilement</h3>
+                        <p>Créez des sorties en quelques clics et gérez automatiquement les inscriptions.</p>
+                    </div>
+                </div>
+
+                <div class="column is-4">
+                    <div class="box has-text-centered has-background-white-ter h-100">
+                        <span class="icon is-large has-text-primary mb-4">
+                            <i class="fas fa-users fa-3x"></i>
+                        </span>
+                        <h3 class="title is-4">Créez du lien</h3>
+                        <p>Rencontrez d'autres stagiaires et développez votre réseau professionnel.</p>
+                    </div>
+                </div>
+
+                <div class="column is-4">
+                    <div class="box has-text-centered has-background-white-ter h-100">
+                        <span class="icon is-large has-text-primary mb-4">
+                            <i class="fas fa-map-marker-alt fa-3x"></i>
+                        </span>
+                        <h3 class="title is-4">Par campus</h3>
+                        <p>Trouvez des sorties près de votre campus ou participez à des événements inter-campus.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Call to Action -->
+    <section class="section has-background-primary">
+        <div class="container">
+            <div class="has-text-centered has-text-white">
+                <h2 class="title is-2 has-text-white mb-4">Prêt à rejoindre la communauté ?</h2>
+                <p class="subtitle is-5 has-text-white mb-5">
+                    Organisez des sorties, rencontrez d'autres stagiaires et créez des liens durables.
+                </p>
+                {% if not app.user %}
+                    <div class="buttons is-centered">
+                        <a href="{{ path('app_login') }}" class="button is-white is-medium">
+                            <span class="icon"><i class="fas fa-sign-in-alt"></i></span>
+                            <span>Se connecter</span>
+                        </a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_register') }}" class="button is-light is-medium">
+                                <span class="icon"><i class="fas fa-user-plus"></i></span>
+                                <span>Créer un compte</span>
+                            </a>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <a href="{{ path('sortie_create') }}" class="button is-white is-medium">
+                        <span class="icon"><i class="fas fa-plus"></i></span>
+                        <span>Organiser une sortie</span>
+                    </a>
+                {% endif %}
+            </div>
         </div>
     </section>
 {% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .event-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .h-100 {
+            height: 100%;
+        }
+    </style>
+{% endblock %}
