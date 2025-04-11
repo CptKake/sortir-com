@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Entity\Participant;
 use App\Entity\Sortie;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -61,5 +63,35 @@ class EmailService
                 'sortie'=>$sortie,
                 'lien_accueil' => $this->urlGenerator->generate('app_main', [], UrlGeneratorInterface::ABSOLUTE_URL),
             ]);
+    }
+    public function sendInscriptionConfirmation(Sortie $sortie, Participant $participant): void
+    {
+        $email = (new TemplatedEmail())
+            ->from($this->senderEmail)
+            ->to($participant->getEmail())
+            ->subject("Confirmation d'inscription : " . $sortie->getNom())
+            ->htmlTemplate('emails/inscription_confirmation.html.twig')
+            ->context([
+                'participant' => $participant,
+                'sortie' => $sortie,
+                'lien_sortie' => $this->urlGenerator->generate('sortie_detail', ['id' => $sortie->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+            ]);
+
+        $this->mailer->send($email);
+    }
+
+    public function sendDesistementConfirmation(Sortie $sortie, Participant $participant): void
+    {
+        $email = (new TemplatedEmail())
+            ->from($this->senderEmail)
+            ->to($participant->getEmail())
+            ->subject("Confirmation de désistement : " . $sortie->getNom())
+            ->htmlTemplate('emails/desistement_confirmation.html.twig')
+            ->context([
+                'participant' => $participant,
+                'sortie' => $sortie,
+                'lien_sortie' => $this->urlGenerator->generate('sortie_index', ['id' => $sortie->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+            ]);
+        $this->mailer->send($email);
     }
 }

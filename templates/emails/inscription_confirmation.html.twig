@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4caf50;
+        }
+        .title {
+            color: #4caf50;
+            margin: 0;
+        }
+        .content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .details {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+        }
+        .button {
+            display: inline-block;
+            background-color: #4a76a8;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #757575;
+            text-align: center;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1 class="title">Confirmation d'inscription</h1>
+</div>
+
+<div class="content">
+    <p>Bonjour {{ participant.prenom }},</p>
+
+    <p>Nous vous confirmons votre inscription à la sortie <strong>"{{ sortie.nom }}"</strong>.</p>
+
+    <div class="details">
+        <h3>Détails de la sortie :</h3>
+        <p><strong>Date et heure :</strong> {{ sortie.dateHeureDebut|date('d/m/Y à H:i') }}</p>
+        <p><strong>Lieu :</strong> {{ sortie.lieu.nom }}</p>
+        <p><strong>Organisateur :</strong> {{ sortie.organisateur.pseudo }}</p>
+        {% if sortie.infosSortie %}
+            <p><strong>Informations :</strong> {{ sortie.infosSortie }}</p>
+        {% endif %}
+    </div>
+
+    <p>N'oubliez pas de vous désister si vous ne pouvez plus participer, afin de libérer votre place pour quelqu'un d'autre.</p>
+
+    <a href="{{ lien_sortie }}" class="button">Voir les détails de la sortie</a>
+</div>
+
+<div class="footer">
+    <p>Cet email est envoyé automatiquement, merci de ne pas y répondre.</p>
+    <p>© {{ "now"|date('Y') }} Sortir.com - Tous droits réservés</p>
+</div>
+</body>
+</html>

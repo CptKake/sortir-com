@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Inscription;
 use App\Entity\Sortie;
+use App\Services\EmailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Clock\Clock;
@@ -16,7 +17,7 @@ final class InscriptionController extends AbstractController
 {
 
 	#[Route('/inscription', name: 'inscription', methods: ['GET', 'POST'])]
-	public function inscription(Sortie $sortie, EntityManagerInterface $em): Response
+	public function inscription(Sortie $sortie, EntityManagerInterface $em, EmailService $emailService): Response
 	{
 		if (!$sortie) {
 			throw $this->createNotFoundException('Sortie inconnue');
@@ -67,6 +68,9 @@ final class InscriptionController extends AbstractController
 		$em->persist($sortie);
 		$em->flush();
 
+        // Envoyer les emails
+        $emailService->sendInscriptionConfirmation($sortie, $user);
+
 		// add flash
 		$this->addFlash('success', 'Vous êtes inscrits à la sortie : ' . $sortie->getNom() );
 
@@ -74,7 +78,7 @@ final class InscriptionController extends AbstractController
 	}
 
 	#[Route('/desistement', name: 'desistement', methods: ['GET', 'POST'])]
-	public function desistement(Sortie $sortie, EntityManagerInterface $em): Response
+	public function desistement(Sortie $sortie, EntityManagerInterface $em, EmailService $emailService): Response
 	{
 		if (!$sortie) {
 			throw $this->createNotFoundException('Sortie inconnue');
@@ -118,6 +122,9 @@ final class InscriptionController extends AbstractController
 
 		// enlever Inscription au user
 		$user->removeInscription($inscription);
+
+        // Envoyer les emails avant de supprimer l'inscription
+        $emailService->sendDesistementConfirmation($sortie, $user);
 
 		// persister
 		$em->remove($inscription);
