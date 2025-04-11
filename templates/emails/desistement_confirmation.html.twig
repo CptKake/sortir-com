@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ff9800;
+        }
+        .title {
+            color: #ff9800;
+            margin: 0;
+        }
+        .content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .details {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+        }
+        .button {
+            display: inline-block;
+            background-color: #4a76a8;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #757575;
+            text-align: center;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1 class="title">Confirmation de désistement</h1>
+</div>
+
+<div class="content">
+    <p>Bonjour {{ participant.prenom }},</p>
+
+    <p>Nous vous confirmons votre désistement de la sortie <strong>"{{ sortie.nom }}"</strong>.</p>
+
+    <div class="details">
+        <h3>Rappel de la sortie :</h3>
+        <p><strong>Date et heure :</strong> {{ sortie.dateHeureDebut|date('d/m/Y à H:i') }}</p>
+        <p><strong>Lieu :</strong> {{ sortie.lieu.nom }}</p>
+        <p><strong>Organisateur :</strong> {{ sortie.organisateur.pseudo }}</p>
+    </div>
+
+    <p>Votre place a été libérée pour d'autres participants potentiels.</p>
+
+    <p>N'hésitez pas à découvrir d'autres sorties disponibles sur notre site.</p>
+
+    <a href="{{ lien_sortie }}" class="button">Voir les sorties disponibles</a>
+</div>
+
+<div class="footer">
+    <p>Cet email est envoyé automatiquement, merci de ne pas y répondre.</p>
+    <p>© {{ "now"|date('Y') }} Sortir.com - Tous droits réservés</p>
+</div>
+</body>
+</html>
