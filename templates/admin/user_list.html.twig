@@ -8,73 +8,71 @@
             <h1 class="title is-4 has-text-weight-semibold">Liste des utilisateurs</h1>
 
             {% for message in app.flashes('success') %}
-                <div class="notification is-success is-light">
-                    {{ message }}
-                </div>
+                <div class="notification is-success is-light">{{ message }}</div>
             {% endfor %}
             {% for message in app.flashes('error') %}
-                <div class="notification is-danger is-light">
-                    {{ message }}
-                </div>
+                <div class="notification is-danger is-light">{{ message }}</div>
             {% endfor %}
 
             <form method="post" action="{{ path('admin_users_mass_action') }}">
-                <table class="table is-fullwidth is-striped">
-                    <thead>
-                    <tr>
-                        <th><input type="checkbox" id="select-all"></th>
-                        <th>Photo</th>
-                        <th>Nom</th>
-                        <th>Prénom</th>
-                        <th>Email</th>
-                        <th>Pseudo</th>
-                        <th>Téléphone</th>
-                        <th>Campus</th>
-                        <th>Admin</th>
-                        <th>Actif</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for user in utilisateurs %}
+                <div class="table-container"> {# ✅ Permet le scroll horizontal sur mobile/tablette #}
+                    <table class="table is-fullwidth is-striped">
+                        <thead>
                         <tr>
-                            <td>
-                                {% if app.user.id != user.id %}
-                                    <input type="checkbox" name="users[]" value="{{ user.id }}">
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if user.urlPhoto %}
-                                    <figure class="image is-48x48">
-                                        <img class="is-rounded" src="{{ asset('uploads/photos/' ~ user.urlPhoto) }}" alt="Photo">
-                                    </figure>
-                                {% else %}
-                                    <span class="has-text-grey-light is-size-7">Aucune</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ user.nom }}</td>
-                            <td>{{ user.prenom }}</td>
-                            <td>{{ user.email }}</td>
-                            <td>
-                                <a href="{{ path('app_profile_detail', {id: user.id}) }}" class="has-text-link has-text-weight-semibold">
-                                    {{ user.pseudo }}
-                                </a>
-                            </td>
-                            <td>{{ user.telephone }}</td>
-                            <td>{{ user.campus.nom }}</td>
-                            <td>{{ user.administrateur ? 'Oui' : 'Non' }}</td>
-                            <td>
-                                <span class="tag is-rounded is-small {{ user.actif ? 'is-success' : 'is-light has-text-grey' }}">
-                                    {{ user.actif ? 'Oui' : 'Non' }}
-                                </span>
-                            </td>
+                            <th><input type="checkbox" id="select-all"></th>
+                            <th>Photo</th>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Email</th>
+                            <th>Pseudo</th>
+                            <th>Téléphone</th>
+                            <th>Campus</th>
+                            <th>Admin</th>
+                            <th>Actif</th>
                         </tr>
-                    {% else %}
-                        <tr>
-                            <td colspan="10" class="has-text-centered">Aucun utilisateur trouvé.</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {% for user in utilisateurs %}
+                            <tr>
+                                <td>
+                                    {% if app.user.id != user.id %}
+                                        <input type="checkbox" name="users[]" value="{{ user.id }}">
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.urlPhoto %}
+                                        <figure class="image is-48x48">
+                                            <img class="is-rounded" src="{{ asset('uploads/photos/' ~ user.urlPhoto) }}" alt="Photo">
+                                        </figure>
+                                    {% else %}
+                                        <span class="has-text-grey-light is-size-7">Aucune</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.nom }}</td>
+                                <td>{{ user.prenom }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    <a href="{{ path('app_profile_detail', {id: user.id}) }}" class="has-text-link has-text-weight-semibold">
+                                        {{ user.pseudo }}
+                                    </a>
+                                </td>
+                                <td>{{ user.telephone }}</td>
+                                <td>{{ user.campus.nom }}</td>
+                                <td>{{ user.administrateur ? 'Oui' : 'Non' }}</td>
+                                <td>
+                                    <span class="tag is-rounded is-small {{ user.actif ? 'is-success' : 'is-light has-text-grey' }}">
+                                        {{ user.actif ? 'Oui' : 'Non' }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="10" class="has-text-centered">Aucun utilisateur trouvé.</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
 
                 <div class="buttons is-centered mt-4">
                     <button class="button is-light has-text-danger" name="action" value="delete" onclick="return confirm('Supprimer les utilisateurs sélectionnés ?')">
@@ -110,7 +108,7 @@
     </section>
 
     <script>
-        document.getElementById('select-all').addEventListener('change', function () {
+        document.getElementById('select-all')?.addEventListener('change', function () {
             document.querySelectorAll('input[name="users[]"]').forEach(cb => cb.checked = this.checked);
         });
     </script>
