@@ -134,7 +134,13 @@
 
                     <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
                         <div class="card">
-                            <span class="tag {{ tag }}">{{ sortie.etat.libelle }}</span>
+
+                            <div class="card-image">
+                                <figure class="image">
+                                    <img src="{{ asset('uploads/activites/afterwork' ~ random(1, 5) ~ '.webp') }}">
+                                    <span class="tag {{ tag }} is-medium">{{ sortie.etat.libelle }}</span>
+                                </figure>
+                            </div>
                             <div class="card-content">
                                 <p class="title is-4">
                                     <a href="{{ path('sortie_detail', {id: sortie.id}) }}">
