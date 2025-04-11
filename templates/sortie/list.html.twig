@@ -110,9 +110,9 @@
             </div>
 
             {# ----- Affichage des cartes ----- #}
-            <div class="columns is-multiline">
+            <div class="columns is-multiline is-variable is-2">
                 {% for sortie in sorties %}
-                    <div class="column is-4">
+                    <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
                         <div class="card">
                             <div class="card-content">
                                 <p class="title is-4">
@@ -140,6 +140,7 @@
                     </div>
                 {% endfor %}
             </div>
+
 
             {# ----- Pagination ----- #}
             {% if sorties.pageCount > 1 %}

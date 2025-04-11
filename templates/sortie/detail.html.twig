@@ -68,6 +68,14 @@
             </div>
         </div>
     </div>
+    {% if app.user.id is same as sortie.organisateur.id and sortie.etat.id is same as 1 %}
+        <div class="buttons mb-4">
+            <a href="{{ path('sortie_publier', {'id': sortie.id}) }}" class="button is-success">
+                <span class="icon"><i class="fas fa-plus"></i></span>
+                <span>Publier</span>
+            </a>
+        </div>
+    {% endif %}
     {% if app.user.id is same as sortie.organisateur.id and sortie.etat.libelle is not same as 'Annulée' %}
         <div class="buttons mb-4">
             <a href="{{ path('sortie_editer', {'id': sortie.id}) }}" class="button is-success">

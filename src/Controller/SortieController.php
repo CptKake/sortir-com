@@ -120,6 +120,7 @@ final class SortieController extends AbstractController
 		$sortie = new Sortie();
 		$user = $this->getUser();
 		$sortie->setOrganisateur($user);
+		$sortie->setEtat($em->getRepository(Etat::class)->find(1));
 		$form = $this->createForm(SortieType::class, $sortie);
 		$form->handleRequest($request);
 
@@ -273,6 +274,21 @@ final class SortieController extends AbstractController
 		$em->flush();
 
 		$this->addFlash('success', 'La sortie a été supprimée');
+
+		return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
+	}
+
+	#[Route('/{id}/publier', name: 'publier', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+	public function publish(Sortie $sortie, EntityManagerInterface $em): Response
+	{
+		if ($sortie->getEtat()->getId() === 1) {
+			$sortie->setEtat($em->getRepository(Etat::class)->find(2));
+			$em->flush();
+			$this->addFlash('success', 'La sortie ' . $sortie->getNom() . ' a été publiée');
+		} else {
+			$this->addFlash('error', 'Erreur lors de la publication de la sortie ' . $sortie->getNom());
+			return $this->redirectToRoute('sortie_detail', ['id'=> $sortie->getId()]);
+		}
 
 		return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
 	}
