@@ -100,7 +100,7 @@
                             <div class="card event-card h-100">
                                 <div class="card-image">
                                     <figure class="image is-4by3">
-                                        <img src="{{ asset('images/events/' ~ sortie.id ~ '.jpg') }}" alt="{{ sortie.nom }}" onerror="this.src='/api/placeholder/400/300';this.onerror='';">
+                                        <img src="{{ asset('uploads/activites/afterwork' ~ random(1, 5) ~ '.webp') }}" alt="{{ sortie.nom }}" onerror="this.src='/api/placeholder/400/300';this.onerror='';">
                                     </figure>
                                     <div class="tag is-primary is-medium" style="position: absolute; top: 10px; right: 10px;">
                                         {{ sortie.campus.nom }}

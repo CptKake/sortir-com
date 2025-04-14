@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Lieu;
+use App\Entity\Sortie;
 use App\Form\LieuType;
 use App\Repository\LieuRepository;
 use App\Services\AddressAutocompleteService;
@@ -125,8 +126,21 @@ final class LieuController extends AbstractController{
     public function delete(Request $request, Lieu $lieu, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$lieu->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($lieu);
-            $entityManager->flush();
+            try {
+                $sortiesAssociees = $entityManager->getRepository(Sortie::class)->count(['lieu' => $lieu]);
+
+                if ($sortiesAssociees > 0) {
+                    $this-> addFlash('danger', 'Ce lieu ne peut pas être supprimé car utilisé dans une sortie');
+                    return $this->redirectToRoute('app_lieu_index', [], Response::HTTP_SEE_OTHER);
+                }
+                $entityManager->remove($lieu);
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Le lieu a été supprimé avec succés');
+            } catch (\Exception $e) {
+                $this->addFlash('danger', $e->getMessage());
+            }
+
         }
 
         return $this->redirectToRoute('app_lieu_index', [], Response::HTTP_SEE_OTHER);
