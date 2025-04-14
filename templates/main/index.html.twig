@@ -99,7 +99,7 @@
                         <div class="column is-4">
                             <div class="card event-card h-100">
                                 <div class="card-image">
-                                    <figure class="image is-4by3">
+                                    <figure class="image ">
                                         <img src="{{ asset('uploads/activites/afterwork' ~ random(1, 5) ~ '.webp') }}" alt="{{ sortie.nom }}" onerror="this.src='/api/placeholder/400/300';this.onerror='';">
                                     </figure>
                                     <div class="tag is-primary is-medium" style="position: absolute; top: 10px; right: 10px;">
@@ -107,7 +107,13 @@
                                     </div>
                                 </div>
                                 <div class="card-content">
-                                    <p class="title is-5">{{ sortie.nom }}</p>
+                                    <p class="title is-5 ">
+                                        {% if app.user %}
+                                            <a href="{{ path('sortie_detail', {'id': sortie.id}) }}">{{ sortie.nom }}</a>
+                                        {% else %}
+                                            {{ sortie.nom }}
+                                        {% endif %}
+                                    </p>
                                     <p class="subtitle is-6">
                                         <span class="icon"><i class="fas fa-calendar"></i></span>
                                         {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}
@@ -115,7 +121,11 @@
 
 
                                     <div class="content">
-                                        <p>{{ sortie.infosSortie|slice(0, 100) }}{% if sortie.infosSortie|length > 100 %}...{% endif %}</p>
+                                        <p>{{ sortie.infosSortie|slice(0, 100) }}
+                                            {% if sortie.infosSortie|length > 100 %}
+                                                ...
+                                            {% endif %}
+                                        </p>
                                         <div class="tags">
                                     {% if is_granted('IS_AUTHENTICATED') %}
                                         <span class="tag" style="background-color: #f5f5f5;">
@@ -130,20 +140,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                {% if is_granted('IS_AUTHENTICATED') %}
-                                    <footer class="card-footer">
-                                        <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" class="card-footer-item">
-                                            <span class="icon"><i class="fas fa-eye"></i></span>
-                                            <span>Détails</span>
-                                        </a>
-                                {% endif %}
-                                    {% if app.user and sortie.organisateur != app.user and not sortie.participants and sortie.etat.libelle == 'Ouverte' %}
-                                        <a href="{{ path('sortie_inscription', {'id': sortie.id}) }}" class="card-footer-item" style="background-color: var(--bulma-primary); color: white;">
-                                            <span class="icon"><i class="fas fa-plus"></i></span>
-                                            <span>S'inscrire</span>
-                                        </a>
-                                    {% endif %}
-                                </footer>
                             </div>
                         </div>
                     {% endfor %}
