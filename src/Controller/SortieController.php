@@ -35,6 +35,8 @@ final class SortieController extends AbstractController
     public function index(SortieRepository $sortieRepository, Request $request, PaginatorInterface $paginator): Response
     {
         $form = $this->createForm(SortieFilterType::class);
+
+
         $form->handleRequest($request);
 
         $user = $this->getUser();
@@ -49,7 +51,6 @@ final class SortieController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
-            // Filtres communs
             if ($data['campus']) {
                 $qb->andWhere('s.campus = :campus')
                     ->setParameter('campus', $data['campus']);
@@ -70,10 +71,7 @@ final class SortieController extends AbstractController
                     ->setParameter('dateFin', $data['dateFin']);
             }
 
-            // Logique conditionnelle :
             if (!empty($data['passees'])) {
-                // 🎯 Si sorties passées cochées
-
                 if (!empty($data['organisateur'])) {
                     $qb->andWhere('s.organisateur = :user')
                         ->andWhere('e.libelle = :etatPassee')
@@ -83,10 +81,7 @@ final class SortieController extends AbstractController
                     $qb->andWhere('e.libelle = :etatPassee')
                         ->setParameter('etatPassee', 'Passée');
                 }
-
             } else {
-                // 🎯 Si "Sorties passées" NON cochées
-
                 if (!empty($data['organisateur'])) {
                     $qb->andWhere('s.organisateur = :user')
                         ->setParameter('user', $user);
@@ -98,19 +93,19 @@ final class SortieController extends AbstractController
                 }
             }
 
-            // Autres filtres complémentaires
-            if ($data['inscrit']) {
-                $qb->andWhere(':user MEMBER OF s.inscriptions')
+            if (!empty($data['inscrit']) && empty($data['nonInscrit'])) {
+                $qb->andWhere('i.participant = :user')
                     ->setParameter('user', $user);
             }
 
-            if ($data['nonInscrit']) {
-                $qb->andWhere(':user NOT MEMBER OF s.inscriptions')
+            if (!empty($data['nonInscrit']) && empty($data['inscrit'])) {
+                $qb->andWhere('i.participant IS NULL OR i.participant != :user')
                     ->setParameter('user', $user);
             }
+
 
         } else {
-            // Cas par défaut : uniquement les sorties ouvertes à venir OU mes sorties
+            // Par défaut
             $qb->andWhere('(e.libelle = :etatOuverte AND s.dateHeureDebut > :now) OR s.organisateur = :user')
                 ->setParameter('etatOuverte', 'Ouverte')
                 ->setParameter('now', new \DateTime())
@@ -128,6 +123,7 @@ final class SortieController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
 
 
 
