@@ -36,9 +36,7 @@ final class SortieController extends AbstractController
     {
         $form = $this->createForm(SortieFilterType::class);
 
-
         $form->handleRequest($request);
-
         $user = $this->getUser();
 
         $qb = $sortieRepository->createQueryBuilder('s')
@@ -82,30 +80,37 @@ final class SortieController extends AbstractController
                         ->setParameter('etatPassee', 'Passée');
                 }
             } else {
-                if (!empty($data['organisateur'])) {
+                // ✅ Cas des filtres organisateur + inscrit (OU)
+                if (!empty($data['organisateur']) && !empty($data['inscrit']) && empty($data['nonInscrit'])) {
+                    $qb->andWhere('s.organisateur = :user OR i.participant = :user')
+                        ->setParameter('user', $user);
+                }
+                // ✅ Uniquement organisateur
+                elseif (!empty($data['organisateur'])) {
                     $qb->andWhere('s.organisateur = :user')
                         ->setParameter('user', $user);
-                } else {
-                    $qb->andWhere('e.libelle = :etatOuverte')
-                        ->andWhere('s.dateHeureDebut > :now')
+                }
+                // ✅ Uniquement inscrit
+                elseif (!empty($data['inscrit']) && empty($data['nonInscrit'])) {
+                    $qb->andWhere('i.participant = :user')
+                        ->setParameter('user', $user);
+                }
+                // ✅ Uniquement non inscrit
+                elseif (!empty($data['nonInscrit']) && empty($data['inscrit'])) {
+                    $qb->andWhere('i.participant IS NULL OR i.participant != :user')
+                        ->setParameter('user', $user);
+                }
+                // ✅ Cas par défaut : sorties ouvertes à venir ou organisées par moi
+                else {
+                    $qb->andWhere('(e.libelle = :etatOuverte AND s.dateHeureDebut > :now) OR s.organisateur = :user')
                         ->setParameter('etatOuverte', 'Ouverte')
-                        ->setParameter('now', new \DateTime());
+                        ->setParameter('now', new \DateTime())
+                        ->setParameter('user', $user);
                 }
             }
 
-            if (!empty($data['inscrit']) && empty($data['nonInscrit'])) {
-                $qb->andWhere('i.participant = :user')
-                    ->setParameter('user', $user);
-            }
-
-            if (!empty($data['nonInscrit']) && empty($data['inscrit'])) {
-                $qb->andWhere('i.participant IS NULL OR i.participant != :user')
-                    ->setParameter('user', $user);
-            }
-
-
         } else {
-            // Par défaut
+            // Cas par défaut sans filtre
             $qb->andWhere('(e.libelle = :etatOuverte AND s.dateHeureDebut > :now) OR s.organisateur = :user')
                 ->setParameter('etatOuverte', 'Ouverte')
                 ->setParameter('now', new \DateTime())
@@ -123,6 +128,7 @@ final class SortieController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
 
 
 
