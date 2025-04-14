@@ -168,6 +168,9 @@ final class SortieController extends AbstractController
         if (!$sortie) {
             throw $this->createNotFoundException('Sortie inconnue');
         }
+
+	    $sortie->setEtat($em->getRepository(Etat::class)->findOneBy(array('libelle' => $sortie->getEtat()->getLibelle())));
+
         $lieu = $em->getRepository(Lieu::class)->findOneBy(array('id' => $sortie->getLieu()->getId()));
         $mapScript = $this->mapService->generateMapScript($lieu->getLatitude(), $lieu->getLongitude(), $lieu->getNom());
         return $this->render('sortie/detail.html.twig', [
@@ -182,6 +185,8 @@ final class SortieController extends AbstractController
 	{
 		$form = $this->createForm(SortieType::class, $sortie);
 		$form->handleRequest($request);
+
+		$sortie->setEtat($em->getRepository(Etat::class)->findOneBy(array('libelle' => $sortie->getEtat()->getLibelle())));
 
 		if ($form->isSubmitted() && $form->isValid()) {
 			$em->flush();
@@ -300,6 +305,9 @@ final class SortieController extends AbstractController
 	#[Route('/{id}/publier', name: 'publier', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
 	public function publish(Sortie $sortie, EntityManagerInterface $em): Response
 	{
+
+		$sortie->setEtat($em->getRepository(Etat::class)->findOneBy(array('libelle' => $sortie->getEtat()->getLibelle())));
+
 		if ($sortie->getEtat()->getId() === 1) {
 			$sortie->setEtat($em->getRepository(Etat::class)->find(2));
 			$em->flush();
