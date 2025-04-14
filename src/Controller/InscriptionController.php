@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Etat;
 use App\Entity\Inscription;
 use App\Entity\Sortie;
 use App\Services\EmailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Clock\Clock;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -29,11 +29,12 @@ final class InscriptionController extends AbstractController
 		// recuperer l'user
 		$user = $this->getUser();
 
+		$sortie->setEtat($em->getRepository(Etat::class)->findOneBy(array('libelle' => $sortie->getEtat()->getLibelle())));
+
 		// Vérifications
 		foreach ($sortie->getInscriptions() as $inscription) {
 			if ($inscription->getParticipant() === $user) {
 				$this->addFlash('error', 'Vous êtes déjà inscrit !');
-			} else {
 				$valide = false;
 				break;
 			}
@@ -86,6 +87,8 @@ final class InscriptionController extends AbstractController
 
 		$inscription = new Inscription();
 		$valide = true;
+
+		$sortie->setEtat($em->getRepository(Etat::class)->findOneBy(array('libelle' => $sortie->getEtat()->getLibelle())));
 
 		// recuperer l'user
 		$user = $this->getUser();
