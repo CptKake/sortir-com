@@ -116,6 +116,10 @@ a:hover {
     font-size: 1.5rem;
 }
 
+.has-text-custom-primary {
+    color: var(--bulma-primary) !important;
+}
+
 
 
 @media screen and (max-width: 768px) {
