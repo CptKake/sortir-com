@@ -87,6 +87,25 @@ final class LieuController extends AbstractController{
     }
 
     #[IsGranted("ROLE_USER")]
+    #[Route('/refresh', name: 'app_refresh_lieux', methods: ['GET'])]
+    public function refreshLieux(LieuRepository $lieuRepository): Response
+    {
+        $lieux = $lieuRepository->findAll();
+
+        $lieuxData = [];
+        foreach ($lieux as $lieu) {
+            $lieuxData[] = [
+                'id' => $lieu->getId(),
+                'nom' => $lieu->getNom(),
+                'ville' => $lieu->getVille(),
+                'codePostal' => $lieu->getCodePostal()
+            ];
+        }
+
+        return $this->json($lieuxData);
+    }
+
+    #[IsGranted("ROLE_USER")]
     #[Route('/{id}', name: 'app_lieu_show', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function show(Lieu $lieu): Response
     {

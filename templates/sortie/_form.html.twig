@@ -1,173 +1,155 @@
 {{ form_start(form) }}
 
-    <div class="field">
-        <label class="label">{{ form_label(form.nom) }}</label>
-        <div class="control">
-            {{ form_widget(form.nom, {'attr': {'class': 'input is-medium'}}) }}
-        </div>
-        <p class="help is-danger">{{ form_errors(form.nom) }}</p>
+<div class="field">
+    <label class="label">{{ form_label(form.nom) }}</label>
+    <div class="control">
+        {{ form_widget(form.nom, {'attr': {'class': 'input is-medium'}}) }}
     </div>
+    <p class="help is-danger">{{ form_errors(form.nom) }}</p>
+</div>
 
-
-
-
-    <div class="columns">
-        <div class="column">
-            <div class="field">
-                <label class="label">{{ form_label(form.dateHeureDebut) }}</label>
-                <div class="control">
-                    {{ form_widget(form.dateHeureDebut, {'attr': {'class': 'input is-medium'}}) }}
-                </div>
-                <p class="help is-danger">{{ form_errors(form.dateHeureDebut) }}</p>
+<div class="columns">
+    <div class="column">
+        <div class="field">
+            <label class="label">{{ form_label(form.dateHeureDebut) }}</label>
+            <div class="control">
+                {{ form_widget(form.dateHeureDebut, {'attr': {'class': 'input is-medium'}}) }}
             </div>
-        </div>
-        <div class="column">
-            <div class="field">
-                <label class="label">{{ form_label(form.dateLimiteInscription) }}</label>
-                <div class="control">
-                    {{ form_widget(form.dateLimiteInscription, {'attr': {'class': 'input is-medium'}}) }}
-                </div>
-                <p class="help is-danger">{{ form_errors(form.dateLimiteInscription) }}</p>
-            </div>
+            <p class="help is-danger">{{ form_errors(form.dateHeureDebut) }}</p>
         </div>
     </div>
-
-    <div class="columns">
-        <div class="column">
-            <div class="field">
-                <label class="label">{{ form_label(form.nbInscriptionsMax) }}</label>
-                <div class="control">
-                    {{ form_widget(form.nbInscriptionsMax, {'attr': {'class': 'input is-medium'}}) }}
-                </div>
-                <p class="help is-danger">{{ form_errors(form.nbInscriptionsMax) }}</p>
+    <div class="column">
+        <div class="field">
+            <label class="label">{{ form_label(form.dateLimiteInscription) }}</label>
+            <div class="control">
+                {{ form_widget(form.dateLimiteInscription, {'attr': {'class': 'input is-medium'}}) }}
             </div>
-        </div>
-        <div class="column">
-            <div class="field">
-                <label class="label">{{ form_label(form.duree) }}</label>
-                <div class="control">
-                    {{ form_widget(form.duree, {'attr': {'class': 'input is-medium'}}) }}
-                </div>
-                <p class="help is-danger">{{ form_errors(form.duree) }}</p>
-            </div>
+            <p class="help is-danger">{{ form_errors(form.dateLimiteInscription) }}</p>
         </div>
     </div>
+</div>
 
-    <div class="field">
-        <label class="label">{{ form_label(form.infosSortie) }}</label>
-        <div class="control">
-            {{ form_widget(form.infosSortie, {'attr': {'class': 'textarea is-medium'}}) }}
-        </div>
-        <p class="help is-danger">{{ form_errors(form.infosSortie) }}</p>
-    </div>
-
-    <div class="field">
-        <label class="label">{{ form_label(form.campus) }}</label>
-        <div class="control">
-            {{ form_widget(form.campus, {'attr': {'class': 'select is-medium'}}) }}
-        </div>
-        <p class="help is-danger">{{ form_errors(form.campus) }}</p>
-    </div>
-
-    <div class="field mt-4 adresse-item">
-        <label class="label">Adresse</label>
-        <div class="box p-4 mb-3">
-            <div class="field">
-                <label class="label">Rechercher une adresse</label>
-                <div class="control">
-                    <input type="text" class="input is-medium adresse-autocomplete" placeholder="Commencez à saisir une adresse...">
-                </div>
+<div class="columns">
+    <div class="column">
+        <div class="field">
+            <label class="label">{{ form_label(form.nbInscriptionsMax) }}</label>
+            <div class="control">
+                {{ form_widget(form.nbInscriptionsMax, {'attr': {'class': 'input is-medium'}}) }}
             </div>
-            <div class="field">
-                <label class="label">{{ form_label(form.lieu.nom) }}</label>
-                <div class="control">
-                    {{ form_widget(form.lieu.nom, {'attr': {'class': 'input is-medium'}}) }}
-                </div>
-                <p class="help is-danger">{{ form_errors(form.lieu.nom) }}</p>
-            </div>
-            <div class="field">
-                <label class="label">{{ form_label(form.lieu.rue) }}</label>
-                <div class="control">
-                    {{ form_widget(form.lieu.rue, {'attr': {'class': 'input is-small'}}) }}
-                </div>
-                <p class="help is-danger">{{ form_errors(form.lieu.rue) }}</p>
-            </div>
-
-            <div class="columns">
-                <div class="column">
-                    <div class="field">
-                        <label class="label">{{ form_label(form.lieu.ville) }}</label>
-                        <div class="control">
-                            {{ form_widget(form.lieu.ville, {'attr': {'class': 'input is-small'}}) }}
-                        </div>
-                        <p class="help is-danger">{{ form_errors(form.lieu.ville) }}</p>
-                    </div>
-                </div>
-                <div class="column">
-                    <div class="field">
-                        <label class="label">{{ form_label(form.lieu.codePostal) }}</label>
-                        <div class="control">
-                            {{ form_widget(form.lieu.codePostal, {'attr': {'class': 'input is-small'}}) }}
-                        </div>
-                        <p class="help is-danger">{{ form_errors(form.lieu.codePostal) }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="box p-4">
-            <label class="label mb-2">Coordonnées géographiques</label>
-            <div class="columns">
-                <div class="column">
-                    <div class="field">
-                        <label class="label is-small">{{ form_label(form.lieu.latitude) }}</label>
-                        <div class="control has-icons-left">
-                            {{ form_widget(form.lieu.latitude, {'attr': {'class': 'input is-small'}}) }}
-                            <span class="icon is-small is-left">
-                                <i class="fas fa-map-marker-alt"></i>
-                            </span>
-                        </div>
-                        <p class="help is-danger">{{ form_errors(form.lieu.latitude) }}</p>
-                    </div>
-                </div>
-                <div class="column">
-                    <div class="field">
-                        <label class="label is-small">{{ form_label(form.lieu.longitude) }}</label>
-                        <div class="control has-icons-left">
-                            {{ form_widget(form.lieu.longitude, {'attr': {'class': 'input is-small'}}) }}
-                            <span class="icon is-small is-left">
-                                <i class="fas fa-map-marker-alt"></i>
-                            </span>
-                        </div>
-                        <p class="help is-danger">{{ form_errors(form.lieu.longitude) }}</p>
-                    </div>
-                </div>
-            </div>
+            <p class="help is-danger">{{ form_errors(form.nbInscriptionsMax) }}</p>
         </div>
     </div>
+    <div class="column">
+        <div class="field">
+            <label class="label">{{ form_label(form.duree) }}</label>
+            <div class="control">
+                {{ form_widget(form.duree, {'attr': {'class': 'input is-medium'}}) }}
+            </div>
+            <p class="help is-danger">{{ form_errors(form.duree) }}</p>
+        </div>
+    </div>
+</div>
 
-    <div class="field is-grouped is-grouped-centered mt-5">
-        <div class="control">
-            <button class="button is-success is-medium">
+<div class="field">
+    <label class="label">{{ form_label(form.infosSortie) }}</label>
+    <div class="control">
+        {{ form_widget(form.infosSortie, {'attr': {'class': 'textarea is-medium'}}) }}
+    </div>
+    <p class="help is-danger">{{ form_errors(form.infosSortie) }}</p>
+</div>
+
+<div class="field">
+    <label class="label">{{ form_label(form.campus) }}</label>
+    <div class="control">
+        {{ form_widget(form.campus, {'attr': {'class': 'select is-medium'}}) }}
+    </div>
+    <p class="help is-danger">{{ form_errors(form.campus) }}</p>
+</div>
+
+<div class="field mt-4">
+    <label class="label">{{ form_label(form.lieu) }}</label>
+    <div class="control">
+        {{ form_widget(form.lieu, {'attr': {'class': 'select is-medium lieu-select' }}) }}
+    </div>
+    <p class="help is-danger">{{ form_errors(form.lieu) }}</p>
+
+    <div class="mt-2">
+        <a href="{{ path('app_lieu_new') }}" class="button is-info is-small" target="_blank">
+                <span class="icon">
+                    <i class="fas fa-plus"></i>
+                </span>
+            <span>Le lieu n'existe pas ? Créez-en un nouveau</span>
+        </a>
+        <button type="button" class="button is-light is-small ml-2" id="refreshLieux">
+                <span class="icon">
+                    <i class="fas fa-sync"></i>
+                </span>
+            <span>Actualiser la liste des lieux</span>
+        </button>
+    </div>
+</div>
+
+<div class="field is-grouped is-grouped-centered mt-5">
+    <div class="control">
+        <button class="button is-success is-medium">
                 <span class="icon">
                     <i class="fas fa-save"></i>
                 </span>
-                <span>{{ button_label|default('Enregistrer') }}</span>
-            </button>
-        </div>
-        <div class="control">
-            <a href="{{ path('sortie_index') }}" class="button is-light is-medium">
+            <span>{{ button_label|default('Enregistrer') }}</span>
+        </button>
+    </div>
+    <div class="control">
+        <a href="{{ path('sortie_index') }}" class="button is-light is-medium">
                 <span class="icon">
                     <i class="fas fa-times"></i>
                 </span>
-                <span>Annuler</span>
-            </a>
-        </div>
+            <span>Annuler</span>
+        </a>
     </div>
+</div>
 
 {{ form_end(form) }}
 
 {% block javascripts %}
-    {{ address_script|raw }}
-{% endblock %}
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fonction pour actualiser la liste des lieux
+            document.getElementById('refreshLieux').addEventListener('click', function() {
+                // Récupérer la sélection actuelle
+                const currentSelection = document.querySelector('.lieu-select').value;
+
+                // Effectuer une requête AJAX pour récupérer la liste à jour des lieux
+                fetch('{{ path('app_refresh_lieux') }}')
+                    .then(response => response.json())
+                    .then(data => {
+                        const selectElement = document.querySelector('.lieu-select');
+
+                        // Sauvegarder la première option (placeholder)
+                        const firstOption = selectElement.options[0];
+
+                        // Vider le select sauf la première option
+                        selectElement.innerHTML = '';
+                        selectElement.appendChild(firstOption);
+
+                        // Remplir avec les nouvelles options
+                        data.forEach(lieu => {
+                            const option = document.createElement('option');
+                            option.value = lieu.id;
+                            option.textContent = lieu.nom + ' (' + lieu.ville + ' ' + lieu.codePostal + ')';
+
+                            // Restaurer la sélection si elle existe toujours
+                            if (lieu.id == currentSelection) {
+                                option.selected = true;
+                            }
+
+                            selectElement.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de l\'actualisation des lieux:', error);
+                    });
+            });
+        });
+    </script>
+{% endblock %}
