@@ -90,7 +90,7 @@
 
     <!-- Events à venir -->
     {% if sorties is defined and sorties|length > 0 %}
-        <section class="section has-background-light">
+        <section class="box hero is-medium has-background-light">
             <div class="container">
                 <h2 class="title is-2 has-text-centered mb-6">Sorties à venir</h2>
 
@@ -114,30 +114,38 @@
                                             {{ sortie.nom }}
                                         {% endif %}
                                     </p>
-                                    <p class="subtitle is-6">
-                                        <span class="icon"><i class="fas fa-calendar"></i></span>
-                                        {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}
-                                    </p>
-
 
                                     <div class="content">
+
+                                        <div class="tags">
+                                             <span class="tag" style="background-color:
+                                                 {% if sortie.inscriptions|length is same as sortie.nbInscriptionsMax %}
+                                                     lightcoral;
+                                                 {% elseif sortie.nbInscriptionsMax - sortie.inscriptions|length < sortie.nbInscriptionsMax/10 %}
+                                                     orange;
+                                                 {% else %}
+                                                     #fff3cd;
+                                                 {% endif %}
+                                                     color: #856404;">
+                                                <span class="icon"><i class="fas fa-users"></i></span>
+                                                {{ sortie.inscriptions|length }}/{{ sortie.nbInscriptionsMax }}
+                                            </span>
+                                            {% if is_granted('IS_AUTHENTICATED') %}
+                                                <span class="tag" style="background-color: #f5f5f5;">
+                                                    <span class="icon"><i class="fas fa-map-marker-alt"></i></span>
+                                                    {{ sortie.lieu.ville }}
+                                                </span>
+                                            {% endif %}
+                                            <span class="tag" style="background-color: #f5f5f5;">
+                                                <span class="icon"><i class="fas fa-clock"></i></span>
+                                                {{ sortie.dateHeureDebut|date('d/m/Y à H:i') }}
+                                            </span>
+                                        </div>
                                         <p>{{ sortie.infosSortie|slice(0, 100) }}
                                             {% if sortie.infosSortie|length > 100 %}
                                                 ...
                                             {% endif %}
                                         </p>
-                                        <div class="tags">
-                                    {% if is_granted('IS_AUTHENTICATED') %}
-                                        <span class="tag" style="background-color: #f5f5f5;">
-                                            <span class="icon"><i class="fas fa-map-marker-alt"></i></span>
-                                            {{ sortie.lieu.nom }}
-                                        </span>
-                                    {% endif %}
-                                            <span class="tag" style="background-color: #fff3cd; color: #856404;">
-                                        <span class="icon"><i class="fas fa-users"></i></span>
-                                        {{ sortie.inscriptions|length }}/{{ sortie.nbInscriptionsMax }}
-                                    </span>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
