@@ -35,7 +35,9 @@ final class SortieController extends AbstractController
     public function index(SortieRepository $sortieRepository, Request $request, PaginatorInterface $paginator): Response
     {
         $form = $this->createForm(SortieFilterType::class);
+
         $form->handleRequest($request);
+        $user = $this->getUser();
 
         $qb = $sortieRepository->createQueryBuilder('s')
             ->leftJoin('s.organisateur', 'o')
@@ -44,61 +46,75 @@ final class SortieController extends AbstractController
             ->leftJoin('s.etat', 'e')
             ->addSelect('o', 'i', 'c', 'e');
 
-        $user = $this->getUser();
-        $data = $form->getData();
-
         if ($form->isSubmitted() && $form->isValid()) {
-            // Filtre campus
-            if (!empty($data['campus'])) {
+            $data = $form->getData();
+
+            if ($data['campus']) {
                 $qb->andWhere('s.campus = :campus')
                     ->setParameter('campus', $data['campus']);
             }
 
-            // Filtre nom
-            if (!empty($data['search'])) {
+            if ($data['search']) {
                 $qb->andWhere('s.nom LIKE :search')
                     ->setParameter('search', '%' . $data['search'] . '%');
             }
 
-            // Dates
-            if (!empty($data['dateDebut'])) {
+            if ($data['dateDebut']) {
                 $qb->andWhere('s.dateHeureDebut >= :dateDebut')
                     ->setParameter('dateDebut', $data['dateDebut']);
             }
-            if (!empty($data['dateFin'])) {
+
+            if ($data['dateFin']) {
                 $qb->andWhere('s.dateHeureDebut <= :dateFin')
                     ->setParameter('dateFin', $data['dateFin']);
             }
 
-            // Filtre organisateur : on affiche toutes les sorties qu’il a créées, peu importe leur état
-            if (!empty($data['organisateur'])) {
-                $qb->andWhere('s.organisateur = :user')
-                    ->setParameter('user', $user);
+            if (!empty($data['passees'])) {
+                if (!empty($data['organisateur'])) {
+                    $qb->andWhere('s.organisateur = :user')
+                        ->andWhere('e.libelle = :etatPassee')
+                        ->setParameter('user', $user)
+                        ->setParameter('etatPassee', 'Passée');
+                } else {
+                    $qb->andWhere('e.libelle = :etatPassee')
+                        ->setParameter('etatPassee', 'Passée');
+                }
             } else {
-                // Sinon, on ne montre que certaines sorties
-                $qb->andWhere('e.libelle IN (:etats)')
-                    ->setParameter('etats', ['Ouverte']);
-            }
-
-            if (!empty($data['inscrit'])) {
-                $qb->andWhere(':user MEMBER OF s.inscriptions')
-                    ->setParameter('user', $user);
-            }
-
-            if (!empty($data['nonInscrit'])) {
-                $qb->andWhere(':user NOT MEMBER OF s.inscriptions')
-                    ->setParameter('user', $user);
-            }
-
-            if (empty($data['passees'])) {
-                $qb->andWhere('s.dateHeureDebut > :now')
-                    ->setParameter('now', new \DateTime());
+                // ✅ Cas des filtres organisateur + inscrit (OU)
+                if (!empty($data['organisateur']) && !empty($data['inscrit']) && empty($data['nonInscrit'])) {
+                    $qb->andWhere('s.organisateur = :user OR i.participant = :user')
+                        ->setParameter('user', $user);
+                }
+                // ✅ Uniquement organisateur
+                elseif (!empty($data['organisateur'])) {
+                    $qb->andWhere('s.organisateur = :user')
+                        ->setParameter('user', $user);
+                }
+                // ✅ Uniquement inscrit
+                elseif (!empty($data['inscrit']) && empty($data['nonInscrit'])) {
+                    $qb->andWhere('i.participant = :user')
+                        ->setParameter('user', $user);
+                }
+                // ✅ Uniquement non inscrit
+                elseif (!empty($data['nonInscrit']) && empty($data['inscrit'])) {
+                    $qb->andWhere('i.participant IS NULL OR i.participant != :user')
+                        ->setParameter('user', $user);
+                }
+                // ✅ Cas par défaut : sorties ouvertes à venir ou organisées par moi
+                else {
+                    $qb->andWhere('(e.libelle = :etatOuverte AND s.dateHeureDebut > :now) OR s.organisateur = :user')
+                        ->setParameter('etatOuverte', 'Ouverte')
+                        ->setParameter('now', new \DateTime())
+                        ->setParameter('user', $user);
+                }
             }
 
         } else {
-            // Par défaut (aucun filtre soumis) : on ne montre que les sorties ouvertes
-            $qb->andWhere('e.libelle IN (:etats)')
-                ->setParameter('etats', ['Ouverte']);
+            // Cas par défaut sans filtre
+            $qb->andWhere('(e.libelle = :etatOuverte AND s.dateHeureDebut > :now) OR s.organisateur = :user')
+                ->setParameter('etatOuverte', 'Ouverte')
+                ->setParameter('now', new \DateTime())
+                ->setParameter('user', $user);
         }
 
         $sorties = $paginator->paginate(
@@ -114,7 +130,12 @@ final class SortieController extends AbstractController
     }
 
 
-	#[Route('/create', name: 'create', methods: ['GET', 'POST'])]
+
+
+
+
+
+    #[Route('/create', name: 'create', methods: ['GET', 'POST'])]
 	public function create(Request $request, EntityManagerInterface $em, AddressAutocompleteService $addressService): Response
 	{
 		$sortie = new Sortie();
@@ -149,6 +170,9 @@ final class SortieController extends AbstractController
         if (!$sortie) {
             throw $this->createNotFoundException('Sortie inconnue');
         }
+
+	    $sortie->setEtat($em->getRepository(Etat::class)->findOneBy(array('libelle' => $sortie->getEtat()->getLibelle())));
+
         $lieu = $em->getRepository(Lieu::class)->findOneBy(array('id' => $sortie->getLieu()->getId()));
         $mapScript = $this->mapService->generateMapScript($lieu->getLatitude(), $lieu->getLongitude(), $lieu->getNom());
         return $this->render('sortie/detail.html.twig', [
@@ -163,6 +187,8 @@ final class SortieController extends AbstractController
 	{
 		$form = $this->createForm(SortieType::class, $sortie);
 		$form->handleRequest($request);
+
+		$sortie->setEtat($em->getRepository(Etat::class)->findOneBy(array('libelle' => $sortie->getEtat()->getLibelle())));
 
 		if ($form->isSubmitted() && $form->isValid()) {
 			$em->flush();
@@ -281,6 +307,9 @@ final class SortieController extends AbstractController
 	#[Route('/{id}/publier', name: 'publier', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
 	public function publish(Sortie $sortie, EntityManagerInterface $em): Response
 	{
+
+		$sortie->setEtat($em->getRepository(Etat::class)->findOneBy(array('libelle' => $sortie->getEtat()->getLibelle())));
+
 		if ($sortie->getEtat()->getId() === 1) {
 			$sortie->setEtat($em->getRepository(Etat::class)->find(2));
 			$em->flush();

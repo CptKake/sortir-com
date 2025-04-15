@@ -21,7 +21,6 @@
                     {{ form_label(form.campus, null, {'label_attr': {'class': 'label'}}) }}
                     <div class="control has-icons-right">
                         {{ form_widget(form.campus, {'attr': {'class': 'select is-fullwidth'}}) }}
-                        <span class="icon is-small is-right"><i class="fas fa-angle-down"></i></span>
                     </div>
                 </div>
             </div>
@@ -112,8 +111,38 @@
             {# ----- Affichage des cartes ----- #}
             <div class="columns is-multiline is-variable is-2">
                 {% for sortie in sorties %}
+                    {# ----- Initilialisation de la couleur du tag selon sortie.etat.libelle ----- #}
+                    {% if sortie.etat.libelle is same as 'Annulée' %}
+                        {% set tag = 'is-danger' %}
+                    {% endif %}
+                    {% if sortie.etat.libelle is same as 'Passée' %}
+                        {% set tag = 'is-danger' %}
+                    {% endif %}
+                    {% if sortie.etat.libelle is same as 'Complète' %}
+                        {% set tag = 'is-warning' %}
+                    {% endif %}
+                    {% if sortie.etat.libelle is same as 'Activité en cours' %}
+                        {% set tag = 'is-info' %}
+                    {% endif %}
+                    {% if sortie.etat.libelle is same as 'Clôturée' %}
+                        {% set tag = 'is-warning' %}
+                    {% endif %}
+                    {% if sortie.etat.libelle is same as 'Ouverte' %}
+                        {% set tag = 'is-success' %}
+                    {% endif %}
+
                     <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
                         <div class="card">
+
+                            <div class="card-image">
+                                <figure class="image">
+                                    <img src="{{ asset('uploads/activites/afterwork' ~ random(1, 5) ~ '.webp') }}">
+                                </figure>
+                                <div class="tag {{ tag }} is-medium" style="position: absolute; top: 10px; right: 10px;">
+                                    {{ sortie.etat.libelle }}
+                                </div>
+
+                            </div>
                             <div class="card-content">
                                 <p class="title is-4">
                                     <a href="{{ path('sortie_detail', {id: sortie.id}) }}">
@@ -125,11 +154,28 @@
                                         {{ sortie.organisateur.pseudo }}
                                     </a>
                                 </p>
-                                <p><strong>Début :</strong> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</p>
-                                <p><strong>Lieu :</strong> {{ sortie.lieu.ville }}</p>
-                                <p><strong>Inscriptions :</strong> {{ sortie.inscriptions.count }} / {{ sortie.nbInscriptionsMax }}</p>
+                                <span class="tag" style="background-color:
+                                    {% if sortie.inscriptions|length is same as sortie.nbInscriptionsMax %}
+                                        lightcoral;
+                                    {% elseif sortie.nbInscriptionsMax - sortie.inscriptions|length < sortie.nbInscriptionsMax/10 %}
+                                        orange;
+                                    {% else %}
+                                        #fff3cd;
+                                    {% endif %}
+                                color: #856404;">
+                                    <span class="icon"><i class="fas fa-users"></i></span>
+                                    {{ sortie.inscriptions|length }}/{{ sortie.nbInscriptionsMax }}
+                                </span>
+                                <span class="tag" style="background-color: #f5f5f5;">
+                                    <span class="icon"><i class="fas fa-map-marker-alt"></i></span>
+                                    {{ sortie.lieu.ville }}
+                                </span>
+                                <span class="tag" style="background-color: #f5f5f5;">
+                                    <span class="icon"><i class="fas fa-clock"></i></span>
+                                    {{ sortie.dateHeureDebut|date('d/m/Y à H:i') }}
+                                </span>
                                 <div class="mt-3">
-                                    {{ sortie.infosSortie }}
+                                    <p>{{ sortie.infosSortie|slice(0, 100) }}{% if sortie.infosSortie|length > 100 %}...{% endif %}</p>
                                 </div>
                             </div>
                         </div>

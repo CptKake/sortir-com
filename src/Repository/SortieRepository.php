@@ -16,6 +16,25 @@ class SortieRepository extends ServiceEntityRepository
         parent::__construct($registry, Sortie::class);
     }
 
+
+    public function findUpcomingSorties(int $limit = 6): array
+    {
+        $now = new \DateTime();
+
+        // Récupérer les sorties à l'état "Ouverte" dont la date est dans le futur
+        // et qui ne sont pas complètes
+        return $this->createQueryBuilder('s')
+            ->join('s.etat', 'e')
+            ->andWhere('e.libelle = :etat')
+            ->andWhere('s.dateHeureDebut > :now')
+            ->andWhere('s.nbInscriptionsMax > SIZE(s.inscriptions)')
+            ->setParameter('etat', 'Ouverte')
+            ->setParameter('now', $now)
+            ->orderBy('s.dateHeureDebut', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
     //    /**
     //     * @return Sortie[] Returns an array of Sortie objects
     //     */

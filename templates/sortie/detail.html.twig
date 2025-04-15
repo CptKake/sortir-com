@@ -5,69 +5,87 @@
 {% block body %}
     <div class="container">
         <div class="section">
-            <div class="column has-text-centered">
+            <div class="has-text-centered">
                 <h1 class="title" style="color: #a11616;">{{ sortie.nom|upper }}</h1><br>
             </div>
+            <div class="buttons mb-6">
+                <a href="{{ path('sortie_index') }}" class="button is-link">
+                    <span class="icon"><i class="fas fa-arrow-left"></i></span>
+                    <span>Retour à la liste des sorties</span>
+                </a>
+            </div>
             <div class="box">
+                <h2 class="content title" style="color: #a11616;">Infos</h2>
                 <ul>
-                    <li class="box content"><strong>Date et heure de la sortie :</strong> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</li>
-                    <li class="box content"><strong>Date limite d'inscription :</strong> {{ sortie.dateLimiteInscription|date('d/m/Y H:i') }}</li>
+                    <li class="content"><strong>Date et heure de la sortie :</strong> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</li>
+                    <li class="content"><strong>Date limite d'inscription :</strong> {{ sortie.dateLimiteInscription|date('d/m/Y H:i') }}</li>
                     {% set nbplaces = sortie.inscriptions.count %}
-                    <li class="box content"><strong>Inscrits :</strong> {{ nbplaces }} / {{ sortie.nbInscriptionsMax }}</li>
-                    <li class="box content"><strong>Durée :</strong> {{ sortie.duree }} minutes</li>
-                    <li class="box content"><strong>Description et infos :</strong> {{ sortie.infosSortie }}</li>
-                    <li class="box content"><strong>Ville organisatrice :</strong> {{ sortie.lieu.ville }}</li>
-                    <li class="box content"><strong>Lieu :</strong> {{ sortie.lieu.nom }}</li>
-                    <li class="box content"><strong>Rue </strong> {{ sortie.lieu.rue }}</li>
-                    <li class="box content"><strong>Code postal :</strong> {{ sortie.lieu.codePostal }}</li>
-
-                    <div id="map" style="height: 50vh;">
-                        {{ mapScript|raw }}
-                    </div>
-                        <a href="https://www.google.com/maps?q={{ lieu.latitude }},{{ lieu.longitude }}" target="_blank" class="button is-info">
-                            <span class="icon">
-                                <i class="fas fa-map-marker-alt"></i>
-                            </span>
-                            <span>Voir sur Google Maps</span>
-                        </a>
-
-                    <div class="box">
-                        <h2 class="title">Participants</h2>
-                        <div class="table-container">
-                            <table class="table is-fullwidth is-striped is-hoverable">
-                                <thead>
-                                <tr>
-                                    <th>Nom</th>
-                                    <th>Prénom</th>
-                                    <th>Voir le profil</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for participant in sortie.participants %}
-                                    <tr>
-                                        <td>{{ participant.nom }}</td>
-                                        <td>{{ participant.prenom }}</td>
-                                        <td>
-                                            <div class="buttons are-small">
-                                                <a href="{{ path('app_profile_detail', {'id': participant.id}) }}" class="button is-info">
-                                                    <span class="icon"><i class="fas fa-eye"></i></span>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% else %}
-                                    <tr>
-                                        <td colspan="6" class="has-text-centered">Aucun participant</td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <li class="content"><strong>Inscrits :</strong> {{ nbplaces }} / {{ sortie.nbInscriptionsMax }}</li>
+                    <li class="content"><strong>Durée :</strong> {{ sortie.duree }} minutes</li>
+                    <li class="content"><strong>Description et infos :</strong> {{ sortie.infosSortie }}</li>
                 </ul>
+            </div>
+            <div class="box">
+                <h2 class="content title" style="color: #a11616;">Adresse</h2>
+                <div class="box">
+                    <Strong>{{ lieu.nom }} : </Strong>
+                    <p>{{ lieu.rue }}</p>
+                    <p>{{ lieu.codePostal }} {{ lieu.ville }}</p></li>
+                </div>
+                <div id="map" style="height: 50vh;border-radius: 10px">
+                    {{ mapScript|raw }}
+                </div>
+                <div class="buttons mt-4">
+                    <a href="https://www.google.com/maps?q={{ lieu.latitude }},{{ lieu.longitude }}" target="_blank" class="button is-info">
+                        <span class="icon"><i class="fas fa-map-marker-alt"></i></span>
+                        <span>Voir sur Google Maps</span>
+                    </a>
+                </div>
+            </div>
+            <div class="box">
+                <h2 class="title" style="color: #a11616;">Participants</h2>
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Voir le profil</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for participant in sortie.participants %}
+                            <tr>
+                                <td><figure class="image is-32x32">
+                                        {% if participant.urlPhoto is defined and participant.urlPhoto %}
+                                            <img class="is-rounded" src="{{ asset('uploads/photos/' ~ participant.urlPhoto) }}" alt="Photo de {{ participant.pseudo }}">
+                                        {% else %}
+                                            <img class="is-rounded" src="{{ asset('images/défaut.png') }}" alt="Photo de profil par défaut">
+                                        {% endif %}
+                                    </figure></td>
+                                <td>{{ participant.nom }}</td>
+                                <td>{{ participant.prenom }}</td>
+                                <td>
+                                    <div class="buttons are-small">
+                                        <a href="{{ path('app_profile_detail', {'id': participant.id}) }}" class="button is-info">
+                                            <span class="icon"><i class="fas fa-eye"></i></span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="has-text-centered">Aucun participant</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
+
     {% if app.user.id is same as sortie.organisateur.id and sortie.etat.id is same as 1 %}
         <div class="buttons mb-4">
             <a href="{{ path('sortie_publier', {'id': sortie.id}) }}" class="button is-success">
@@ -76,6 +94,7 @@
             </a>
         </div>
     {% endif %}
+
     {% if app.user.id is same as sortie.organisateur.id and sortie.etat.libelle is not same as 'Annulée' %}
         <div class="buttons mb-4">
             <a href="{{ path('sortie_editer', {'id': sortie.id}) }}" class="button is-success">
@@ -84,14 +103,16 @@
             </a>
         </div>
     {% endif %}
-        {% if (app.user == sortie.organisateur or is_granted('ROLE_ADMIN'))
-            and sortie.etat.id not in [5, 6] %} {# 5=Passée, 6=Annulée #}
+
+    {% if (app.user == sortie.organisateur or is_granted('ROLE_ADMIN'))
+        and sortie.etat.id not in [5, 6] %} {# 5=Passée, 6=Annulée #}
+        <div class="buttons mb-4">
             <a href="{{ path('sortie_annuler', {'id': sortie.id}) }}" class="button is-danger">
                 <span class="icon"><i class="fas fa-ban"></i></span>
                 <span>Annuler la sortie</span>
             </a>
-        {% endif %}
-
+        </div>
+    {% endif %}
 
     {% set inscrit = 0 %}
 
@@ -127,6 +148,14 @@
             </a>
         </div>
     {% endif %}
+
+    <div class="buttons mb-6">
+        <a href="{{ path('sortie_index') }}" class="button is-link">
+            <span class="icon"><i class="fas fa-arrow-left"></i></span>
+            <span>Retour à la liste des sorties</span>
+        </a>
+    </div>
+
 
 {% endblock %}
 

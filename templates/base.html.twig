@@ -10,35 +10,33 @@
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
             <link rel="stylesheet" href="{{ asset('css/bulma.min.css') }}">
             <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
-
         {% endblock %}
-
-
     </head>
+
     <body>
-    <div class="wrapper is-flex is-flex-direction-column" style="min-height: 100vh;">
-        {% block header %}
-            {% include 'partials/_navbar.html.twig' %}
-        {% endblock %}
+        <div class="wrapper is-flex is-flex-direction-column" style="min-height: 100vh;">
+            {% block header %}
+                {% include 'partials/_navbar.html.twig' %}
+            {% endblock %}
 
-        <section class="section is-flex-grow-1">
-            <div class="container">
-                {% for label, messages in app.flashes %}
-                    {% for message in messages %}
-                        <div class="notification is-{{ label }} is-light">
-                            <button class="delete"></button>
-                            {{ message }}
-                        </div>
+            <section class="section is-flex-grow-1">
+                <div class="container">
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="notification is-{{ label }} is-light">
+                                <button class="delete"></button>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
                     {% endfor %}
-                {% endfor %}
 
-                {% block body %}{% endblock %}
-            </div>
-        </section>
+                    {% block body %}{% endblock %}
+                </div>
+            </section>
 
-        {% block footer %}
-            {% include 'partials/_footer.html.twig' %}
-        {% endblock %}
-    </div>
+            {% block footer %}
+                {% include 'partials/_footer.html.twig' %}
+            {% endblock %}
+        </div>
     </body>
 </html>

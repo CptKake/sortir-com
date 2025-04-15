@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Lieu;
+use App\Entity\Sortie;
 use App\Form\LieuType;
 use App\Repository\LieuRepository;
 use App\Services\AddressAutocompleteService;
@@ -26,20 +27,37 @@ final class LieuController extends AbstractController{
 
     #[IsGranted("ROLE_USER")]
     #[Route(name: 'app_lieu_index', methods: ['GET'])]
-    public function index(LieuRepository $lieuRepository, PaginatorInterface $paginator, Request $request): Response
-    {
-        $query = $lieuRepository->createQueryBuilder('s')->getQuery();
+    public function index(
+        LieuRepository $lieuRepository,
+        PaginatorInterface $paginator,
+        Request $request
+    ): Response {
+        $form = $this->createForm(\App\Form\LieuFilterType::class, null, [
+            'method' => 'GET',
+        ]);
+        $form->handleRequest($request);
+
+        $qb = $lieuRepository->createQueryBuilder('s');
+
+        $search = $form->get('search')->getData();
+        if (!empty($search)) {
+            $qb->andWhere('s.nom LIKE :search OR s.ville LIKE :search OR s.codePostal LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
 
         $lieux = $paginator->paginate(
-            $query,
+            $qb->getQuery(),
             $request->query->getInt('page', 1),
             12
         );
 
         return $this->render('lieu/index.html.twig', [
             'lieux' => $lieux,
+            'form' => $form->createView(),
         ]);
     }
+
+
 
     #[IsGranted("ROLE_USER")]
     #[Route('/new', name: 'app_lieu_new', methods: ['GET', 'POST'])]
@@ -82,7 +100,7 @@ final class LieuController extends AbstractController{
 
     #[IsGranted("ROLE_USER")]
     #[Route('/{id}/edit', name: 'app_lieu_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
-    public function edit(Request $request, Lieu $lieu, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Lieu $lieu, EntityManagerInterface $entityManager, AddressAutocompleteService $addressService): Response
     {
         $form = $this->createForm(LieuType::class, $lieu);
         $form->handleRequest($request);
@@ -96,6 +114,10 @@ final class LieuController extends AbstractController{
         return $this->render('lieu/edit.html.twig', [
             'lieu' => $lieu,
             'form' => $form,
+            'address_script' => $addressService->generateAutocompleteScript('.adresse-autocomplete'), [
+                'limit'=>8,
+                'minLength'=>3,
+                ]
         ]);
     }
 
@@ -104,8 +126,21 @@ final class LieuController extends AbstractController{
     public function delete(Request $request, Lieu $lieu, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$lieu->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($lieu);
-            $entityManager->flush();
+            try {
+                $sortiesAssociees = $entityManager->getRepository(Sortie::class)->count(['lieu' => $lieu]);
+
+                if ($sortiesAssociees > 0) {
+                    $this-> addFlash('danger', 'Ce lieu ne peut pas être supprimé car utilisé dans une sortie');
+                    return $this->redirectToRoute('app_lieu_index', [], Response::HTTP_SEE_OTHER);
+                }
+                $entityManager->remove($lieu);
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Le lieu a été supprimé avec succés');
+            } catch (\Exception $e) {
+                $this->addFlash('danger', $e->getMessage());
+            }
+
         }
 
         return $this->redirectToRoute('app_lieu_index', [], Response::HTTP_SEE_OTHER);

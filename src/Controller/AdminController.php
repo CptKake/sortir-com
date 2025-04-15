@@ -166,18 +166,40 @@ class AdminController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        $query = $em->getRepository(Participant::class)->createQueryBuilder('u')->getQuery();
+        $search = $request->query->get('search');
+        $isAdmin = $request->query->get('admin');
+        $isActive = $request->query->get('actif');
+
+        $qb = $em->getRepository(Participant::class)->createQueryBuilder('u');
+
+        if ($search) {
+            $qb->andWhere('u.pseudo LIKE :search OR u.nom LIKE :search OR u.email LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
+
+        if ($isAdmin !== null) {
+            $qb->andWhere('u.roles LIKE :adminRole')
+                ->setParameter('adminRole', '%ROLE_ADMIN%');
+
+        }
+
+        if ($isActive !== null) {
+            $qb->andWhere('u.actif = :actif')
+                ->setParameter('actif', (bool) $isActive);
+        }
 
         $pagination = $paginator->paginate(
-            $query,
+            $qb->getQuery(),
             $request->query->getInt('page', 1),
-            10
+            9
         );
 
         return $this->render('admin/user_list.html.twig', [
             'utilisateurs' => $pagination,
+
         ]);
     }
+
 
     #[Route('/admin/utilisateurs/action', name: 'admin_users_mass_action', methods: ['POST'])]
     public function massAction(Request $request, EntityManagerInterface $em): Response
