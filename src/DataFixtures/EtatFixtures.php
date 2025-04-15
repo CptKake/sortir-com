@@ -14,6 +14,7 @@ class EtatFixtures extends Fixture
     public const ETAT_ACTIVITE_EN_COURS = 'ETAT_ACTIVITE_EN_COURS';
     public const ETAT_PASSEE = 'ETAT_PASSEE';
     public const ETAT_ANNULEE = 'ETAT_ANNULEE';
+	public const ETAT_COMPLETE = 'ETAT_COMPLETE';
 
     public function load(ObjectManager $manager): void
     {
@@ -23,7 +24,8 @@ class EtatFixtures extends Fixture
             self::ETAT_CLOTUREE => 'Clôturée',
             self::ETAT_ACTIVITE_EN_COURS => 'Activité en cours',
             self::ETAT_PASSEE => 'Passée',
-            self::ETAT_ANNULEE => 'Annulée'
+            self::ETAT_ANNULEE => 'Annulée',
+	        self::ETAT_COMPLETE => 'Complète'
         ];
 
         foreach ($etats as $reference => $libelle) {
