@@ -38,5 +38,29 @@
                 {% include 'partials/_footer.html.twig' %}
             {% endblock %}
         </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Cibler spécifiquement les notifications Bulma
+                const notifications = document.querySelectorAll('.notification');
+
+                notifications.forEach(function(notification) {
+                    // Récupérer le bouton de suppression
+                    const deleteButton = notification.querySelector('.delete');
+
+                    if (deleteButton) {
+                        // Ajouter l'événement de clic au bouton de suppression
+                        deleteButton.addEventListener('click', function() {
+                            notification.remove();
+                        });
+                    }
+
+                    // Auto-suppression après 10 secondes
+                    setTimeout(function() {
+                        notification.remove();
+                    }, 10000);
+                });
+            });
+        </script>
     </body>
 </html>
