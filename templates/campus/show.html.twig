@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Campus{% endblock %}
+
+{% block body %}
+    <h1 class="title">{{ campus.nom }}</h1>
+
+    <div class="buttons mb-4">
+        <a href="{{ path('app_campus_index') }}" class="button is-link">
+            <span class="icon"><i class="fas fa-arrow-left"></i></span>
+            <span>Retour à la liste</span>
+        </a>
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_campus_edit', {'id': campus.id}) }}" class="button is-warning">
+                <span class="icon"><i class="fas fa-edit"></i></span>
+                <span>Modifier</span>
+            </a>
+            <form method="post" action="{{ path('app_campus_delete', {'id': campus.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce campus ?');" style="display: inline-block;">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ campus.id) }}">
+                <button class="button is-danger">
+                    <span class="icon"><i class="fas fa-trash"></i></span>
+                    <span>Supprimer</span>
+                </button>
+            </form>
+        {% endif %}
+    </div>
+
+<div class="box">
+    <div class="columns">
+        <div class="column">
+            <table class="table is-striped is-fullwidth">
+                <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ campus.id }}</td>
+                </tr>
+                <tr>
+                    <th>Nom</th>
+                    <td>{{ campus.nom }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

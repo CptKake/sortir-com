@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Campus{% endblock %}
+
+{% block body %}
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-8">
+                    <div class="box">
+                        <h1 class="title has-text-centered mb-5">Modifier un Campus</h1>
+                        {{ include('campus/_form.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
