@@ -10,11 +10,15 @@ use App\Entity\Sortie;
 use App\Entity\Ville;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SortieType extends AbstractType
@@ -23,40 +27,49 @@ class SortieType extends AbstractType
     {
         $builder
             ->add('nom', TextType::class, [
-				'label' => 'Nom',
-	            'attr' => [
-					'placeholder' => 'Nom',
-	            ]
+                'label' => 'Nom',
+                'attr' => [
+                    'placeholder' => 'Nom',
+                ]
             ])
             ->add('dateHeureDebut', DateTimeType::class, [
-				'label' => 'Début',
+                'label' => 'Début',
                 'widget' => 'single_text',
             ])
             ->add('duree', IntegerType::class, [
-				'label' => 'duree',
-	            'attr' => [
-					'placeholder' => 'durée en min',
-	            ]
+                'label' => 'duree',
+                'attr' => [
+                    'placeholder' => 'durée en min',
+                ]
             ])
             ->add('dateLimiteInscription', DateTimeType::class, [
-				'label' => 'Limite d\'inscription',
-	            'widget' => 'single_text',
+                'label' => 'Limite d\'inscription',
+                'widget' => 'single_text',
             ])
             ->add('nbInscriptionsMax', IntegerType::class, [
-				'label' => 'Nombre de participants maximum',
+                'label' => 'Nombre de participants maximum',
             ])
             ->add('infosSortie', TextareaType::class, [
-				'label' => 'Information sortie',
-	            'attr' => [
-					'placeholder' => 'Votre description ici...',
-	            ]
+                'label' => 'Information sortie',
+                'attr' => [
+                    'placeholder' => 'Votre description ici...',
+                ]
             ])
             ->add('campus', EntityType::class, [
                 'class' => Campus::class,
                 'choice_label' => 'nom',
             ])
-            ->add('lieu', LieuType::class)
-        ;
+            ->add('lieu', EntityType::class, [
+                'class' => Lieu::class,
+                'choice_label' => function (Lieu $lieu) {
+                    return $lieu->getNom() . ' (' . $lieu->getVille() . ' ' . $lieu->getCodePostal() . ')';
+                },
+                'placeholder' => 'Sélectionnez un lieu existant',
+                'required' => true,
+                'attr' => [
+                    'class' => 'lieu-select'
+                ]
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

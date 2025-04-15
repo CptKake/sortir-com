@@ -136,33 +136,42 @@ final class SortieController extends AbstractController
 
 
     #[Route('/create', name: 'create', methods: ['GET', 'POST'])]
-	public function create(Request $request, EntityManagerInterface $em, AddressAutocompleteService $addressService): Response
-	{
-		$sortie = new Sortie();
-		$user = $this->getUser();
-		$sortie->setOrganisateur($user);
-		$sortie->setEtat($em->getRepository(Etat::class)->find(1));
-		$form = $this->createForm(SortieType::class, $sortie);
-		$form->handleRequest($request);
+    public function create(Request $request, EntityManagerInterface $em): Response
+    {
+        $sortie = new Sortie();
+        $user = $this->getUser();
+        $sortie->setOrganisateur($user);
+        $sortie->setEtat($em->getRepository(Etat::class)->find(1));
+        $form = $this->createForm(SortieType::class, $sortie);
+        $form->handleRequest($request);
 
-		if ($form->isSubmitted() && $form->isValid()) {
-			$em->persist($sortie);
-			$em->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Vérifier que le lieu est bien sélectionné
+            $lieu = $form->get('lieu')->getData();
 
-			$this->addFlash('success', 'La sortie a été créée');
+            if (!$lieu) {
+                $this->addFlash('error', 'Veuillez sélectionner un lieu pour la sortie');
+                return $this->render('sortie/create.html.twig', [
+                    'sortie' => $sortie,
+                    'form' => $form->createView(),
 
-			return $this->redirectToRoute('sortie_index');
-		}
+                ]);
+            }
 
-        $addressScript = $addressService->generateAutocompleteScript('.adresse-autocomplete');
+            $em->persist($sortie);
+            $em->flush();
 
-		return $this->render('sortie/create.html.twig', [
-			'sortie' => $sortie,
-			'form' => $form,
-            'address_script' => $addressScript,
-		]);
+            $this->addFlash('success', 'La sortie a été créée');
 
-	}
+            return $this->redirectToRoute('sortie_index');
+        }
+
+        return $this->render('sortie/create.html.twig', [
+            'sortie' => $sortie,
+            'form' => $form->createView(),
+
+        ]);
+    }
 
     #[Route('/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function show(Sortie $sortie, EntityManagerInterface $em): Response
@@ -183,7 +192,7 @@ final class SortieController extends AbstractController
     }
 
 	#[Route('/{id}/editer', name: 'editer', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
-	public function edit(Request $request, Sortie $sortie, EntityManagerInterface $em, AddressAutocompleteService $addressService): Response
+	public function edit(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
 	{
 		$form = $this->createForm(SortieType::class, $sortie);
 		$form->handleRequest($request);
@@ -198,12 +207,10 @@ final class SortieController extends AbstractController
 			return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
 		}
 
-        $addressScript = $addressService->generateAutocompleteScript('.adresse-autocomplete');
 
 		return $this->render('sortie/edit.html.twig', [
 			'sortie' => $sortie,
 			'form' => $form,
-            'address_script' => $addressScript,
 		]);
 	}
 
