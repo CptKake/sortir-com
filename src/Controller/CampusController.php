@@ -23,7 +23,6 @@ final class CampusController extends AbstractController{
         ]);
     }
 
-    #[IsGranted("ROLE_ADMIN")]
     #[Route('/new', name: 'app_campus_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -44,7 +43,6 @@ final class CampusController extends AbstractController{
         ]);
     }
 
-    #[IsGranted("ROLE_ADMIN")]
     #[Route('/{id}', name: 'app_campus_show', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function show(Campus $campus): Response
     {
@@ -53,7 +51,6 @@ final class CampusController extends AbstractController{
         ]);
     }
 
-    #[IsGranted("ROLE_ADMIN")]
     #[Route('/{id}/edit', name: 'app_campus_edit',requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function edit(Request $request, Campus $campus, EntityManagerInterface $entityManager): Response
     {
@@ -72,7 +69,6 @@ final class CampusController extends AbstractController{
         ]);
     }
 
-    #[IsGranted("ROLE_ADMIN")]
     #[Route('/{id}', name: 'app_campus_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(Request $request, Campus $campus, EntityManagerInterface $entityManager): Response
     {
