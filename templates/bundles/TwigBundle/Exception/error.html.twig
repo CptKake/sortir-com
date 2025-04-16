@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur inconnue{% endblock %}
+
+{% block body %}
+    <div class="container has-text-centered">
+        <h1 class="title">Erreur inconnue</h1>
+        <p>Désolé, vous avez rencontrez une erreur inconnue.</p>
+        <a href="{{ path('app_main') }}" class="button is-primary mt-4">Retour à l'accueil</a>
+    </div>
+{% endblock %}

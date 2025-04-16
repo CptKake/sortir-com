@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Campus index{% endblock %}
+
+{% block body %}
+    <div class="container has-text-centered">
+        <h1 class="title">Liste des Campus</h1>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="buttons mb-4 is-centered">
+                <a href="{{ path('app_campus_new') }}" class="button is-success">
+                    <span class="icon"><i class="fas fa-plus"></i></span>
+                    <span>Ajouter un campus</span>
+                </a>
+            </div>
+        {% endif %}
+
+        {# vue PC-Tablette #}
+        <div class="is-hidden-mobile  is-flex is-justify-content-center">
+            <div class="table-container">
+                <table class="table is-fullwidth is-striped is-hoverable">
+                    <thead class="is-primary">
+                    <tr>
+                        <th>Id</th>
+                        <th>Nom</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for campus in campuses %}
+                        <tr>
+                            <td>{{ campus.id }}</td>
+                            <td>{{ campus.nom }}</td>
+                            <td>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <div class="buttons are-small">
+                                        <a href="{{ path('app_campus_show', {'id': campus.id}) }}" class="button is-info">
+                                            <span class="icon"><i class="fas fa-eye"></i></span>
+                                        </a>
+                                        <a href="{{ path('app_campus_edit', {'id': campus.id}) }}" class="button is-warning">
+                                            <span class="icon"><i class="fas fa-edit"></i></span>
+                                        </a>
+                                        <form method="post" action="{{ path('app_campus_delete', {'id': campus.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce campus ?');" style="display: inline-block;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ campus.id) }}">
+                                            <button class="button is-danger">
+                                                <span class="icon"><i class="fas fa-trash"></i></span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="3">no records found</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {# Vue mobile #}
+        <div class="is-hidden-tablet">
+            {% for campus in campuses %}
+                <div class="card mb-4">
+                    <div class="card-content">
+                        <p class="title is-5">{{ campus.nom }}</p>
+                    </div>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <footer class="card-footer">
+                            <a href="{{ path('app_campus_show', {'id': campus.id}) }}" class="card-footer-item has-text-info">
+                                <span class="icon"><i class="fas fa-eye"></i></span>
+                                <span>Voir</span>
+                            </a>
+                            <a href="{{ path('app_campus_edit', {'id': campus.id}) }}" class="card-footer-item has-text-warning">
+                                <span class="icon"><i class="fas fa-edit"></i></span>
+                                <span>Modifier</span>
+                            </a>
+                            <form method="post" action="{{ path('app_campus_delete', {'id': campus.id}) }}"
+                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce lieu ?');"
+                                  class="card-footer-item" style="margin: 0; padding: 0;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ campus.id) }}">
+                                <button type="submit" class="card-footer-item has-text-danger" style="width: 100%; border: none; background: none;">
+                                    <span class="icon"><i class="fas fa-trash"></i></span>
+                                    <span>Supprimer</span>
+                                </button>
+                            </form>
+                        </footer>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="notification is-info is-light">
+                    Aucun lieu trouvé
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

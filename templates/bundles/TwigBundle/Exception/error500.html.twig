@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur interne du serveur{% endblock %}
+
+
+{% block body %}
+    <div class="container">
+        <div class="section">
+            <div class="box has-text-centered">
+                <h1 class="title has-text-danger">500 - Erreur interne du serveur</h1>
+
+                <div class="error-image-container">
+                    <figure class="image is-128x128 mx-auto">
+                        <img src="{{ asset('images/erreur500.png') }}" alt="aaaarrgggg" class="has-radius-normal">
+                    </figure>
+                </div>
+
+                <div class="error-message-container mt-auto">
+                    <p class="subtitle mt-4">Désolé, ça marche pas et c'est rageant.</p>
+                </div>
+
+                <div class="buttons is-centered mt-5">
+                    <a href="{{ path('app_main') }}" class="button is-link">
+                        <span class="icon"><i class="fas fa-home"></i></span>
+                        <span>Retour à l'accueil</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accès interdit{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="section">
+            <div class="box has-text-centered">
+                <h1 class="title has-text-danger">403 - Accès interdit</h1>
+
+                <div class="error-image-container">
+                    <figure class="image is-128x128 mx-auto">
+                        <img src="{{ asset('images/erreur403.png') }}" alt="erreur403" class="has-radius-normal">
+                    </figure>
+                </div>
+
+                <div class="error-message-container mt-6">
+                    <p class="subtitle mt-4">Désolé, vous n'avez pas les droits nécessaires pour accéder à cette page.</p>
+                </div>
+
+                <div class="buttons is-centered mt-5">
+                    <a href="{{ path('app_main') }}" class="button is-link">
+                        <span class="icon"><i class="fas fa-home"></i></span>
+                        <span>Retour à l'accueil</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{{ form_start(form) }}
+<div class="field">
+    <label class="label">{{ form_label(form.nom) }}</label>
+    <div class="control">
+        {{ form_widget(form.nom, {'attr': {'class': 'input is-medium'}}) }}
+    </div>
+    <p class="help is-danger">{{ form_errors(form.nom) }}</p>
+</div>
+
+<div class="field is-grouped is-grouped-centered mt-5">
+    <div class="control">
+        <button class="button is-success is-medium">
+                <span class="icon">
+                    <i class="fas fa-save"></i>
+                </span>
+            <span>{{ button_label|default('Enregistrer') }}</span>
+        </button>
+    </div>
+    <div class="control">
+        <a href="{{ path('app_campus_index') }}" class="button is-light is-medium">
+                <span class="icon">
+                    <i class="fas fa-times"></i>
+                </span>
+            <span>Annuler</span>
+        </a>
+    </div>
+</div>
+{{ form_end(form) }}
