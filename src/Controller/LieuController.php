@@ -17,6 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/lieu')]
+#[IsGranted("ROLE_USER")]
 final class LieuController extends AbstractController{
 
     private MapService $mapService;
@@ -24,8 +25,6 @@ final class LieuController extends AbstractController{
     public function __construct(MapService $mapService){
         $this->mapService = $mapService;
     }
-
-    #[IsGranted("ROLE_USER")]
     #[Route(name: 'app_lieu_index', methods: ['GET'])]
     public function index(
         LieuRepository $lieuRepository,
@@ -57,9 +56,6 @@ final class LieuController extends AbstractController{
         ]);
     }
 
-
-
-    #[IsGranted("ROLE_USER")]
     #[Route('/new', name: 'app_lieu_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, AddressAutocompleteService $addressService): Response
     {
@@ -86,7 +82,6 @@ final class LieuController extends AbstractController{
         ]);
     }
 
-    #[IsGranted("ROLE_USER")]
     #[Route('/refresh', name: 'app_refresh_lieux', methods: ['GET'])]
     public function refreshLieux(LieuRepository $lieuRepository): Response
     {
@@ -105,7 +100,6 @@ final class LieuController extends AbstractController{
         return $this->json($lieuxData);
     }
 
-    #[IsGranted("ROLE_USER")]
     #[Route('/{id}', name: 'app_lieu_show', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function show(Lieu $lieu): Response
     {
@@ -117,7 +111,6 @@ final class LieuController extends AbstractController{
         ]);
     }
 
-    #[IsGranted("ROLE_USER")]
     #[Route('/{id}/edit', name: 'app_lieu_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function edit(Request $request, Lieu $lieu, EntityManagerInterface $entityManager, AddressAutocompleteService $addressService): Response
     {
